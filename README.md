@@ -4,7 +4,7 @@ A .NET 10 (C#) web API with a React + TypeScript front end.
 
 ```
 MyApp.slnx
-src/MyApp.Api/   ASP.NET Core minimal API (http://localhost:5000)
+src/MyApp.Api/   ASP.NET Core minimal API (http://localhost:5080)
 web/             React + Vite front end   (http://localhost:5173)
 ```
 
@@ -22,7 +22,7 @@ cd src/MyApp.Api
 dotnet run
 ```
 
-Check it works: open http://localhost:5000/api/hello
+Check it works: open http://localhost:5080/api/hello
 
 **Terminal 2 - front end**
 
