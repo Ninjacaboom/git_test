@@ -1,0 +1,261 @@
+[
+  {
+    "id": "dc6fbcbb-5990-4ed5-82ee-93152dab7845",
+    "name": "Agricium",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Agricium"
+  },
+  {
+    "id": "48c7080a-bbef-43d2-901a-698321ed4340",
+    "name": "Aluminium",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Aluminum"
+  },
+  {
+    "id": "3f137385-dd8f-410b-b5f3-7b4d283c09cd",
+    "name": "Aphorite",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Aphorite"
+  },
+  {
+    "id": "fde0cd65-8827-4b23-804d-cc8845dfa7ac",
+    "name": "Aslarite",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Aslarite"
+  },
+  {
+    "id": "38d7d7e9-819b-4351-a40e-7b764cb304e6",
+    "name": "Beradom",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Beradom"
+  },
+  {
+    "id": "93c8b7df-d6ac-4b4f-a115-b0e3afc238b8",
+    "name": "Beryl",
+    "category": "minerals",
+    "unitType": "SCU",
+    "material": "Beryl"
+  },
+  {
+    "id": "999e3149-fd10-49ac-914f-8911e61c6122",
+    "name": "Bexalite",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Bexalite"
+  },
+  {
+    "id": "33bff393-42f1-4f70-85a1-71e695ed2a5a",
+    "name": "Borase",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Borase"
+  },
+  {
+    "id": "0b83f4b2-1d15-4843-aa94-29f2b40a5cbe",
+    "name": "Carinite",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Carinite"
+  },
+  {
+    "id": "a789f57a-e12b-4bcd-8132-e0c03d84fc89",
+    "name": "Copper",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Copper"
+  },
+  {
+    "id": "4236c16b-c47f-4083-9e26-4313733f2326",
+    "name": "Corundum",
+    "category": "minerals",
+    "unitType": "SCU",
+    "material": "Corundum"
+  },
+  {
+    "id": "20094ded-ad04-46a3-b734-9e37aa3154b3",
+    "name": "Dolivine",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Dolivine"
+  },
+  {
+    "id": "d7a21cac-3c2b-4695-95b7-2042d8f5755e",
+    "name": "Feynmaline",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Feynmaline"
+  },
+  {
+    "id": "ae6d8d74-04fa-4d21-9991-4232f8eb2cfe",
+    "name": "Glacosite",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Glacosite"
+  },
+  {
+    "id": "21825507-7923-4683-9bf3-9cfe316940e3",
+    "name": "Gold",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Gold"
+  },
+  {
+    "id": "125dd723-95ad-488d-830f-62c954445ca1",
+    "name": "Hadanite",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Hadanite"
+  },
+  {
+    "id": "61189578-ed7a-4491-9774-37ae2f82b8b0",
+    "name": "Hephaestanite",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Hephaestanite"
+  },
+  {
+    "id": "f386a33c-ac9a-400a-a7b8-fe1fc7c8d270",
+    "name": "Iron",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Iron"
+  },
+  {
+    "id": "e954d75e-fb1e-487e-90a8-170f0284b502",
+    "name": "Janalite",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Janalite"
+  },
+  {
+    "id": "7f4599b0-a2b2-4178-8c7e-13292054ab20",
+    "name": "Laranite",
+    "category": "minerals",
+    "unitType": "SCU",
+    "material": "Laranite"
+  },
+  {
+    "id": "392b4dca-449a-4d4d-8fef-beab024d9ee7",
+    "name": "Lindinium",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Lindinium"
+  },
+  {
+    "id": "989f9b73-f636-4f35-a81d-579dcbe3f0ab",
+    "name": "Ouratite",
+    "category": "nonmetal",
+    "unitType": "SCU",
+    "material": "Ouratite"
+  },
+  {
+    "id": "f9f3251a-8e48-408a-b957-f1e3d5d3e213",
+    "name": "Pressurized Ice",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Pressurized Ice"
+  },
+  {
+    "id": "bde5a2c8-2ef4-46ac-9403-2fcb79e4016c",
+    "name": "Quantanium",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Quantainium"
+  },
+  {
+    "id": "35121003-f1af-481a-b16f-7f48d8af0efb",
+    "name": "Quartz",
+    "category": "minerals",
+    "unitType": "SCU",
+    "material": "Quartz"
+  },
+  {
+    "id": "86d00bd8-08f7-4231-b375-a609803fc46d",
+    "name": "Riccite",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Riccite"
+  },
+  {
+    "id": "51b456cd-e73e-42a8-b36e-0bf6fbe29ce6",
+    "name": "Sadaryx",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Sadaryx"
+  },
+  {
+    "id": "ee704f52-8794-434d-bcd7-47fec365ffbd",
+    "name": "Saldynium (Ore)",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": "Saldynium"
+  },
+  {
+    "id": "4a47cad8-0271-4048-b19b-d9b52521fc20",
+    "name": "Savrilium",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Savrilium"
+  },
+  {
+    "id": "7bbd3197-a6e1-49b3-a495-0b7ef4f8ce40",
+    "name": "Silicon",
+    "category": "nonmetal",
+    "unitType": "SCU",
+    "material": "Silicon"
+  },
+  {
+    "id": "8cd317a3-df9b-4315-8ac3-0f1fca42dfd4",
+    "name": "Stileron",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Stileron"
+  },
+  {
+    "id": "06cafea0-49fe-4dce-b0f0-dc583316c66d",
+    "name": "Taranite",
+    "category": "mineral",
+    "unitType": "SCU",
+    "material": "Taranite"
+  },
+  {
+    "id": "1b4c4042-5fdc-4b52-bec4-07085cb3520a",
+    "name": "Tin",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Tin"
+  },
+  {
+    "id": "07570c9f-fdf6-4bca-a56b-c42809ec0e01",
+    "name": "Titanium",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Titanium"
+  },
+  {
+    "id": "75b37a54-45c9-4f27-ac09-9830f092dd86",
+    "name": "Torite",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Torite"
+  },
+  {
+    "id": "60f116f4-c02a-45b2-9ded-333747795124",
+    "name": "Tungsten",
+    "category": "metal",
+    "unitType": "SCU",
+    "material": "Tungsten"
+  },
+  {
+    "id": "124da32f-de8f-45f6-a2f1-81fd47752b2d",
+    "name": "Yormandi Eye",
+    "category": "Harvestable",
+    "unitType": "Units",
+    "material": null
+  }
+]
