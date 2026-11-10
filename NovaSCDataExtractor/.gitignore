@@ -1,0 +1,35 @@
+# Game extraction cache (large, regeneratable from Data.p4k)
+cache/
+
+# Extracted tools (downloaded separately)
+tools/
+
+# Generated output JSON
+output/
+
+# Reference data (local comparison only)
+temp/
+
+# Extraction run logs (local only)
+logs/
+
+# Generated patch/channel diff reports (regeneratable from two output snapshots)
+reports/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude session files
+.claude/
+.gstack/

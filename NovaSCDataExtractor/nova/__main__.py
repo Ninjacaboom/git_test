@@ -1,0 +1,836 @@
+"""Nova Star Citizen Data Extractor - CLI entry point.
+
+Usage:
+    python -m nova                    # Run Live, then PTU if newer; zip both
+    python -m nova --config path/to/config.json
+    python -m nova --channel PTU      # Run only the named channel
+    python -m nova --no-package       # Skip the Live.zip / PTU.zip step
+    python -m nova --force
+    python -m nova --only ships
+"""
+
+import argparse
+import json
+import os
+import sys
+import time
+import zipfile
+
+from . import __version__
+from .config import Config
+from .tool_downloader import ensure_tools
+from .extractor import (extract_all_xml_and_dcb, get_entity_files, get_localization_file,
+                          get_vehicle_impl_files, scan_cryxml_binaries)
+from .converter import convert_game_dcb, convert_entities
+from .dataforge_parser import stream_parse_dataforge
+from .entity_parser import parse_entity_file
+from .vehicle_impl_parser import parse_vehicle_implementations
+from .utils import parse_localization, resolve_name, NULL_GUID
+from .cosmetic_classifier import (
+    identify_cosmetic_variants,
+    identify_variants,
+    load_impl_xml_modifications,
+)
+from .socpak_parser import build_ship_storage_index
+from .loot_parser import parse_loot_records
+from .builders.slices import (
+    build_vehicle_metadata,
+    build_vehicle_stats,
+    build_vehicle_hardpoints,
+    build_vehicle_equipment,
+    build_fps_equipment,
+)
+from .builders.resources import build_resources
+from .builders.mineables import build_mineables
+from .builders.blueprints import build_blueprints
+from .builders.missions import build_missions
+from .builders.mission_board import build_mission_board
+from .builders.factions import build_factions
+from .builders.standings import build_standings
+from .builders.localities import build_localities
+from .builders.tags import build_tags
+from .builders.mission_types import build_mission_types
+from .builders.scenarios import build_scenarios
+from .builders.loot import build_loot_locations
+
+
+class BuildContext:
+    """Shared context passed to all builders."""
+    def __init__(self, items_by_class, vehicles_by_class, guid_to_class,
+                 manufacturers, ammo_params, translations, vehicle_impls=None,
+                 inventory_containers=None, gimbal_modifiers=None,
+                 weapon_pool_sizes=None, shield_pool_sizes=None,
+                 inclusion_modes=None, cosmetic_variants=None,
+                 ship_storage_index=None, ifcs_modifiers=None,
+                 crafting_blueprints=None, gpp_records=None,
+                 recoil_configs=None, recoil_modifiers=None,
+                 weapon_recoil_configs=None, misfire_defs=None,
+                 variants=None,
+                 blueprint_pools=None, faction_reputation=None,
+                 standings=None, reputation_scopes=None, localities=None,
+                 contract_rewards=None, scenario_rewards=None, tags=None,
+                 mission_types=None, contract_templates=None,
+                 mission_scenarios=None):
+        self.items = items_by_class
+        self.vehicles = vehicles_by_class
+        self.guids = guid_to_class
+        self.manufacturers = manufacturers
+        self.ammo = ammo_params
+        self.translations = translations
+        self.vehicle_impls = vehicle_impls or {}
+        self.inventory_containers = inventory_containers or {}
+        self.gimbal_modifiers = gimbal_modifiers or {}
+        self.weapon_pool_sizes = weapon_pool_sizes or {}
+        self.shield_pool_sizes = shield_pool_sizes or {}
+        # className -> EAEntityDataParams.inclusionMode ("ReadyToInclude" /
+        # "DoNotInclude" / ""). Populated from per-ship entity XMLs. Used by
+        # the ships filter to drop records CIG flagged not-for-PU.
+        self.inclusion_modes = inclusion_modes or {}
+        # Set of ClassNames identified as cosmetic-only variants of another
+        # ship sharing the same vehicleDefinition. Populated by the
+        # cosmetic_classifier. The extractor filters these so each cosmetic
+        # group is represented by its base ClassName only.
+        self.cosmetic_variants = cosmetic_variants or set()
+        # {variant_classname: base_classname} for the looser sibling rule
+        # (same chassis + armor + structural-mod sig; different default
+        # loadouts permitted). Strict superset of cosmetic_variants on
+        # ships that have a resolvable armor port.
+        self.variants = variants or {}
+        # ship className -> {item_classname: count, ...} for interior
+        # PersonalStorage placements walked from .socpak archives. Used by the
+        # Storage builder to emit crew-locker entries not reachable through
+        # the loadout port chain.
+        self.ship_storage_index = ship_storage_index or {}
+        # SIFCSModifiersLegacy records keyed by GUID. Items with
+        # IFCSParams.modifiersLegacy set reference these for actual
+        # delta values (replaces hardcoded FlightBlade HND/SPD constants).
+        self.ifcs_modifiers = ifcs_modifiers or {}
+        # Crafting blueprints keyed by target entity GUID — recipe slots
+        # (FRAME/WIRING/LENSES/etc.) with quality-range modifiers and
+        # resource costs. Used by stditem to emit per-weapon Crafting block.
+        self.crafting_blueprints = crafting_blueprints or {}
+        # CraftingGameplayPropertyDef records keyed by GUID — resolves
+        # blueprint modifier GPP refs (gameplayPropertyRecord) to property
+        # names like GPP_Weapon_Damage / GPP_Weapon_FireRate.
+        self.gpp_records = gpp_records or {}
+        # Per-FPS-weapon procedural recoil chain: weapon's
+        # actorProceduralRecoilConfig GUID -> {setups: [{aimStance, modifiersGuid}]}
+        # Each setup's modifiersGuid resolves via recoil_modifiers below.
+        self.recoil_configs = recoil_configs or {}
+        # ActorProceduralRecoilModifiers records keyed by GUID —
+        # {hands, aim, body, head} parameter blocks driving procedural recoil.
+        self.recoil_modifiers = recoil_modifiers or {}
+        # WeaponProceduralRecoilConfigDef records keyed by GUID — per-firing-mode
+        # base recoil curves (hands/aim/body/head). The actor-level
+        # recoil_modifiers above multiply on top of these absolute values.
+        self.weapon_recoil_configs = weapon_recoil_configs or {}
+        # WeaponMisfireDef records keyed by GUID — jam mechanics. 5 records
+        # total, shared by fire-type (burst/rapid/single/charge/beam).
+        self.misfire_defs = misfire_defs or {}
+        # ---------- Blueprint reward catalog ----------
+        # BlueprintPoolRecord by GUID. Each pool holds weighted blueprint refs.
+        self.blueprint_pools = blueprint_pools or {}
+        # FactionReputation records by GUID — what contracts reference as
+        # @factionReputation. Carries the localized DisplayName + HQ/Leadership/…
+        self.faction_reputation = faction_reputation or {}
+        # SReputationStandingParams by GUID — single rank steps (Neutral,
+        # Elite Contractor, …) referenced from contracts as @min/maxStanding.
+        self.standings = standings or {}
+        # SReputationScopeParams by GUID — rep ladders (factionreputationscope).
+        self.reputation_scopes = reputation_scopes or {}
+        # MissionLocality by GUID — region/sub-region (Nyx, Pyro_RegionA, …).
+        self.localities = localities or {}
+        # Flat list of contract entries (CareerContract / Contract) that carry
+        # <BlueprintRewards>. See dataforge_parser._parse for the shape.
+        self.contract_rewards = contract_rewards or []
+        # Flat list of scenario-tier reward entries (ScenarioProgress).
+        self.scenario_rewards = scenario_rewards or []
+        # Tag catalog from TagDatabase.TagDatabase.xml. {guid: {TagName, Path,
+        # Description?}}. Sub-region + mission-type-capability + zone-property
+        # tags used by location filters.
+        self.tags = tags or {}
+        # MissionType records by GUID — {className, localisedTypeName, …}.
+        # Resolved via contract_templates (template GUID → MissionType GUID).
+        self.mission_types = mission_types or {}
+        # ContractTemplate records by GUID — {className, missionTypeGuid}.
+        self.contract_templates = contract_templates or {}
+        # MissionScenario records by GUID. Referenced from
+        # ContractGeneratorHandler_*/required_active_scenarios — when a
+        # handler's required scenarios aren't all active (e.g. CIG ships
+        # ContentBlocker_Scenario with scheduleEnabled=False), the contracts
+        # never spawn live regardless of player prerequisites.
+        self.mission_scenarios = mission_scenarios or {}
+        # Reverse index built downstream in __main__: bp_guid → [{Kind, …}].
+        self.reward_sources_by_bp_guid = {}
+        self._items_by_guid = None
+
+    @property
+    def items_by_guid(self):
+        """Lazy {item_guid.lower(): className} index shared by builders.
+
+        blueprints/missions/resources each used to rebuild this O(N) map."""
+        if self._items_by_guid is None:
+            self._items_by_guid = {
+                rec["guid"].lower(): cn
+                for cn, rec in self.items.items() if rec.get("guid")
+            }
+        return self._items_by_guid
+
+    def resolve_name(self, raw_name):
+        return resolve_name(raw_name, self.translations)
+
+    def get_manufacturer(self, guid):
+        """Resolve a manufacturer GUID to {code, name}.
+
+        Returns None when no SCItemManufacturer record exists for this GUID
+        (caller should omit the field entirely). Returns an empty dict {} when
+        the record exists but resolves to empty/unresolved values (REF emits
+        an empty Manufacturer block in this case)."""
+        if not guid or guid == NULL_GUID:
+            return None
+        mfr = self.manufacturers.get(guid)
+        if mfr:
+            name = self.resolve_name(mfr["name"])
+            # Keep @LOC_PLACEHOLDER as-is; convert "<= PLACEHOLDER =>" back
+            if name == "<= PLACEHOLDER =>":
+                name = "@LOC_PLACEHOLDER"
+            result = {}
+            if mfr["code"]:
+                result["Code"] = mfr["code"]
+            # Keep @LOC_PLACEHOLDER, exclude other unresolved @keys and empty
+            if name == "<= PLACEHOLDER =>" or name == "@LOC_PLACEHOLDER":
+                result["Name"] = "@LOC_PLACEHOLDER"
+            elif name and not name.startswith("@"):
+                result["Name"] = name
+            return result
+        return None
+
+    def get_ammo(self, guid):
+        """Get ammo params by GUID."""
+        if not guid or guid == NULL_GUID:
+            return None
+        return self.ammo.get(guid)
+
+    def get_item(self, class_name):
+        """Look up an item by className."""
+        return self.items.get(class_name)
+
+    def get_inventory_capacity(self, guid):
+        """Get inventory container capacity in SCU by GUID."""
+        if not guid or guid == NULL_GUID:
+            return 0
+        container = self.inventory_containers.get(guid)
+        if container:
+            return container.get("capacity", 0)
+        return 0
+
+    def resolve_guid(self, guid):
+        """Resolve a GUID to a className."""
+        if not guid or guid == NULL_GUID:
+            return None
+        return self.guids.get(guid)
+
+    def get_gimbal_modifier(self, guid):
+        """Get gimbal mode modifier data by GUID."""
+        if not guid or guid == NULL_GUID:
+            return None
+        return self.gimbal_modifiers.get(guid)
+
+
+# Builder registry: (filename, builder_fn)
+# All builders receive BuildContext as first arg
+BUILDERS = {
+    "vehicle_metadata":   ("vehicle_metadata.json",   build_vehicle_metadata),
+    "vehicle_stats":      ("vehicle_stats.json",      build_vehicle_stats),
+    "vehicle_hardpoints": ("vehicle_hardpoints.json", build_vehicle_hardpoints),
+    "vehicle_equipment":  ("vehicle_equipment.json",  build_vehicle_equipment),
+    "fps_equipment":      ("fps_equipment.json",      build_fps_equipment),
+    "resources":          ("resources.json",          build_resources),
+    "mineables":          ("mineables.json",          build_mineables),
+    "blueprints":         ("blueprints.json",         build_blueprints),
+    "missions":           ("missions.json",           build_missions),
+    "mission_board":      ("mission_board.json",      build_mission_board),
+    "factions":           ("factions.json",           build_factions),
+    "standings":          ("standings.json",          build_standings),
+    "localities":         ("localities.json",         build_localities),
+    "tags":               ("tags.json",               build_tags),
+    "mission_types":      ("mission_types.json",      build_mission_types),
+    "scenarios":          ("scenarios.json",          build_scenarios),
+    "loot_locations":     ("loot_locations.json",     build_loot_locations),
+}
+
+
+def _parse_version_tuple(s):
+    """Parse a build-manifest Version string ("4.7.178.8917") into a tuple."""
+    if not s:
+        return ()
+    out = []
+    for part in s.split("."):
+        try:
+            out.append(int(part))
+        except ValueError:
+            return tuple(out)  # fall back to whatever parsed cleanly
+    return tuple(out)
+
+
+def _read_manifest_version(channel_path):
+    """Read build_manifest.id from an SC install dir, return Version string."""
+    manifest_path = os.path.join(channel_path, "build_manifest.id")
+    if not os.path.isfile(manifest_path):
+        return None
+    try:
+        with open(manifest_path, "r") as f:
+            return json.load(f).get("Data", {}).get("Version")
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def find_newer_ptu(live_config):
+    """Return a PTU Config if a sibling PTU install exists with a newer Version.
+
+    Compared on the build_manifest.id `Version` field (e.g. "4.7.178.8917"),
+    parsed as a tuple of ints. Returns None when:
+    - No PTU folder exists alongside the configured Live path
+    - PTU has no Data.p4k or no build_manifest.id
+    - PTU version is <= Live version
+    """
+    sc_root = os.path.dirname(live_config.sc_live_path)
+    ptu_path = os.path.join(sc_root, "PTU")
+    if not os.path.isdir(ptu_path):
+        return None
+    if not os.path.isfile(os.path.join(ptu_path, "Data.p4k")):
+        return None
+
+    live_ver = _parse_version_tuple(_read_manifest_version(live_config.sc_live_path))
+    ptu_ver = _parse_version_tuple(_read_manifest_version(ptu_path))
+
+    if not ptu_ver:
+        return None
+    if live_ver and ptu_ver <= live_ver:
+        return None
+
+    return Config(live_config_path_for(live_config), channel_override="PTU")
+
+
+def live_config_path_for(config):
+    """Helper: return the config-file path that produced `config`.
+
+    Stashed on the Config at load time so PTU re-runs can use the same JSON.
+    """
+    return getattr(config, "_config_path", None) or os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "nova_config.json"
+    )
+
+
+def package_output(config):
+    """Zip every file under `config.output_dir` into `<channel>.zip`.
+
+    Lands in the un-channelled output root (e.g. output/Live.zip,
+    output/PTU.zip) so consumers can pick up either build by name.
+    """
+    if not os.path.isdir(config.output_dir):
+        print(f"  [WARN] No output directory to package: {config.output_dir}")
+        return None
+    zip_path = os.path.join(config.output_root, f"{config.channel}.zip")
+    file_count = 0
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for root, _, files in os.walk(config.output_dir):
+            for fname in sorted(files):
+                fpath = os.path.join(root, fname)
+                arcname = os.path.relpath(fpath, config.output_dir)
+                zf.write(fpath, arcname)
+                file_count += 1
+    size_mb = os.path.getsize(zip_path) / (1024 * 1024)
+    print(f"  Packaged {file_count} files -> {zip_path} ({size_mb:.1f} MB)")
+    return zip_path
+
+
+def _build_reward_sources_index(ctx):
+    """Build ctx.reward_sources_by_bp_guid: blueprint_guid (lowercased) → list
+    of reward-source records.
+
+    Walks contract_rewards and scenario_rewards once, expanding each pool
+    reference to its constituent blueprints. Each entry references upstream
+    catalogs by ClassName (Mission/Pool) so consumers join via the dedicated
+    output files rather than embedding redundant metadata.
+    """
+    pools_by_guid = ctx.blueprint_pools
+    bp_index = {}
+
+    # Mekanism A — Contract-bundna BlueprintRewards
+    for c in ctx.contract_rewards:
+        mission_cn = c.get("debugName") or c.get("handlerDebugName") or ""
+        for br in c.get("blueprintRewards", []):
+            pool = pools_by_guid.get(br.get("poolGuid", "").lower()) \
+                or pools_by_guid.get(br.get("poolGuid", ""))
+            if not pool:
+                continue
+            pool_cn = pool.get("className", "")
+            rewards = pool.get("rewards", [])
+            sum_w = sum(r.get("weight", 1) for r in rewards) or 1
+            chance = br.get("chance", 1.0)
+            results_mask = br.get("missionResultsMask", [])
+            on_results = _decode_mission_results(results_mask)
+            for r in rewards:
+                bp_guid_raw = r.get("bpGuid", "")
+                if not bp_guid_raw:
+                    continue
+                bp_guid = bp_guid_raw.lower()
+                eff = chance * (r.get("weight", 1) / sum_w)
+                bp_index.setdefault(bp_guid, []).append({
+                    "Kind": "Contract",
+                    "MissionClassName": mission_cn,
+                    "PoolClassName": pool_cn,
+                    "EffectiveChance": round(eff, 6),
+                    "OnMissionResults": on_results,
+                })
+
+    # Mekanism B — ScenarioProgress tiers
+    for s in ctx.scenario_rewards:
+        scen_cn = s.get("scenarioClassName", "")
+        for tier in s.get("tiers", []):
+            min_pts = tier.get("minPoints", 0)
+            mission_cn = f"{scen_cn}.Tier_{min_pts}"
+            for pool_guid in tier.get("poolGuids", []):
+                pool = pools_by_guid.get(pool_guid.lower()) \
+                    or pools_by_guid.get(pool_guid)
+                if not pool:
+                    continue
+                pool_cn = pool.get("className", "")
+                for r in pool.get("rewards", []):
+                    bp_guid_raw = r.get("bpGuid", "")
+                    if not bp_guid_raw:
+                        continue
+                    bp_index.setdefault(bp_guid_raw.lower(), []).append({
+                        "Kind": "ScenarioTier",
+                        "MissionClassName": mission_cn,
+                        "PoolClassName": pool_cn,
+                        "MinPoints": min_pts,
+                    })
+
+    ctx.reward_sources_by_bp_guid = bp_index
+
+
+# Mission-result-mask index → human-readable enum string. CIG's mission engine
+# uses 5 boolean slots; observed semantics from contract data:
+_MISSION_RESULT_NAMES = ["Success", "FailedTimeout", "FailedDeath", "Aborted", "Failed"]
+
+
+def _decode_mission_results(mask):
+    """Turn a 5-bool array (from <missionResults><Bool value="X"/>) into a
+    list of result-name strings."""
+    out = []
+    for i, b in enumerate(mask):
+        if b and i < len(_MISSION_RESULT_NAMES):
+            out.append(_MISSION_RESULT_NAMES[i])
+    return out
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=f"Nova Star Citizen Data Extractor v{__version__}"
+    )
+    parser.add_argument("--config", default=None, help="Path to nova_config.json")
+    parser.add_argument("--channel", default=None, help="Override channel (LIVE, PTU). "
+                        "When set, only that channel runs and PTU auto-detection is skipped.")
+    parser.add_argument("--no-package", action="store_true",
+                        help="Skip the per-channel .zip step.")
+    parser.add_argument("--force", action="store_true", help="Force re-extraction (bypass cache)")
+    parser.add_argument("--only", nargs="+", choices=list(BUILDERS.keys()),
+                        help="Extract only specific categories")
+    args = parser.parse_args()
+
+    print(f"=== Nova Star Citizen Data Extractor v{__version__} ===\n")
+
+    # Load config
+    config_path = args.config
+    if config_path is None:
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "nova_config.json")
+
+    if not os.path.isfile(config_path):
+        print(f"[ERROR] Config not found: {config_path}")
+        print("Please create nova_config.json with your SC install path.")
+        sys.exit(1)
+
+    # Run primary channel (Live by default, or whatever --channel says).
+    primary_config = Config(config_path, channel_override=args.channel)
+    primary_config._config_path = config_path
+
+    # Fetch the RSI ship-matrix once per run. The matrix is channel-agnostic,
+    # so Live and PTU both read the same cache file populated here.
+    primary_config.ensure_dirs()
+    from .matrix import fetch_matrix
+    fetch_matrix(primary_config.cache_root)
+
+    run_extraction(primary_config, args)
+    if not args.no_package:
+        print(f"\n[PACKAGE] Zipping {primary_config.channel} output...")
+        package_output(primary_config)
+
+    # Auto-run PTU when the user didn't pin a specific channel.
+    # PTU failures (e.g. unforge can't decode a newer DCB format) must
+    # NOT abort the script — the primary Live build is already complete
+    # and packaged. Log a clear warning and exit success.
+    if not args.channel:
+        ptu_config = find_newer_ptu(primary_config)
+        if ptu_config is not None:
+            ptu_config._config_path = config_path
+            print(f"\n[PTU] PTU build is newer than Live — running PTU extraction...")
+            try:
+                run_extraction(ptu_config, args)
+                if not args.no_package:
+                    print(f"\n[PACKAGE] Zipping {ptu_config.channel} output...")
+                    package_output(ptu_config)
+            except Exception as exc:
+                print(f"\n[PTU] [WARN] PTU extraction failed: {exc}")
+                print(f"       This often happens when unforge.exe can't decode")
+                print(f"       a DCB-format change in the PTU build. Live output")
+                print(f"       is unaffected — Live.zip is already packaged.")
+        else:
+            print(f"\n[PTU] No newer PTU build detected — skipping.")
+
+
+def run_extraction(config, args):
+    """Run the full extract -> parse -> build pipeline for one channel."""
+    config.ensure_dirs()
+
+    print(f"\n=== Channel: {config.channel} ===")
+
+    # Clear cache if forced
+    if args.force:
+        print("[FORCE] Clearing cache...")
+        import shutil
+        if os.path.isdir(config.cache_dir):
+            shutil.rmtree(config.cache_dir)
+        config.ensure_dirs()
+
+    # Ensure tools
+    if not ensure_tools(config.tools_dir):
+        print("[ERROR] Failed to set up tools. Please download unp4k manually.")
+        sys.exit(1)
+
+    # Validate
+    errors = config.validate()
+    if errors:
+        for e in errors:
+            print(f"[ERROR] {e}")
+        sys.exit(1)
+
+    # Get game version
+    version_info = config.get_version_info()
+    branch = version_info["branch"]
+    version_label = version_info["version"] or "unknown"
+    p4_change = version_info["p4_change"]
+    # Public patch version (e.g. "4.7.2") looked up from the RSI launcher
+    # log via the current build's p4 changelist. The build manifest's
+    # `Branch` is the major patch series ("sc-alpha-4.7.0") and stays
+    # constant across every 4.7.x patch, so it can't be the gameVersion.
+    launcher_patch = config.get_launcher_patch()
+    if launcher_patch and p4_change:
+        game_version = f"{launcher_patch}.{p4_change}"
+    else:
+        game_version = branch
+    print(f"\nGame version:  {game_version}")
+    print(f"Build branch:  {branch}")
+    print(f"Build version: {version_label}")
+    if p4_change:
+        print(f"P4 changelist: {p4_change}")
+    print(f"Data.p4k: {config.p4k_path}")
+    p4k_size = os.path.getsize(config.p4k_path) / (1024 * 1024 * 1024)
+    print(f"Data.p4k size: {p4k_size:.1f} GB")
+
+    # Staleness check: cache extracted from a different p4k than the one on disk
+    staleness = config.is_cache_stale()
+    if staleness["stale"] and not args.force:
+        from datetime import datetime
+        c_mtime = datetime.fromtimestamp(staleness["cache_mtime"]).strftime("%Y-%m-%d %H:%M")
+        p_mtime = datetime.fromtimestamp(staleness["p4k_mtime"]).strftime("%Y-%m-%d %H:%M")
+        print(f"\n[WARN] Cache is older than Data.p4k (cache {c_mtime} vs p4k {p_mtime}).")
+        print("       Reported gameVersion reflects the current Live manifest, but the")
+        print("       extracted data is from the previous p4k contents. Re-run with")
+        print("       --force to invalidate the cache and extract from current p4k.")
+
+    start_time = time.time()
+
+    # Stage 1: Extract all XML + DCB files in one pass
+    dcb_path = extract_all_xml_and_dcb(config)
+
+    # Stage 2: Convert DCB to XML
+    xml_path = convert_game_dcb(config, dcb_path)
+
+    # Stage 3: Get entity files (already extracted in stage 1)
+    entity_files = []
+    for entity_type in ["spaceships", "groundvehicles"]:
+        found = get_entity_files(config, entity_type)
+        print(f"  Found {len(found)} {entity_type} entity files")
+        entity_files.extend(found)
+
+    # Scan cache for CryXML-binary .xml files under known-binary directories
+    # (covers vehicle implementation files + any other newly added binary XMLs).
+    cryxml_files = scan_cryxml_binaries(config)
+    # Exclude ones already in entity_files to avoid double-queueing
+    seen_paths = {os.path.abspath(p) for p in entity_files}
+    for p in cryxml_files:
+        if os.path.abspath(p) not in seen_paths:
+            entity_files.append(p)
+    print(f"  Found {len(cryxml_files)} CryXML-binary .xml files needing conversion")
+
+    # Stage 4: Convert entity files (CryXML binary -> readable XML)
+    if entity_files:
+        entity_xml_map = convert_entities(config, entity_files)
+    else:
+        print("  [WARN] No entity files found.")
+        entity_xml_map = {}
+
+    # Stage 5: Get localization
+    loc_path = get_localization_file(config)
+
+    # Parse everything
+    print("\n[PARSE] Parsing DataForge data...")
+    (items_by_class, vehicles_by_class, guid_to_class, manufacturers,
+     ammo_params, inventory_containers, gimbal_modifiers, ifcs_modifiers,
+     crafting_blueprints, gpp_records, recoil_configs, recoil_modifiers,
+     weapon_recoil_configs, misfire_defs,
+     blueprint_pools, faction_reputation, standings, reputation_scopes,
+     localities, contract_rewards, scenario_rewards,
+     mission_types, contract_templates, mission_scenarios) = \
+        stream_parse_dataforge(xml_path, config.cache_dir)
+
+    print("\n[PARSE] Parsing TagDatabase...")
+    from .tag_db_parser import parse_tag_database
+    tags = parse_tag_database(config.cache_dir)
+
+    # Loot records live in a second pass rather than in stream_parse_dataforge:
+    # the loot graph is self-contained and keeping it out avoids widening that
+    # parser's already 24-wide return tuple. Costs one extra Game2.xml scan.
+    print("\n[PARSE] Parsing loot graph...")
+    loot = parse_loot_records(xml_path, config.cache_dir)
+
+    print("\n[PARSE] Parsing entity files...")
+    entity_data_map = {}
+    weapon_pool_sizes = {}  # entity GUID -> WeaponGun FixedPowerPool size (0 for DynamicPowerPool)
+    shield_pool_sizes = {}  # entity GUID -> Shield DynamicPowerPool maxItemCount
+    inclusion_modes = {}    # className -> EAEntityDataParams.inclusionMode
+    import re
+    _POOL_RE = re.compile(r'FixedPowerPool\s+itemType="WeaponGun"\s+poolSize="(\d+)"')
+    # Vehicles with a DynamicPowerPool for WeaponGun (no fixed cap) still
+    # surface as ResourceNetwork.ItemPools.WeaponPoolSize=0 in the reference.
+    # Capture them too so the field is emitted with a 0 value rather than absent.
+    _DYN_POOL_RE = re.compile(r'DynamicPowerPool\s+itemType="WeaponGun"\s+maxItemCount="(-?\d+)"')
+    _SHIELD_POOL_RE = re.compile(r'DynamicPowerPool\s+itemType="Shield"\s+maxItemCount="(-?\d+)"')
+    _INCLUSION_RE = re.compile(
+        r'EAEntityDataParams[^>]*\binclusionMode="([^"]*)"'
+    )
+    _ROOT_TAG_RE = re.compile(r'<EntityClassDefinition\.(\w+)[^>]*__ref="([^"]+)"')
+    for original, xml_file in entity_xml_map.items():
+        # Read once; the same bytes feed both the ET parse and the regex
+        # scans below (previously each file was opened twice).
+        try:
+            with open(xml_file, "rb") as f:
+                raw = f.read()
+        except OSError:
+            raw = None
+        data = parse_entity_file(xml_file, raw=raw)
+        parsed_cn = ""
+        if data:
+            parsed_cn = data.get("ClassName", data.get("className", ""))
+            if not parsed_cn:
+                parsed_cn = os.path.splitext(os.path.basename(original))[0]
+            entity_data_map[parsed_cn] = data
+        try:
+            if raw is None:
+                raise OSError("unreadable")
+            content = raw.decode("utf-8", errors="replace")
+            mr = _ROOT_TAG_RE.search(content)
+            cn_key = mr.group(1) if mr else parsed_cn
+            guid = mr.group(2) if mr else None
+            if guid:
+                m = _POOL_RE.search(content)
+                if m:
+                    weapon_pool_sizes[guid] = int(m.group(1))
+                elif _DYN_POOL_RE.search(content):
+                    # DynamicPowerPool present → no fixed cap. Reference emits 0.
+                    weapon_pool_sizes.setdefault(guid, 0)
+                m2 = _SHIELD_POOL_RE.search(content)
+                if m2:
+                    val = int(m2.group(1))
+                    if val > 0:  # -1 means unlimited, don't emit
+                        shield_pool_sizes[guid] = val
+            m3 = _INCLUSION_RE.search(content)
+            if m3 and cn_key:
+                inclusion_modes[cn_key] = m3.group(1)
+        except Exception:
+            pass
+    print(f"  Parsed {len(entity_data_map)} entity files, {len(weapon_pool_sizes)} weapon pool sizes, {len(shield_pool_sizes)} shield pool sizes, {len(inclusion_modes)} inclusion flags")
+
+    print("\n[PARSE] Loading localization...")
+    translations = parse_localization(loc_path)
+    print(f"  Loaded {len(translations)} translations")
+
+    print("\n[PARSE] Parsing vehicle implementations...")
+    vehicle_impls = parse_vehicle_implementations(config.cache_dir)
+
+    print("\n[PARSE] Classifying cosmetic-only ship variants...")
+    # Per-ClassName path to the per-ship entity XML (already converted).
+    # CRITICAL: filter to *entity* XMLs only. The Implementations/Xml tree
+    # contains both the per-impl files (e.g. aegs_avenger.xml) AND a
+    # Modifications/ subfolder (e.g. Modifications/AEGS_Avenger_Warlock.xml)
+    # — those Modifications files share a basename with the real entity XML
+    # at Libs/Foundry/Records/entities/spaceships/aegs_avenger_warlock.xml,
+    # so a naive basename-only match can pick the wrong file. Force builds
+    # are particularly affected because convert_entities' ThreadPoolExecutor
+    # populates entity_xml_map in non-deterministic order, so the
+    # Modifications/ file sometimes wins. Result observed 2026-05-12 with
+    # PTU 4.8: AEGS_Avenger_Warlock and RSI_Constellation_Phoenix tagged as
+    # cosmetic variants of Titan/Taurus because both sides were empty
+    # Modifications/ files that compared equal.
+    entity_xml_by_class = {}
+    vehicles_lower = {cn.lower(): cn for cn in vehicles_by_class}
+    _ENTITY_DIR_TOKENS = (
+        os.sep.join(["entities", "spaceships"]).lower(),
+        os.sep.join(["entities", "groundvehicles"]).lower(),
+    )
+    for original, xml_file in entity_xml_map.items():
+        # Only consider files that live under the per-ship entity tree.
+        # Modifications/, Implementations/, Loadouts/, etc. are not entity
+        # XMLs and must not feed the cosmetic-variant classifier.
+        norm = original.replace("/", os.sep).lower()
+        if not any(tok in norm for tok in _ENTITY_DIR_TOKENS):
+            continue
+        cn_lower = os.path.splitext(os.path.basename(original))[0].lower()
+        matched = vehicles_lower.get(cn_lower)
+        if matched:
+            entity_xml_by_class[matched] = xml_file
+
+    # Parse impl-XML <Modification> blocks for rename-only detection.
+    impl_dirs = [
+        os.path.join(config.cache_dir, "Data", "Scripts", "Entities",
+                      "Vehicles", "Implementations", "Xml"),
+    ]
+    impl_modifications = load_impl_xml_modifications(impl_dirs)
+
+    cosmetic_variants = identify_cosmetic_variants(
+        vehicles_by_class, entity_xml_by_class, items_by_class, impl_modifications,
+    )
+    print(f"  Identified {len(cosmetic_variants)} cosmetic-only variants")
+    cv_path = os.path.join(config.cache_dir, "cosmetic_variants.json")
+    with open(cv_path, "w", encoding="utf-8") as f:
+        json.dump(cosmetic_variants, f, indent=2, sort_keys=True)
+
+    # Looser sibling grouping — same chassis (impl) + same armor +
+    # same structural-mod signature; default-loadout swaps are allowed.
+    # This catches Teach's / Collector / Wikelo / event-skin variants
+    # that a player would consider "the same ship, restocked differently".
+    variants = identify_variants(
+        vehicles_by_class, entity_xml_by_class, items_by_class, impl_modifications,
+    )
+    print(f"  Identified {len(variants)} variant-of-base mappings")
+    v_path = os.path.join(config.cache_dir, "variants.json")
+    with open(v_path, "w", encoding="utf-8") as f:
+        json.dump(variants, f, indent=2, sort_keys=True)
+
+    # Walk ship-interior socpak archives to count PersonalStorage placements
+    # per ship. Emits {className: {item_classname: count, ...}, ...} keyed by
+    # ship className. Used by the Storage builder to emit interior crew-locker
+    # entries that aren't reachable through the loadout port chain.
+    ship_storage_index = build_ship_storage_index(config.cache_dir)
+    print(f"  Indexed interior storage for {len(ship_storage_index)} ships")
+    ssi_path = os.path.join(config.cache_dir, "parsed_ship_storage.json")
+    with open(ssi_path, "w", encoding="utf-8") as f:
+        json.dump(ship_storage_index, f, indent=2, sort_keys=True)
+
+    # Load the RSI ship-matrix cached at the top of main(). The slices
+    # builder uses this to tag emitted ships with `FlightReady` and to
+    # populate Store / Career / Role / Cargo placeholders. None when
+    # neither network nor cached file is available; tagging is then
+    # silently omitted.
+    from .matrix import load_matrix
+    matrix_data = load_matrix(config.cache_root)
+    if matrix_data:
+        print(f"\n[MATRIX] Loaded {len(matrix_data)} ship-matrix entries.")
+    else:
+        print(f"\n[MATRIX] No matrix data — FlightReady tags will be omitted.")
+
+    # Build context shared by all builders
+    ctx = BuildContext(items_by_class, vehicles_by_class, guid_to_class,
+                       manufacturers, ammo_params, translations, vehicle_impls,
+                       inventory_containers, gimbal_modifiers, weapon_pool_sizes,
+                       shield_pool_sizes, inclusion_modes, cosmetic_variants,
+                       ship_storage_index=ship_storage_index,
+                       ifcs_modifiers=ifcs_modifiers,
+                       crafting_blueprints=crafting_blueprints,
+                       gpp_records=gpp_records,
+                       recoil_configs=recoil_configs,
+                       recoil_modifiers=recoil_modifiers,
+                       weapon_recoil_configs=weapon_recoil_configs,
+                       misfire_defs=misfire_defs,
+                       variants=variants,
+                       blueprint_pools=blueprint_pools,
+                       faction_reputation=faction_reputation,
+                       standings=standings,
+                       reputation_scopes=reputation_scopes,
+                       localities=localities,
+                       contract_rewards=contract_rewards,
+                       scenario_rewards=scenario_rewards,
+                       tags=tags,
+                       mission_types=mission_types,
+                       contract_templates=contract_templates,
+                       mission_scenarios=mission_scenarios)
+    ctx.matrix = matrix_data
+    ctx.cache_dir = config.cache_dir
+    ctx.loot = loot
+
+    # Build reverse index: blueprint_guid → list of reward sources. Used by
+    # the blueprints builder to emit RewardSources[] on each blueprint and by
+    # the missions builder to emit BlueprintRewards[].TargetClassNames[] for
+    # the reverse-lookup view. Built once here so neither builder walks the
+    # contract list twice.
+    _build_reward_sources_index(ctx)
+    print(f"  Indexed reward sources for {len(ctx.reward_sources_by_bp_guid)} blueprints")
+
+    # Build output
+    categories = args.only if args.only else list(BUILDERS.keys())
+
+    print(f"\n[BUILD] Building {len(categories)} dataset(s)...")
+
+    build_counts = {}
+    for category in categories:
+        filename, builder_fn = BUILDERS[category]
+        print(f"\n  Building {category}...")
+        result = builder_fn(ctx)
+
+        output_path = os.path.join(config.output_dir, filename)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+
+        build_counts[category] = len(result)
+        print(f"  Wrote {output_path} ({len(result)} items)")
+
+    # Write metadata
+    metadata = {
+        "gameVersion": game_version,
+        "buildBranch": branch,
+        "buildVersion": version_info["version"],
+        "p4Change": version_info["p4_change"],
+        "buildDate": version_info["build_date"],
+        "channel": config.channel,
+        "extractionTimestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "novaVersion": __version__,
+        "counts": build_counts,
+    }
+
+    meta_path = os.path.join(config.output_dir, "metadata.json")
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
+
+    elapsed = time.time() - start_time
+    print(f"\n=== Done! Total time: {elapsed:.0f}s ===")
+    print(f"Output: {config.output_dir}")
+    for category in categories:
+        filename = BUILDERS[category][0]
+        count = metadata["counts"].get(category, "?")
+        print(f"  {filename}: {count} items")
+
+
+if __name__ == "__main__":
+    main()
