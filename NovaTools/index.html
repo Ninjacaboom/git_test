@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Fallback for when assets are served without the wsgi.py CSP header
+     (e.g. a PythonAnywhere static-file mapping). frame-ancestors is
+     header-only and intentionally absent here. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'">
+<title>Nova Tools</title>
+<base href="/">
+<link rel="stylesheet" href="css/styles.css?v=41">
+</head>
+<body>
+
+<div class="header">
+  <img src="img/nova-logo-white.svg" alt="Nova Tools" class="header-logo">
+  <h1 class="sr-only">Nova Tools</h1>
+  <p id="buildInfo" style="display:none"></p>
+  <div class="tab-nav" id="tabNav" style="display:none">
+    <button class="tab-btn active" data-tab="loadout">Loadout Manager</button>
+    <button class="tab-btn" data-tab="analyzer">Weapon Deflection</button>
+    <div class="build-toggle" id="buildToggle" style="display:none">
+      <button class="build-btn" data-build="live">LIVE</button>
+      <button class="build-btn" data-build="ptu">PTU</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="loading">
+    <div class="spinner"></div>
+    Loading data&hellip;
+    <div class="load-status"></div>
+  </div>
+  <div id="error"></div>
+  <div id="app" style="display:none">
+
+    <!-- Tab: Weapon Analyzer -->
+    <div class="tab-panel" id="analyzerPanel">
+      <div class="main">
+        <div class="sidebar">
+          <div class="sb-filters">
+            <label><i class="spvi-insurance"></i> Search</label>
+            <div class="sb-filters-body">
+              <div class="sb-field">
+                <span class="sb-label">Name</span>
+                <input type="text" class="search-box" id="weaponSearch" placeholder="Search by name&hellip;">
+              </div>
+              <div class="sb-field">
+                <span class="sb-label">Type</span>
+                <div class="multi-select" id="typeSelect">
+                  <div class="ms-toggle" id="typeToggle">All Types <span class="ms-arrow">&#9662;</span></div>
+                  <div class="ms-dropdown" id="typeDropdown"></div>
+                </div>
+              </div>
+              <div class="sb-field">
+                <span class="sb-label">Size</span>
+                <div class="multi-select" id="sizeSelect">
+                  <div class="ms-toggle" id="sizeToggle">All Sizes <span class="ms-arrow">&#9662;</span></div>
+                  <div class="ms-dropdown" id="sizeDropdown"></div>
+                </div>
+              </div>
+              <div class="sb-field">
+                <span class="sb-label">Speed</span>
+                <div class="filter-row">
+                  <input type="number" class="search-box" id="filterSpeed" placeholder="Min" min="0" step="50">
+                  <input type="number" class="search-box" id="filterSpeedMax" placeholder="Max" min="0" step="50">
+                </div>
+              </div>
+              <div class="legend" title="Toughest ship class this weapon still out-damages">
+                <span class="legend-item"><span class="legend-dot defl-tier-none"></span>None</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-lf"></span>Light Fighter</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-mf"></span>Medium Fighter</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-hf"></span>Heavy Fighter</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-gs"></span>Gunship</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-hg"></span>Heavy Gunship</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-sc"></span>Sub Capital</span>
+                <span class="legend-item"><span class="legend-dot defl-tier-cp"></span>Capital</span>
+              </div>
+            </div>
+          </div>
+          <div class="sb-weapons">
+            <label><i class="spvi-weapon"></i> Weapons (<span id="weaponCount">0</span>)</label>
+            <div class="weapon-list" id="weaponList"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="placeholder" id="placeholder">Select a weapon from the list to analyze ship immunity</div>
+          <div class="results" id="results">
+            <div class="stat-card" id="statCard"></div>
+            <div class="immunity-banner" id="immunityBanner"></div>
+            <div class="table-wrap" id="tableWrap">
+              <div class="table-header">
+                <h2><i class="spvi-standard_control"></i> Immune Ships</h2>
+                <input type="text" class="table-filter" id="shipFilter" placeholder="Filter ships by name&hellip;">
+              </div>
+              <div class="table-scroll">
+                <table>
+                  <thead id="tableHead"></thead>
+                  <tbody id="tableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Loadout Manager -->
+    <div class="tab-panel active" id="loadoutPanel">
+      <div class="lo-tab-bar" id="tabBar"></div>
+      <div class="loadout-header">
+        <div class="multi-select" id="shipSelect" style="min-width:320px">
+          <div class="ms-toggle" id="shipToggle">Select a vehicle&hellip; <span class="ms-arrow">&#9662;</span></div>
+          <div class="ms-dropdown" id="shipDropdown">
+            <input type="text" class="search-box ms-search" id="shipSearch" placeholder="Search ships&hellip;" autocomplete="off">
+            <div class="ms-list" id="shipList"></div>
+          </div>
+        </div>
+        <div class="lo-analysis-cluster" id="loadoutAnalysisCluster" style="display:none">
+          <button class="lo-build-save-btn lo-materials-btn" id="loadoutMaterialsBtn" title="Crafting materials needed for this loadout" style="display:none"><i class="fa-solid fa-wrench"></i> Materials</button>
+          <button class="lo-build-save-btn lo-deflection-btn" id="loadoutDeflectionBtn" title="Find deflection - simulate this loadout's damage against a chosen opponent"><i class="spvi-Engineering_Icon_ItemShields"></i> Deflection</button>
+          <button class="lo-build-save-btn lo-ttk-btn" id="loadoutTtkBtn" title="Time to kill - how long this loadout takes to break, kill or disable a chosen opponent"><i class="fa-solid fa-crosshairs"></i> Time to Kill</button>
+        </div>
+        <div class="lo-build-bar" id="loadoutBar" style="display:none">
+          <div class="lo-build-dropdown" id="loadoutSelect">
+            <input type="text" class="lo-build-input" id="loadoutNameInput" placeholder="Loadout..." autocomplete="off">
+            <span class="lo-build-arrow">&#9662;</span>
+            <div class="lo-build-list" id="loadoutList"></div>
+          </div>
+          <button class="lo-build-save-btn" id="loadoutSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+          <button class="lo-build-save-btn lo-share-btn" id="loadoutShareBtn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+        </div>
+      </div>
+      <div class="loadout-placeholder" id="loadoutPlaceholder">Select a vehicle to configure its loadout</div>
+      <!-- Top row: Power Distribution (left, content-sized) + Ship Stats banner
+           (right, fills remainder). Banner has a collapsed grouped-cell strip
+           and an absolutely-positioned 3-col detail overlay. -->
+      <div class="lo-top-row" id="loTopRow" style="display:none">
+        <div id="loPipMount"></div>
+        <div id="loStatsBanner"></div>
+      </div>
+      <div class="loadout-main" id="loadoutMain" style="display:none">
+        <div class="lo-col lo-weapons" id="loWeapons"></div>
+        <div class="lo-col lo-systems" id="loSystems"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="lib/zip-full.min.js"></script>
+<script type="module" src="js/app.js?v=38"></script>
+</body>
+</html>

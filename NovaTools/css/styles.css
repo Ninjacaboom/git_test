@@ -1,0 +1,1242 @@
+/* Theme variables */
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2238;--bg-dark:#0d1525;--cyan:#00e5ff;--cyan-04:rgba(0,229,255,.04);--cyan-06:rgba(0,229,255,.06);--cyan-08:rgba(0,229,255,.08);--gold:#ffc107;--orange:#ffa726;--orange-bg:rgba(255,167,38,.1);--text:#e0e6ed;--text2:#8899aa;--text3:#666;--text4:#555;--text5:#444;--border:#1e3050;--red:#ff4d6a;--red-soft:#e04040;--red-bg:rgba(255,77,106,.12);--green:#00e676;--green-soft:#40c040;--green-bg:rgba(0,230,118,.1);--pip:#e8871e;--pip-border:#c06a10;--pip-bg-15:rgba(232,135,30,.15);--pip-bg-30:rgba(232,135,30,.3);--pip-bg-35:rgba(232,135,30,.35);--pip-shield:#3b9dd9;--pip-shield-border:#2a7ab5;--overlay:rgba(0,0,0,.6);--hover-bg:rgba(255,255,255,.03);--surface-raise:rgba(255,255,255,.06);--defl-none:#5a6473;--defl-lf:var(--red);--defl-mf:#ff7a3d;--defl-hf:var(--orange);--defl-gs:#ffd740;--defl-hg:#b8e356;--defl-sc:var(--green);--defl-cp:#40c4ff}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:110%}
+
+/* Custom tooltips - use data-tip="text" instead of title="" */
+[data-tip]{position:relative}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:5px 10px;font-size:.72rem;white-space:nowrap;z-index:999;pointer-events:none;letter-spacing:normal;text-transform:none;font-weight:400;line-height:1.4;max-width:320px}
+/* Immune ships tooltip - rendered as a real DOM element by JS, not ::after */
+.defl-tip{position:fixed;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:.72rem;z-index:9999;pointer-events:none;line-height:1.5;column-count:1;column-gap:16px;letter-spacing:normal;text-transform:none;font-weight:400;box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 1px rgba(0,229,255,.08)}
+.defl-tip.cols-2{column-count:2;min-width:280px}
+.defl-tip.cols-3{column-count:3;min-width:420px}
+
+/* Icon font */
+@font-face{
+  font-family:spv-icons;
+  src:url(../fonts/spv-icons-BrXfL6RU.eot);
+  src:url(../fonts/spv-icons-BrXfL6RU.eot) format("embedded-opentype"),
+     url(../fonts/spv-icons-BiMDeAR2.woff2) format("woff2"),
+     url(../fonts/spv-icons-Bp97_FSD.woff) format("woff");
+  font-weight:400;font-style:normal
+}
+[class^="spvi-"]:before,[class*=" spvi-"]:before{font-family:spv-icons;font-style:normal;font-weight:400;-webkit-font-smoothing:antialiased}
+.spvi-cooler:before{content:"\ea02"}.spvi-engine:before{content:"\ea0b"}.spvi-gimbal:before{content:"\ea11"}
+.spvi-fuelpump:before{content:"\ea10"}.spvi-health:before{content:"\ea12"}.spvi-insurance:before{content:"\ea17"}.spvi-missile:before{content:"\ea1a"}.spvi-missilerack:before{content:"\ea1d"}
+.spvi-powerplant:before{content:"\ea26"}.spvi-qdrive:before{content:"\ea22"}.spvi-radar:before{content:"\ea29"}
+.spvi-shield:before{content:"\ea2f"}.spvi-weapon:before{content:"\ea41"}.spvi-weaponturret:before{content:"\ea43"}
+.spvi-lifesupport:before{content:"\ea61"}.spvi-bomb:before{content:"\ea46"}
+.spvi-Engineering_Icon_ItemThrusters:before{content:"\ea5c"}.spvi-icon_common_generator_shield:before{content:"\ea60"}
+.spvi-icon_common_quantum:before{content:"\ea62"}.spvi-icon_common_radar:before{content:"\ea63"}
+.spvi-icon_common_life_support:before{content:"\ea61"}.spvi-icon_common_coolant:before{content:"\ea5f"}
+.spvi-infrared:before{content:"\ea19"}.spvi-icon_common_tractor-beam:before{content:"\ea65"}
+.spvi-electric:before{content:"\ea13"}.spvi-Engineering_Icon_ItemTurret:before{content:"\ea79"}
+.spvi-MFD-Icon-Generator:before{content:"\ea69"}
+.spvi-Engineering_Icon_ItemShields:before{content:"\ea6f"}
+.spvi-power_button:before{content:"\ea86"}
+.spvi-standard_control:before{content:"\ea7a"}
+.spvi-modularity:before{content:"\ea20"}
+.spvi-icon_common_cross_section:before{content:"\ea5b"}
+.spvi-drag_indicator:before{content:"\ea85"}.spvi-gear:before{content:"\ea24"}
+.spvi-icon_common_EMP:before{content:"\ea5d"}.spvi-icon_common_QED:before{content:"\ea5e"}
+.spvi-icon_common_mining:before{content:"\ea6e"}.spvi-salvage:before{content:"\ea7d"}
+.spvi-icon_common_3D_cargo_boxes:before{content:"\ea71"}
+
+/* Font Awesome 6 Free Solid - used for the component-crafting indicator.
+   Self-hosted; add a `.fa-<name>:before{content:"\<hex>"}` rule per icon as needed.
+   See ICONS.md for conventions. */
+@font-face{
+  font-family:"Font Awesome 6 Free";
+  font-weight:900;font-style:normal;font-display:swap;
+  src:url(../fonts/fa-solid-900.woff2) format("woff2")
+}
+.fa-solid,.fas{font-family:"Font Awesome 6 Free";font-weight:900;font-style:normal;-webkit-font-smoothing:antialiased;display:inline-block;line-height:1}
+.fa-solid:before,.fas:before{font-family:"Font Awesome 6 Free";font-weight:900}
+.fa-wrench:before{content:"\f0ad"}
+.fa-crosshairs:before{content:"\f05b"}
+.fa-floppy-disk:before{content:"\f0c7"}
+.fa-share-nodes:before{content:"\f1e0"}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+::-webkit-scrollbar-corner{background:var(--bg)}
+
+/* Number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{opacity:1;filter:invert(1)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:1.6rem;color:var(--cyan);text-transform:uppercase;letter-spacing:2px}
+h2{font-size:1.1rem;color:var(--gold);margin-bottom:8px}
+
+.update-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--cyan);color:var(--text2);font-size:.85rem;z-index:100;white-space:nowrap}
+.update-bar span{flex:1}
+.update-bar i{color:var(--cyan);margin-right:4px}
+.update-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:4px;cursor:pointer;font-size:.82rem;white-space:nowrap;transition:all .15s;margin-left:auto}
+.update-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.update-btn:hover{opacity:.85}
+.update-btn:disabled{opacity:.5;cursor:default}
+.update-dismiss{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1rem;padding:0 4px}
+.update-dismiss:hover{color:var(--text)}
+.update-log{margin-top:8px;max-height:200px;overflow-y:auto;font-size:.75rem;color:var(--text2);background:var(--bg);padding:8px;border-radius:4px;width:100%;white-space:pre-wrap}
+.header{text-align:left;padding:24px 0 0;background:linear-gradient(180deg,var(--bg-dark),var(--bg));max-width:1400px;margin:0 auto}
+.header-logo{height:36px;margin-bottom:8px;padding-left:16px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.header p{color:var(--text2);font-size:.85rem;margin-top:4px}
+.build-toggle{display:flex;gap:4px;margin-left:auto;align-items:center}
+.build-btn{padding:5px 20px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text2);cursor:pointer;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;transition:all .15s}
+.build-btn:hover{border-color:var(--text2)}
+.build-btn.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-08)}
+.build-btn.disabled{opacity:.4;cursor:not-allowed}
+.container{max-width:1400px;margin:0 auto;padding:16px}
+
+/* Loading */
+#loading{text-align:center;padding:80px 20px;color:var(--cyan)}
+#loading .spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading .load-status{margin-top:8px;font-size:.85rem;color:var(--text2)}
+#error{text-align:center;padding:40px;color:var(--red);display:none}
+
+/* Layout */
+.main{display:grid;grid-template-columns:360px 1fr;gap:20px;margin-top:16px}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* Sidebar */
+.sidebar{background:var(--bg2);border:1px solid var(--border);border-radius:8px;max-height:calc(100vh - 140px);overflow-y:auto;display:flex;flex-direction:column}
+.sidebar label{display:block;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sidebar label i{font-size:1.1rem;vertical-align:middle;margin-right:3px}
+.sb-filters+.sb-weapons>label{border-top:1px solid var(--border)}
+.sb-filters-body{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.sb-field{display:flex;align-items:center;gap:8px}
+.sb-field .search-box,.sb-field .multi-select,.sb-field .filter-row{flex:1;margin:0}
+.sb-label{font-size:.72rem;color:var(--text2);letter-spacing:.3px;min-width:40px;flex-shrink:0}
+.sb-filters-body .legend{padding:2px 0;margin:0}
+.sb-weapons{flex:1;display:flex;flex-direction:column;min-height:0}
+.sb-weapons .weapon-list{margin:0 6px 8px;flex:1;overflow-y:auto}
+.filter-row{display:flex;gap:8px}
+.filter-row select,.filter-row input,.search-box{width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.82rem}
+.filter-row select:hover,.filter-row input:hover,.search-box:hover{border-color:var(--text2)}
+.filter-row select:focus,.filter-row input:focus,.search-box:focus{outline:none;border-color:var(--cyan)}
+label{font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;display:block}
+
+/* Multi-select dropdown */
+.multi-select{position:relative}
+.ms-toggle{padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.82rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.ms-toggle:hover{border-color:var(--text2)}
+.ms-toggle.open{border-color:var(--cyan)}
+.ms-arrow{font-size:.7rem;color:var(--text2)}
+.ms-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:0 0 4px 4px;max-height:240px;overflow-y:auto;z-index:10;margin-top:-1px}
+.ms-dropdown.open{display:block}
+.ms-option{display:flex;align-items:center;gap:4px;padding:6px 10px;cursor:pointer;font-size:.82rem;color:var(--text2);transition:background .1s}
+.ms-option:hover{background:var(--bg3)}
+.ms-option input[type=checkbox]{display:none}
+.ms-option::before{content:"\2713";font-size:.9rem;color:var(--text2);opacity:.3;width:16px;text-align:center;flex-shrink:0;transition:all .15s}
+.ms-option.checked::before{color:var(--cyan);opacity:1}
+.ms-option.checked{color:var(--cyan)}
+
+/* Legend */
+/* Eight tier steps, so the legend runs tighter than the old three-dot row. */
+.legend{display:flex;gap:4px 10px;flex-wrap:wrap;padding:4px 0;font-size:.66rem;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+
+.weapon-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;min-height:200px}
+.weapon-item{padding:8px 10px;border-radius:4px;cursor:pointer;font-size:.82rem;border:1px solid transparent;transition:all .15s}
+.weapon-item:hover{background:var(--bg3);border-color:var(--border)}
+.weapon-item.active{background:var(--bg3);border-color:var(--cyan)}
+.weapon-item .wi-name{color:var(--text);font-weight:600}
+.weapon-item .wi-meta{color:var(--text2);font-size:.72rem;margin-top:2px}
+.weapon-item.tier-none{border-left:3px solid var(--defl-none)}
+.weapon-item.tier-lf{border-left:3px solid var(--defl-lf)}
+.weapon-item.tier-mf{border-left:3px solid var(--defl-mf)}
+.weapon-item.tier-hf{border-left:3px solid var(--defl-hf)}
+.weapon-item.tier-gs{border-left:3px solid var(--defl-gs)}
+.weapon-item.tier-hg{border-left:3px solid var(--defl-hg)}
+.weapon-item.tier-sc{border-left:3px solid var(--defl-sc)}
+.weapon-item.tier-cp{border-left:3px solid var(--defl-cp)}
+.weapon-item.loot-only{opacity:.45}
+
+/* Results panel */
+.results{display:none;flex-direction:column;gap:16px}
+.results.visible{display:flex}
+.placeholder{display:flex;align-items:center;justify-content:center;color:var(--text2);height:300px;font-size:1rem;text-align:center;padding:40px}
+
+/* Stat card */
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.stat-card h2{padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0;font-weight:600}
+.stat-card h2 i{font-size:1.1rem;vertical-align:middle;margin-right:3px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;padding:14px}
+.stat-item{background:var(--bg3);padding:8px 12px;border-radius:4px}
+.stat-item.wide{grid-column:span 2}
+.stat-item .sl{font-size:.72rem;color:var(--text2);letter-spacing:.3px;font-weight:500}
+.stat-item .sv{font-size:.82rem;color:var(--text);margin-top:2px;font-weight:700}
+.stat-item .sv.cyan{color:var(--cyan)}
+
+/* Immunity banner */
+.immunity-banner{padding:14px 16px;border-radius:8px;font-size:.95rem;font-weight:600;text-align:center}
+.immunity-banner.warn{background:var(--red-bg);border:1px solid var(--red);color:var(--red)}
+.immunity-banner.safe{background:var(--green-bg);border:1px solid var(--green);color:var(--green)}
+.immunity-banner.partial{background:var(--orange-bg);border:1px solid var(--orange);color:var(--orange)}
+
+/* Table */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.table-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.table-header h2{margin-bottom:0;font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.table-header h2 i{font-size:1.1rem;vertical-align:middle;margin-right:3px}
+.table-filter{padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.82rem;width:220px}
+.table-filter:focus{outline:none;border-color:var(--cyan)}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{padding:8px 10px;text-align:left;background:var(--bg3);color:var(--gold);font-weight:600;text-transform:uppercase;font-size:.68rem;letter-spacing:.5px;cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;border-bottom:1px solid var(--border)}
+th:hover{color:var(--cyan)}
+th.sorted-asc::after{content:' \25B2';font-size:.6rem}
+th.sorted-desc::after{content:' \25BC';font-size:.6rem}
+td{padding:6px 10px;border-top:1px solid var(--border);white-space:nowrap}
+tr:hover td{background:var(--cyan-04)}
+
+/* Tab navigation - folder tabs */
+.tab-nav{display:flex;gap:0;margin-top:10px;border-bottom:1px solid var(--border);padding:0 16px;max-width:1400px;margin:10px auto 0}
+.tab-btn{padding:8px 24px;border:1px solid transparent;border-bottom:none;background:transparent;color:var(--text2);cursor:pointer;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;transition:all .15s;border-radius:6px 6px 0 0;margin-bottom:-1px;position:relative}
+.tab-btn:hover{color:var(--text);background:var(--hover-bg)}
+.tab-btn.active{color:var(--cyan);background:var(--bg2);border-color:var(--border);border-bottom-color:var(--bg2)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Loadout Manager */
+.loadout-header{margin-bottom:16px;display:flex;align-items:center;gap:10px;position:relative;z-index:200}
+.loadout-placeholder{display:flex;align-items:center;justify-content:center;color:var(--text2);height:300px;font-size:1rem;text-align:center}
+.loadout-main{display:grid;grid-template-columns:1fr 1fr 280px;gap:16px}
+@media(max-width:1100px){.loadout-main{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.loadout-main{grid-template-columns:1fr}}
+
+.lo-col{display:flex;flex-direction:column;gap:12px}
+
+/* Loadout section */
+/* No overflow:hidden - would clip tooltips that rise above section headers
+   into the panel above them. The first/last child carry the rounded corners. */
+.lo-section{background:var(--bg2);border:1px solid var(--border);border-radius:8px}
+.lo-section > :first-child{border-radius:7px 7px 0 0}
+.lo-section > :last-child{border-radius:0 0 7px 7px}
+.lo-section-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.lo-section-header h3{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600;flex:1}
+.lo-section-header h3 i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.lo-reset{background:var(--surface-raise);border:1px solid var(--border);border-radius:3px;color:var(--text2);font-size:.65rem;padding:2px 8px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:border-color .12s,color .12s}
+.lo-reset:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-reset:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* Loadout slot */
+.lo-slot{padding:8px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.lo-slot.has-toggle{display:flex;align-items:stretch;gap:0}
+.lo-slot-content{flex:1;min-width:0}
+.lo-slot:last-child{border-bottom:none}
+.lo-slot:hover{background:var(--bg3)}
+.lo-slot.uneditable{opacity:.6;cursor:default}
+.lo-slot-top{display:flex;align-items:center;gap:8px}
+.lo-size{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.7rem;color:var(--cyan);font-weight:600;min-width:24px;text-align:center}
+.lo-name{font-size:.82rem;font-weight:600;color:var(--text);flex:1}
+.lo-stat{font-size:.82rem;color:var(--cyan);font-weight:600;white-space:nowrap}
+.lo-stat-unit{font-size:.7rem;color:var(--text2);margin-left:2px}
+.lo-stat-stack{display:inline-flex;flex-direction:column;align-items:flex-end;line-height:1.15;gap:1px}
+.lo-summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:.82rem}
+.lo-summary-row:last-of-type{border-bottom:1px solid var(--border)}
+.lo-summary-label{color:var(--cyan);font-weight:600}
+.lo-summary-label i{font-size:1rem;vertical-align:middle;margin-right:4px}
+.lo-summary-value{color:var(--cyan);font-weight:600;white-space:nowrap}
+.lo-meta{font-size:.72rem;color:var(--text2);margin-top:2px;margin-left:32px;display:flex;justify-content:space-between;align-items:center}
+.lo-meta-text{color:var(--text2)}
+.lo-ammo{white-space:nowrap}
+.lo-val{color:var(--cyan)}
+.lo-stat-text{color:var(--text2);font-weight:400}
+.lo-unpowered{color:var(--text2);font-style:italic;opacity:0.6}
+.lo-power-toggle{background:none;border:none;border-left:1px solid var(--border);color:var(--text2);cursor:pointer;padding:0 0 0 10px;margin-left:10px;font-size:1.1rem;line-height:1;opacity:.35;transition:all .15s;flex-shrink:0;display:flex;align-items:center}
+.lo-power-toggle:hover{opacity:.6}
+.lo-power-toggle.active{color:var(--green-soft);opacity:.9}
+.lo-power-toggle.active:hover{opacity:1;text-shadow:0 0 8px var(--green-soft)}
+.lo-stat-icon{color:var(--cyan);margin-right:4px;font-size:.85em}
+.lo-stat-sublabel{color:var(--text2);font-size:.8rem;padding:4px 0 2px}
+.lo-indent{padding-left:12px}
+.lo-count{color:var(--text2);font-size:.85em}
+.lo-expanded-hidden{display:none}
+.lo-chevron{color:var(--text2);font-size:.7rem;cursor:pointer;user-select:none;width:16px;text-align:center;flex-shrink:0}
+.lo-chevron:hover{color:var(--text)}
+.lo-slot-row{display:flex;align-items:center}
+.lo-slot-row .lo-slot{flex:1}
+.lo-collapse-row{text-align:left;padding-left:16px}
+.lo-grade{color:var(--text2);font-size:.72rem}
+
+/* Loadout turret group */
+.lo-turret-group{padding:6px 0 6px 14px;border-bottom:1px solid var(--border)}
+.lo-mount-header{padding-left:0;padding-right:0;border-bottom:none}
+.lo-seat-label{color:var(--text2);font-weight:400;font-size:.75rem}
+.lo-turret-group:last-child{border-bottom:none}
+.lo-turret-label{font-size:.78rem;color:var(--text);font-weight:600;padding:4px 0;display:flex;align-items:center;gap:6px;opacity:.6}
+.lo-turret-label .lo-size{font-size:.65rem}
+.lo-turret-weapons{margin-left:16px}
+.lo-turret-sub{margin-left:16px}
+.lo-module-subs{margin-left:16px;display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.lo-turret-sub .lo-turret-group{padding-left:0;padding-right:0;border-bottom:none}
+/* Turret sub-category divider (Anti-personnel / PDC) - sentence case + dashed
+   top border, mirroring .stats-sublabel. Flags turrets skipped in turret DPS. */
+.lo-turret-subcat{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:.74rem;font-weight:600;color:var(--text2);padding:8px 0 4px 14px;margin-top:4px;border-top:1px dashed var(--border)}
+.lo-turret-subcat-note{font-weight:400;font-size:.68rem;color:var(--text3)}
+
+/* Power pip distribution panel */
+.pip-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;flex-shrink:0}
+.pip-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);margin:-14px -14px 10px -14px;border-radius:8px 8px 0 0}
+.pip-header h3{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0;font-weight:600}
+.pip-header h3 i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.lo-settings-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:12px;overflow:hidden}
+.lo-setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:.82rem;color:var(--text2)}
+.lo-setting-label{color:var(--text2)}
+.lo-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.lo-toggle-btn{background:var(--bg2);border:none;color:var(--text2);padding:4px 12px;cursor:pointer;font-size:.78rem;transition:all .15s}
+.lo-toggle-btn:not(:last-child){border-right:1px solid var(--border)}
+.lo-toggle-btn.active{background:var(--bg3);color:var(--cyan)}
+.lo-toggle-btn:hover:not(.active){color:var(--text)}
+.lo-stat-mode{font-size:.72rem;color:var(--text2);font-weight:400}
+.lo-header-stat{font-size:.75rem;color:var(--cyan);font-weight:600;margin-right:8px}
+.lo-header-stat.red{color:var(--red)}
+.lo-weapon-power{display:flex;align-items:center;gap:8px;margin-left:auto}
+.lo-weapon-power.off .lo-header-stat{color:var(--text2)}
+.lo-weapon-power.off .lo-wpn-bar-fill{background-color:var(--text2)}
+.lo-weapon-power.full .lo-header-stat{color:var(--green)}
+.lo-weapon-power.full .lo-wpn-bar-fill{background-color:var(--green)}
+.lo-weapon-power.partial .lo-header-stat{color:var(--gold)}
+.lo-weapon-power.partial .lo-wpn-bar-fill{background-color:var(--gold)}
+.lo-wpn-bar{width:80px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0;display:flex}
+.lo-wpn-bar-fill{height:100%;border-radius:3px;transition:width .2s;display:block}
+.pip-budget{font-size:.75rem;color:var(--cyan);font-weight:600}
+.pip-budget.over-budget{color:var(--red)}
+.lo-build-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);cursor:pointer;font-size:.82rem;padding:6px 14px;white-space:nowrap;transition:all .15s;margin-left:auto}
+.lo-build-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-build-btn i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.pip-columns{display:flex;justify-content:center;align-items:stretch;gap:4px}
+.pip-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:28px}
+.pip-stack{display:flex;flex-direction:column;justify-content:flex-end;gap:2px;width:100%;flex:1}
+.pip-block{width:100%;height:8px;background:var(--bg3);border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:background .15s,opacity .15s}
+.pip-block.active{background:var(--pip);border-color:var(--pip-border)}
+.pip-block.active.shield-hp{background:var(--pip-shield);border-color:var(--pip-shield-border)}
+.pip-block.active.shield-bonus{background:var(--pip);border-color:var(--pip-border)}
+.pip-block.available{background:var(--pip-bg-15);border-color:var(--pip-bg-30);cursor:default}
+.pip-block.unpowerable{background:var(--bg);border-color:var(--bg3);opacity:.3;cursor:default}
+.pip-unpow-badge{font-size:.55rem;color:var(--text3);text-align:center;opacity:.5;line-height:1;padding-bottom:1px}
+.pip-block.spacer{visibility:hidden} /* legacy, no longer used */
+.pip-block:hover:not(.active):not(.available):not(.unpowerable):not(.spacer){background:var(--pip-bg-35)}
+.pip-column.empty .pip-block{opacity:.2;cursor:default}
+.pip-column.empty .pip-icon{opacity:.2}
+.pip-column.fixed .pip-block{cursor:default;opacity:.6}
+.pip-column.fixed .pip-icon{opacity:.5}
+.pip-column.mutual-off .pip-block:not(.active){opacity:.3}
+.pip-column.mutual-off .pip-icon{opacity:.35}
+.pip-column.powered-off .pip-block:not(.active){opacity:.3}
+.pip-column.powered-off .pip-icon{opacity:.35}
+.pip-icon{width:18px;height:18px;margin-top:4px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+.pip-column.empty .pip-icon,.pip-column.fixed .pip-icon{cursor:default}
+
+/* Cooling bar */
+.cooling-bar-panel{padding:4px 8px 2px}
+.cooling-bar-row{display:flex;align-items:center;gap:6px}
+.cooling-bar-icon{display:flex;align-items:center;flex-shrink:0;font-size:16px;transform:translateY(2px)}
+.cooling-bar-track{flex:1;height:12px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;position:relative;overflow:hidden}
+.cooling-bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.cooling-bar-seg{position:absolute;top:0;border-radius:0}
+.cooling-bar-marker{position:absolute;top:-1px;bottom:-1px;width:2px;background:var(--text2);opacity:.6;pointer-events:none}
+.cooling-bar-pct{font-size:.7rem;font-weight:600;min-width:45px;text-align:right}
+
+/* Signature panel (EM/IR/CS below cooling bar) */
+.sig-panel{display:flex;flex-direction:column;gap:4px;padding:6px 8px 4px;border-top:1px solid var(--border)}
+.sig-row{display:flex;justify-content:space-around}
+.sig-item{display:inline-flex;align-items:center;gap:4px}
+.sig-value{font-size:.75rem;color:var(--cyan);font-weight:600}
+.sig-label{font-size:.75rem;color:var(--text2);margin-left:2px}
+.sig-icon{font-size:1.1rem;color:var(--text2);line-height:1;transform:translateY(2px)}
+
+/* Loadout stats panel */
+.lo-stats-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:0;overflow:hidden}
+.lo-stats-card h3{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-weight:600}
+.lo-stats-card h3 i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.lo-stats-card .lo-stat-row:first-of-type{margin-top:10px}
+.lo-stats-card .lo-stat-row,.lo-stats-card .lo-stat-divider{padding-left:14px;padding-right:14px}
+.lo-stats-card .lo-stat-row:last-child{padding-bottom:10px}
+.lo-stat-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.82rem}
+.lo-stat-label{color:var(--text2)}
+.lo-stat-value{color:var(--text);font-weight:600}
+.lo-stat-value.cyan{color:var(--cyan)}
+.lo-stat-value.red{color:var(--red-soft)}
+.lo-stat-value.green{color:var(--green-soft)}
+.lo-stat-divider{border-top:1px solid var(--border);margin:6px 0}
+
+/* Ship search in dropdown */
+.ms-search{margin:6px;width:calc(100% - 12px)}
+.ms-list{max-height:200px;overflow-y:auto}
+.ms-ship-opt{padding:6px 10px;cursor:pointer;font-size:.82rem;color:var(--text2);transition:background .1s}
+.ms-ship-opt:hover,.ms-ship-opt.keynav{background:var(--bg3);color:var(--text)}
+.ms-ship-opt.active{color:var(--cyan);background:var(--cyan-06)}
+.ms-ship-opt.active.keynav{background:var(--cyan-06);box-shadow:inset 0 0 0 1px var(--cyan)}
+
+/* Component picker overlay - z-index above the loadout header (200) and
+   any other stacking context on the page so modal dialogs are never
+   obscured by dropdowns. */
+.lo-picker{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--overlay);z-index:1000;display:flex;align-items:center;justify-content:center}
+.lo-picker-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:500px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column}
+.lo-picker-header{padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.lo-picker-header h3{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin:0}
+.lo-picker-header h3 i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.lo-picker-close{background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;padding:4px 8px}
+.lo-picker-close:hover{color:var(--text)}
+.lo-picker-actions{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center}
+.lo-picker-filters{padding:6px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.lo-picker-filters input{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:4px;font-size:.82rem}
+.lo-picker-filters input:hover{border-color:var(--text2)}
+.lo-picker-filters input[type=number]{-moz-appearance:textfield;appearance:textfield}
+.lo-picker-filters input[type=number]::-webkit-inner-spin-button,.lo-picker-filters input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.lo-picker-speed{width:100px}
+.lo-picker-filters input:focus{outline:none;border-color:var(--cyan)}
+.lo-picker-filters .ms-wrap{position:relative}
+.lo-picker-filters .ms-wrap{min-width:220px}
+.lo-picker-filters .ms-toggle{width:100%}
+.lo-picker-empty{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);padding:6px 14px;cursor:pointer;font-size:.82rem;white-space:nowrap;transition:all .15s}
+.lo-picker-empty:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-picker-list{overflow-y:auto;flex:1;min-height:0}
+.lo-picker-section-label{color:var(--gold);font-size:.8rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;padding:10px 14px;margin:0;background:var(--bg3);border-bottom:1px solid var(--border)}
+/* Inline table-row version of the section label - used when a port accepts
+   multiple item categories (Turret + Module) and we need to group them in
+   the same picker table with visual separation. */
+.lo-picker-group-header td{color:var(--gold);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;padding:10px 14px 6px;background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);cursor:default}
+.lo-picker-group-header:first-child td{border-top:none}
+.lo-picker-group-header:hover{background:var(--bg3) !important}
+
+.lo-picker-item{display:flex;align-items:center;gap:10px;padding:8px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+.lo-picker-item:hover{background:var(--bg3)}
+.lo-picker-item.current{background:var(--cyan-06);border-left:3px solid var(--cyan)}
+.lo-picker-item .lo-size{flex-shrink:0}
+.lo-picker-item-info{flex:1;min-width:0}
+.lo-picker-item-name{font-size:.82rem;font-weight:600;color:var(--text)}
+.lo-picker-item-meta{font-size:.72rem;color:var(--text2);margin-top:1px}
+.lo-picker-wide{width:max-content;max-width:min(90vw,1360px);min-width:500px}
+.lo-picker-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.lo-picker-table th{padding:8px 10px;text-align:left;background:var(--bg3);color:var(--gold);font-weight:600;text-transform:uppercase;font-size:.68rem;letter-spacing:.5px;cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;border-bottom:1px solid var(--border)}
+.lo-picker-table th:hover{color:var(--cyan)}
+.lo-picker-table th.sorted-asc::after{content:' \25B2';font-size:.6rem}
+.lo-picker-table th.sorted-desc::after{content:' \25BC';font-size:.6rem}
+.lo-picker-table td{padding:6px 10px;border-top:1px solid var(--border);white-space:nowrap}
+.lo-picker-table tr{cursor:pointer;transition:background .1s}
+.lo-picker-table tr:hover td{background:var(--bg3)}
+.lo-picker-table tr.current td{background:var(--cyan-06)}
+.lo-picker-table tr.current td:first-child{border-left:3px solid var(--cyan)}
+.lo-picker-table tr.loot-only td{opacity:.45}
+/* Explosive-ammo column: centred tick / cross. The cross is muted rather than
+   red - "no explosive ammo" is neutral information, not a warning. */
+.lo-picker-table td.lo-explosive{text-align:center}
+.lo-picker-table td.lo-explosive.yes{color:var(--green)}
+.lo-picker-table td.lo-explosive.no{color:var(--text4)}
+.defl-dot{display:inline-block;width:.5em;height:.5em;border-radius:50%;vertical-align:middle;margin-left:4px}
+.defl-dot-immune{position:relative;padding:4px;margin:-4px;margin-left:0;background-clip:content-box}
+.defl-dot-immune[data-immune]{cursor:help}
+.defl-count{color:var(--text2);font-size:.78rem;margin-left:4px;vertical-align:middle}
+/* Deflection tier ramp - red (light fighters only) through to blue (every
+   ship). Shared by the slot dots, the picker badges and the weapon-list
+   border accents so all three stay in step. */
+.defl-tier-none{background:var(--defl-none)}
+.defl-tier-lf{background:var(--defl-lf)}
+.defl-tier-mf{background:var(--defl-mf)}
+.defl-tier-hf{background:var(--defl-hf)}
+.defl-tier-gs{background:var(--defl-gs)}
+.defl-tier-hg{background:var(--defl-hg)}
+.defl-tier-sc{background:var(--defl-sc)}
+.defl-tier-cp{background:var(--defl-cp)}
+/* Picker-only two-letter badge. Seven colours are past what a 0.5em dot can
+   carry, so the picker spells the tier out; slots keep the bare dot. Dark ink
+   works on the whole ramp except the grey "no tier" step. */
+.defl-badge{display:inline-block;min-width:22px;padding:1px 4px;border-radius:3px;font-size:.62rem;font-weight:600;letter-spacing:.4px;text-align:center;color:var(--bg);vertical-align:middle}
+.defl-badge.defl-tier-none{color:var(--text)}
+.defl-badge[data-immune]{cursor:help}
+
+/* Loadouts dialog */
+.lo-build-dialog{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:1100}
+.lo-build-dialog-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:360px;max-height:80vh;display:flex;flex-direction:column}
+.lo-build-wide{width:560px}
+.lo-build-dialog-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.lo-build-dialog-header h3{margin:0;font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.lo-build-dialog-header h3 i{font-size:1.1rem;vertical-align:middle;margin-right:1px}
+.lo-build-dialog-close{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
+.lo-build-dialog-close:hover{color:var(--cyan)}
+.lo-build-dialog-search{padding:10px 16px 0;background:var(--bg2)}
+.lo-build-dialog-search .search-box{width:100%;box-sizing:border-box}
+.lo-build-dialog-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.lo-build-name-input{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:6px 10px;color:var(--text);font-size:.8rem;outline:none;width:180px}
+.lo-build-name-input:focus{border-color:var(--cyan)}
+.lo-build-save-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);padding:6px 14px;cursor:pointer;font-size:.82rem;white-space:nowrap;transition:all .15s}
+.lo-build-save-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-build-search{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:7px 10px;color:var(--text);font-size:.82rem;outline:none}
+.lo-build-search:hover{border-color:var(--text2)}
+.lo-build-search:focus{border-color:var(--cyan)}
+.lo-build-search:focus{border-color:var(--cyan)}
+.lo-build-dialog-list{overflow-y:auto;flex:1;min-height:0}
+.lo-build-table{width:100%}
+.lo-build-table th:last-child{width:30px}
+.lo-build-cell-name{color:var(--cyan)}
+.lo-build-cell-ship{color:var(--text);opacity:.7}
+.lo-build-cell-actions{text-align:center}
+.lo-build-delete-btn{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
+.lo-build-delete-btn:hover{color:var(--red)}
+.lo-build-bar{display:flex;align-items:center;gap:8px;margin-left:auto}
+.lo-build-dropdown{position:relative;min-width:220px}
+.lo-build-input{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:7px 28px 7px 10px;color:var(--text);font-size:.82rem;outline:none;width:100%;box-sizing:border-box}
+.lo-build-input:hover{border-color:var(--text2)}
+.lo-build-input:focus{border-color:var(--cyan)}
+.lo-build-input::placeholder{color:var(--text2)}
+.lo-build-arrow{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:.82rem;pointer-events:none}
+.lo-build-list{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px;max-height:200px;overflow-y:auto;z-index:100}
+.lo-build-list.open{display:block}
+.lo-build-list-item{padding:6px 10px;color:var(--text);font-size:.82rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.lo-build-list-item:hover{background:var(--bg3)}
+.lo-build-list-item.selected{color:var(--cyan);background:var(--cyan-06)}
+.lo-build-list-item .lo-build-item-delete{background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;padding:0 2px;line-height:1;opacity:0;transition:opacity .1s}
+.lo-build-list-item:hover .lo-build-item-delete{opacity:1}
+.lo-build-list-item .lo-build-item-delete:hover{color:var(--red)}
+.lo-build-list-empty{padding:10px;color:var(--text3);text-align:center;font-size:.8rem}
+.lo-confirm-overlay{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:10000}
+.lo-confirm-panel{background:var(--bg2);border:1px solid var(--border);border-radius:6px;min-width:280px;max-width:400px;overflow:hidden}
+.lo-confirm-panel .lo-confirm-header{margin:0;border-radius:6px 6px 0 0}
+.lo-confirm-message{color:var(--text2);font-size:.82rem;margin:0;padding:16px 20px;line-height:1.5}
+.lo-confirm-actions{padding:0 20px 16px}
+.lo-confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.lo-confirm-ok,.lo-confirm-cancel{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);padding:6px 16px;cursor:pointer;font-size:.82rem;transition:all .15s}
+.lo-confirm-ok:hover,.lo-confirm-cancel:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-toast-layer{position:fixed;top:20px;right:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:10001;pointer-events:none}
+.lo-toast{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--cyan);color:var(--text);padding:10px 18px;border-radius:4px;font-size:.82rem;box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;transform:translateX(24px);transition:opacity .2s ease-out,transform .3s cubic-bezier(.34,1.4,.64,1);pointer-events:auto}
+.lo-toast.show{opacity:1;transform:translateX(0);animation:lo-toast-pulse 1.2s ease-out}
+.lo-toast.error{border-left-color:var(--red)}
+.lo-toast.error.show{animation:lo-toast-pulse-err 1.2s ease-out}
+@keyframes lo-toast-pulse{0%{box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 0 rgba(0,229,255,.55)}60%{box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 10px rgba(0,229,255,0)}100%{box-shadow:0 8px 24px rgba(0,0,0,.5)}}
+@keyframes lo-toast-pulse-err{0%{box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 0 rgba(255,77,106,.55)}60%{box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 10px rgba(255,77,106,0)}100%{box-shadow:0 8px 24px rgba(0,0,0,.5)}}
+.lo-tab-bar{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px 0;margin-bottom:8px}
+.lo-tab{background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid transparent;border-radius:4px 4px 0 0;color:var(--text2);padding:5px 10px;cursor:pointer;font-size:.78rem;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:all .15s}
+.lo-tab:hover{border-color:var(--border);color:var(--text)}
+.lo-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:var(--bg2)}
+.lo-tab-close{background:none;border:none;color:var(--text4);font-size:.7rem;cursor:pointer;padding:0 1px;line-height:1;opacity:0;transition:opacity .1s}
+.lo-tab:hover .lo-tab-close{opacity:1}
+.lo-tab-close:hover{color:var(--red)}
+.lo-tab-add{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);padding:5px 10px;cursor:pointer;font-size:.78rem;transition:all .15s}
+.lo-tab-add:hover{border-color:var(--cyan);color:var(--cyan)}
+.lo-drag-handle{color:var(--text5);cursor:grab;font-size:.9rem;margin-right:2px;user-select:none}
+.lo-drag-handle:hover{color:var(--text2)}
+.lo-drag-handle:active{cursor:grabbing}
+.lo-section.dragging{opacity:.3}
+.lo-section.drag-over-top{box-shadow:inset 0 3px 0 var(--cyan)}
+.lo-section.drag-over-bottom{box-shadow:inset 0 -3px 0 var(--cyan)}
+.lo-tab.dragging{opacity:.4}
+.lo-tab.drag-over-left{box-shadow:inset 3px 0 0 var(--cyan)}
+.lo-tab.drag-over-right{box-shadow:inset -3px 0 0 var(--cyan)}
+
+/* ============================================================
+   TOP ROW - Power Distribution (left, content-sized) + Ship Stats
+   banner (right, fills remainder). Lives above the 2-col main grid.
+   When the stats banner is expanded, the detail panel drops down as
+   an OVERLAY on top of the workspace below - the layout does not shift.
+   ============================================================ */
+.lo-top-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;position:relative}
+.lo-top-row #loPipMount{flex:0 0 auto}
+.lo-top-row #loPipMount .pip-panel{margin-bottom:0}
+.lo-top-row #loStatsBanner{flex:1 1 0;min-width:0;align-self:stretch;display:flex}
+
+
+/* ============================================================
+   SHIP STATS BANNER - collapsible panel shared with the pip card.
+   Collapsed = one-row grouped cells (offense / shield / structure /
+   flight / signature). Expanded = absolute drop-down overlay with
+   a 3-col Hull / Weaponry / Flight spec sheet.
+   ============================================================ */
+.ship-stats-banner{background:linear-gradient(180deg,var(--bg2),var(--bg-dark));border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;position:relative;width:100%}
+.ship-stats-banner.expanded{border-bottom-left-radius:0;border-bottom-right-radius:0}
+
+.stats-collapsed{display:flex;flex-wrap:nowrap;align-items:stretch;gap:10px;padding:10px 12px;flex:1;min-width:0}
+/* Details toggle button - lives on the right side of the banner header,
+   opposite the "Ship Details" title. Clicking it toggles the expanded
+   detail overlay. Chevron rotates when expanded. */
+.stats-tag-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--surface-raise);border:1px solid var(--border);color:var(--text2);border-radius:3px;padding:4px 10px;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:border-color .12s,color .12s,background .12s;font-family:inherit}
+.stats-tag-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.stats-tag-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-08,rgba(0,229,255,.08))}
+.stats-tag-btn .chevron{transition:transform .2s;font-size:.7rem}
+.ship-stats-banner.expanded .stats-tag-btn{border-color:var(--cyan);color:var(--cyan)}
+.ship-stats-banner.expanded .stats-tag-btn .chevron{transform:rotate(180deg)}
+
+.stats-group-cell{display:flex;align-items:flex-start;flex:1 1 auto;min-width:0;padding-top:2px}
+.stats-group-cell .group-rows{flex:1;min-width:0}
+.stats-group-cell .group-rows{display:flex;flex-direction:column;gap:2px;line-height:1.15}
+/* Row layout: label on the left in muted text, value group pushed right.
+   .g-val-wrap can contain one or more .g-val + .g-unit pairs separated
+   by .g-sep for compound values like "50 phys / 45 energy" or
+   "36 L × 26.5 W × 14 H". */
+.stats-group-cell .g-row{display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.25}
+.stats-group-cell .g-label{color:var(--text2);font-size:.72rem;font-weight:500;flex-shrink:0}
+.stats-group-cell .g-label.dim{color:var(--text4);font-weight:400}
+.stats-group-cell .g-val-wrap{margin-left:auto;display:inline-flex;align-items:baseline;gap:3px}
+.stats-group-cell .g-val{font-size:.82rem;font-weight:700;color:var(--text)}
+.stats-group-cell .g-val.cyan{color:var(--cyan)}
+.stats-group-cell .g-val.gold{color:var(--gold)}
+.stats-group-cell .g-val.green{color:var(--green-soft,#00e676)}
+.stats-group-cell .g-val.red{color:var(--red-soft,#ff4d6a)}
+.stats-group-cell .g-val.dim{color:var(--text3);font-weight:600}
+.stats-group-cell .g-unit{font-size:.58rem;color:var(--text3);letter-spacing:.3px}
+.stats-group-cell .g-sep{font-size:.62rem;color:var(--text4);margin:0 2px}
+
+.stats-sep{width:1px;align-self:stretch;background:var(--border);flex-shrink:0;margin:4px 0}
+
+/* Burst / Sustained DPS-mode segmented toggle - lives in the Weapons
+   section header next to the power efficiency bar. */
+.lo-weapon-dpsmode{display:inline-flex;border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-right:8px;height:22px;background:var(--surface-raise)}
+.lo-weapon-dpsmode .lo-dpsmode-btn{background:transparent;border:none;color:var(--text2);padding:0 10px;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-weight:600;transition:background .12s,color .12s}
+.lo-weapon-dpsmode .lo-dpsmode-btn:hover{color:var(--cyan)}
+.lo-weapon-dpsmode .lo-dpsmode-btn.active{background:var(--cyan);color:var(--bg)}
+.lo-weapon-dpsmode .lo-dpsmode-btn+.lo-dpsmode-btn{border-left:1px solid var(--border)}
+
+/* Expanded body - absolutely-positioned drop-down overlay. Anchored
+   to the bottom of the banner, floats above the pip card and loadout
+   sections below so the layout doesn't shift. */
+.stats-expanded{display:none;position:absolute;top:100%;left:-1px;right:-1px;background:var(--bg2);border:1px solid var(--border);border-top:none;border-bottom-left-radius:8px;border-bottom-right-radius:8px;padding:0 16px 16px;box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 1px rgba(0,229,255,.08);z-index:60;max-height:calc(100vh - 200px);overflow-y:auto;transform:translateY(-6px);opacity:0;pointer-events:none;transition:transform .15s ease-out,opacity .15s ease-out}
+.ship-stats-banner.expanded .stats-expanded{display:block;transform:translateY(0);opacity:1;pointer-events:auto}
+
+/* Header bar at the top of the whole Ship Stats banner - always visible,
+   above the collapsed grouped-cell strip. Shows the "Ship Details" title
+   with the ship-controls icon, and the active ship name rendered as a
+   muted suffix on the right of the title. */
+.stats-banner-header{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border);flex-shrink:0}
+.stats-banner-header h3{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin:0;flex:1}
+.stats-banner-header h3 i{font-size:1.1rem;vertical-align:middle;margin-right:3px}
+
+.stats-grid-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-top:12px}
+.stats-grid-3col .stats-group h4{font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--cyan);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);font-weight:700}
+.stats-grid-3col .stats-group h4 i{font-size:1.1rem;vertical-align:middle;margin-right:3px}
+.stats-grid-3col .stats-group h4.h4-sub{margin-top:16px}
+/* Expanded ship details rows inherit the same typographic scale as the
+   collapsed Ship Details strip (.g-label / .g-val / .g-unit on lines
+   535-544) so the two views read as one design. Labels are .72rem
+   text2 weight 500, values are .82rem text weight 700, units stay
+   .58rem text3 with the same letter-spacing. */
+.stats-grid-3col .stats-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;font-size:.82rem}
+.stats-grid-3col .stats-row .label{color:var(--text2);font-size:.72rem;font-weight:500}
+.stats-grid-3col .stats-row .label.indent{padding-left:12px}
+.stats-grid-3col .stats-row .label .mini,
+.stats-grid-3col .stats-row .value .mini{font-size:.58rem;color:var(--text3);letter-spacing:.3px;margin-left:3px;font-weight:400}
+.stats-grid-3col .stats-row .value{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.stats-grid-3col .stats-row .value.cyan{color:var(--cyan)}
+.stats-grid-3col .stats-row .value.green{color:var(--green-soft)}
+.stats-grid-3col .stats-row .value.red{color:var(--red-soft)}
+/* Sub-block divider inside an expanded Ship Details column. Sentence
+   case at .7rem with a dashed top border - the divider hierarchy is
+   "h4 cyan uppercase > stats-sublabel grey sentence case > data row".
+   Uppercase used to live here but conflicted with the project rule of
+   keeping uppercase reserved for section headers, table column headers
+   and small action buttons. */
+.stats-grid-3col .stats-sublabel{color:var(--text3);font-size:.7rem;margin:10px 0 4px;padding-top:8px;border-top:1px dashed var(--border)}
+.stats-grid-3col .stats-group>.stats-sublabel:first-of-type{margin-top:0;border-top:none;padding-top:0}
+
+/* Pip card inside the top row - keep the existing vertical channel layout,
+   but arrange cooling+signatures side-by-side with the channels so the
+   card is short and wide instead of tall and narrow. */
+.lo-top-row .pip-panel{display:flex;flex-direction:column;padding:0}
+.lo-top-row .pip-panel .pip-header{margin:0;border-radius:8px 8px 0 0}
+.lo-top-row .pip-panel .pip-columns{padding:10px 14px 6px;gap:6px}
+.lo-top-row .pip-panel .pip-body-row{display:flex;align-items:flex-end;gap:18px;padding:0 14px 10px}
+.lo-top-row .pip-panel .pip-body-row{gap:14px}
+.lo-top-row .pip-panel .pip-body-row .pip-columns{padding:4px 0 0;flex-shrink:0;gap:4px}
+.lo-top-row .pip-panel .pip-body-row .pip-columns .pip-column{width:24px}
+.lo-top-row .pip-panel .pip-body-row .pip-sidebar{flex:1;min-width:220px;display:flex;flex-direction:column;gap:4px;padding-top:2px}
+.lo-top-row .pip-panel .pip-body-row .cooling-bar-panel{padding:2px 0}
+.lo-top-row .pip-panel .pip-body-row .sig-panel{border-top:none;padding:2px 0 0}
+.lo-top-row .pip-panel .pip-body-row .sig-panel .sig-item{font-size:.72rem}
+
+/* Main grid is now 2 columns since stats moved out of the right column */
+.loadout-main{grid-template-columns:1fr 1fr}
+
+/* Narrow viewport: stack top row vertically so pip + stats don't squish */
+@media(max-width:1100px){
+  .lo-top-row{flex-direction:column;align-items:stretch}
+  .lo-top-row #loPipMount{width:100%}
+}
+
+/* ============================================================
+   Component crafting - indicator on slot rows + inline popover
+   ============================================================ */
+
+/* The slot-row indicator: FA wrench icon + mean-quality badge. Rendered
+   inline inside `.lo-name` so it sits next to the component name, not
+   on the far right where the slot's keyStat lives.
+   Note: padding is asymmetric (3px top, 1px bottom) to compensate for
+   the digits' baseline sitting near the line-box bottom - equal padding
+   leaves more visual whitespace above than below the glyph. */
+.cc-indicator{
+  display:inline-flex;align-items:center;gap:5px;vertical-align:middle;
+  margin-left:8px;
+  background:transparent;border:1px solid var(--border);
+  border-radius:4px;padding:3px 6px 1px;
+  color:var(--text2);cursor:pointer;font-size:.72rem;font-weight:400;
+  line-height:1;transition:color .15s,border-color .15s,background .15s;
+}
+.cc-indicator:hover{color:var(--cyan);border-color:var(--cyan);background:var(--cyan-08)}
+.cc-indicator i{font-size:.78rem}
+.cc-indicator .cc-quality-badge{
+  font-variant-numeric:tabular-nums;min-width:1.8em;text-align:center;
+  font-weight:600;letter-spacing:.02em;
+}
+/* Quality colour encodes the crafted value: red below the 500 default, green
+   above it; the neutral text2 default stays at exactly 500. */
+.cc-indicator.cc-q-low{color:var(--red);border-color:var(--red)}
+.cc-indicator.cc-q-high{color:var(--green);border-color:var(--green)}
+
+/* Popover container - floating card, body-attached, fixed-positioned. */
+.crafting-popover{
+  position:fixed;z-index:1000;width:340px;max-height:80vh;overflow:auto;
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+  color:var(--text);font-size:.82rem;
+}
+.cc-pop-head{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+}
+.cc-pop-title{flex:1;font-weight:600;color:var(--cyan);font-size:.88rem}
+.cc-pop-subtitle{color:var(--text2);font-weight:400;font-size:.72rem;margin-left:6px;text-transform:capitalize}
+.cc-pop-mean{
+  background:var(--cyan-08);color:var(--cyan);border:1px solid var(--cyan);
+  border-radius:4px;padding:2px 10px;font-weight:600;font-variant-numeric:tabular-nums;
+  min-width:3em;text-align:center;
+}
+.cc-pop-body{padding:6px 12px}
+
+/* Individual slot block inside the popover. */
+.cc-slot{padding:10px 0;border-bottom:1px dashed var(--border)}
+.cc-slot:last-child{border-bottom:none}
+.cc-slot-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+.cc-slot-title{font-weight:600;color:var(--text);text-transform:uppercase;letter-spacing:.04em;font-size:.74rem}
+.cc-slot-cost{color:var(--gold);font-size:.7rem}
+.cc-slot-pct{margin-bottom:8px;font-size:.78rem;color:var(--text2)}
+.cc-pct-pos{color:var(--green)}
+.cc-pct-neg{color:var(--red)}
+.cc-pct-zero{color:var(--text3)}
+.cc-pct-prop{color:var(--text2);font-weight:400}
+
+/* Top crafted-value summary - one row per unique affected property
+   showing the current crafted value + delta vs base. Replaces the old
+   per-slot Base → Crafted block; same information without per-slot
+   duplication. */
+.cc-pop-summary{
+  display:flex;flex-direction:column;gap:4px;
+  padding:8px 12px;background:var(--bg-dark);border-bottom:1px solid var(--border);
+}
+.cc-pop-summary:empty{display:none}
+.cc-summary-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  font-size:.78rem;color:var(--text2);
+}
+.cc-summary-label{font-weight:600;color:var(--text);text-transform:none;letter-spacing:.01em}
+.cc-summary-val strong{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* Slider row: MIN - slider - MAX - - [num] +  */
+.cc-slot-controls{display:grid;grid-template-columns:auto 1fr auto auto auto auto;gap:6px;align-items:center}
+.cc-bound{font-size:.62rem;color:var(--text3);font-weight:600;letter-spacing:.04em}
+
+/* Reusable range-input style for every slider in the app. Rail is the
+   same dark var(--bg) used as the dropdown background, framed by a
+   1 px var(--border) outline - the same pair of colours the searchable
+   dropdowns and the picker inputs already use. No new palette entries,
+   just the existing "depressed input" combination. Reads as a clear
+   groove against both the dialog bg2 panel and the crafting popover
+   bg2 without dominating the row.
+
+   Cyan thumb has a 2 px bg2 ring so it reads as a coin on the rail.
+   The crafting popover (.cc-slider) and the Deflection Calculator
+   (.defl-slider) both alias this so the two sliders look identical
+   even though only crafting needs the surrounding min/max + numeric
+   scaffolding. */
+.app-slider,
+.cc-slider,
+.defl-slider{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:6px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:3px;outline:none;cursor:pointer;
+  box-sizing:border-box;
+}
+.app-slider::-webkit-slider-thumb,
+.cc-slider::-webkit-slider-thumb,
+.defl-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg2);
+  cursor:pointer;transition:transform .1s;
+}
+.app-slider::-webkit-slider-thumb:hover,
+.cc-slider::-webkit-slider-thumb:hover,
+.defl-slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.app-slider::-moz-range-thumb,
+.cc-slider::-moz-range-thumb,
+.defl-slider::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg2);
+  cursor:pointer;
+}
+.cc-step{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  border-radius:3px;width:22px;height:22px;cursor:pointer;font-weight:600;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:border-color .15s,color .15s;
+}
+.cc-step:hover{border-color:var(--cyan);color:var(--cyan)}
+/* Compact stepper input: family colours (bg3, border, radius 4, cyan focus)
+   but keeps its small footprint - it sits between the - / + step buttons. */
+.cc-num{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  border-radius:4px;padding:2px 4px;width:54px;text-align:center;
+  font-variant-numeric:tabular-nums;font-size:.78rem;-moz-appearance:textfield;appearance:textfield;
+}
+.cc-num::-webkit-inner-spin-button,.cc-num::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.cc-num:hover{border-color:var(--text2)}
+.cc-num:focus{outline:none;border-color:var(--cyan)}
+
+/* Footer: bulk-quality buttons - three standalone buttons in the
+   `.lo-reset` style (subtle border, transparent background, uppercase
+   label). Per-button hover colour conveys consequence (red = nuke,
+   cyan = neutral, green = boost). */
+.cc-pop-foot{
+  display:flex;gap:6px;padding:10px 12px;
+  border-top:1px solid var(--border);background:var(--bg3);
+}
+.cc-bulk{
+  flex:1;background:none;border:1px solid var(--border);border-radius:3px;
+  color:var(--text2);padding:4px 8px;font-size:.65rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
+  transition:border-color .12s,color .12s;
+}
+.cc-bulk-min:hover{border-color:var(--red);color:var(--red)}
+.cc-bulk-reset:hover{border-color:var(--cyan);color:var(--cyan)}
+.cc-bulk-max:hover{border-color:var(--green);color:var(--green)}
+
+/* ── Crafting summary modal ─────────────────────────────────────────────
+   "Materials" button opens a shopping-list view of every craftable
+   component on the loadout with aggregated material costs.
+
+   The dialog frame reuses existing styles entirely:
+     • `.lo-build-dialog` + `.lo-build-dialog-panel.lo-build-wide` for the
+       overlay + 560px panel.
+     • `.lo-build-dialog-header` / `.lo-build-dialog-close` for the title bar.
+     • `.lo-build-dialog-actions` + `.lo-reset` buttons for the toolbar.
+     • `.lo-build-dialog-list` for the scrollable component list.
+     • `.lo-slot` + `.lo-name` for each component row.
+     • `.lo-summary-row` for each total-resource row.
+
+   Only the bits below are genuinely new: the per-row grid layout (checkbox
+   + name + count + pills-wrap), the resource pill styling, and the totals
+   sticky-header container. */
+
+/* Materials + Deflection analysis-button cluster centered between ship
+   dropdown and loadout toolbar. Both this cluster and .lo-build-bar carry
+   margin-left:auto so flex distributes remaining space evenly. */
+.lo-analysis-cluster{display:flex;gap:8px;margin-left:auto}
+/* All three analysis-button icons share vertical centering + spacing. */
+.lo-materials-btn i, .lo-deflection-btn i, .lo-ttk-btn i, #loadoutSaveBtn i, .lo-share-btn i{vertical-align:middle;margin-right:4px}
+/* Deflection still uses an spvi glyph, which reads optically smaller than a
+   Font Awesome glyph at the same px, so bump it up to .95rem. */
+.lo-deflection-btn i{font-size:.95rem}
+/* The FA glyphs (wrench, crosshairs, floppy-disk, share-nodes) ride a hair low
+   in their em box even with vertical-align:middle, so .82rem + a 1px nudge
+   levels them with the button label. */
+.lo-materials-btn i, .lo-ttk-btn i, #loadoutSaveBtn i, .lo-share-btn i{font-size:.82rem;position:relative;top:-1px}
+
+/* ── Find Deflection calculator modal ──────────────────────────────────────
+   Frame reuses .lo-build-dialog + .lo-build-dialog-panel.lo-build-wide.
+   Only the body-specific CSS lives here. */
+
+/* Wider than the shared .lo-build-wide (560px) so the 6-column weapon table
+   (Shield/Armor/Hull/Components/Penetration + label) fits without a horizontal
+   scrollbar. min() keeps it inside the viewport on narrow screens. */
+.defl-panel{width:min(680px,94vw);max-height:88vh;overflow-y:auto}
+/* ── Time to Kill dialog ── reuses .defl-opponent-row / .defl-field /
+   .defl-toggle / .defl-dropdown / .defl-options-row / .defl-loadout-header /
+   .defl-empty / .defl-checkbox; only the summary + result table are new. */
+.ttk-panel{width:min(680px,94vw);max-height:88vh;overflow:hidden;display:flex;flex-direction:row;align-items:stretch}
+.ttk-main{flex:0 0 auto;width:100%;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column}
+.ttk-panel.ttk-panel-with-log{width:min(1480px,98vw)}
+.ttk-panel.ttk-panel-with-log .ttk-main{width:680px;flex:0 0 680px}
+.ttk-panel-with-log .ttk-log-host{flex:1 1 auto;border-left:1px solid var(--border);max-height:88vh;overflow:auto;min-width:0}
+.ttk-summary{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.8rem;color:var(--text2)}
+.ttk-summary-val{color:var(--text);font-weight:600}
+/* Uniform section-body gutter inside the TTK dialog. */
+.ttk-section-body{padding:12px 14px}
+/* The opponent dropdown grid already sits inside this gutter, so it must NOT
+   carry the standalone-deflection padding/border/band - otherwise the inputs
+   are inset 14px further than the sliders, checkbox and stats below them.
+   Neutralize it here; a plain bottom margin spaces it from the sliders. */
+.ttk-section-body .defl-opponent-row{padding:0;background:none;border-bottom:none;margin-bottom:12px}
+/* Opponent stats + loadout summary lines sit inside a section body, so no
+   extra padding of their own; a top border separates them from the controls. */
+.ttk-opp-stats,.ttk-loadout-summary{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+/* TTK slider row: wide label column fits "Cooling / reloading time". */
+.ttk-srow{display:flex;align-items:center;gap:10px;padding:3px 0}
+/* Field label, same treatment as the opponent section's .defl-field-label
+   (.75rem, text2, normal weight). The cyan .ttk-srow-val carries the emphasis;
+   the label stays quiet like every other field label in the dialog. */
+.ttk-srow-label{flex:0 0 150px;color:var(--text2);font-size:.75rem}
+.ttk-srow .app-slider{flex:1 1 auto;min-width:0}
+.ttk-srow-val{flex:0 0 auto;min-width:46px;text-align:right;color:var(--cyan);font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums}
+.ttk-srow-hint{padding-left:160px;font-size:.72rem;line-height:1.3;color:var(--text2);min-height:0}
+.ttk-srow-hint:empty{display:none}
+/* Distance-to-power-plant field: lives in the opponent dropdown grid as a
+   .defl-field, so the input fills the cell width like the dropdowns with the
+   unit pinned to its right. */
+.ttk-reach-wrap{display:flex;align-items:center;gap:8px}
+.ttk-reach-input{flex:1 1 auto;min-width:0;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:7px 10px;font-size:.82rem;font-variant-numeric:tabular-nums}
+.ttk-reach-input:hover{border-color:var(--text2)}
+.ttk-reach-input:focus{outline:none;border-color:var(--cyan)}
+.ttk-reach-input::placeholder{color:var(--text3)}
+.ttk-reach-unit{flex:0 0 auto;color:var(--text2);font-size:.82rem}
+/* Shield charge / armor integrity sliders sit side by side, label stacked above
+   the slider (same 2-col rhythm as the opponent dropdown grid). */
+.ttk-srow-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ttk-stack{display:flex;flex-direction:column;gap:5px}
+/* The label's flex:0 0 150px is a WIDTH basis in the inline .ttk-srow; in this
+   column stack it would become a 150px HEIGHT, so reset it to content height. */
+.ttk-stack .ttk-srow-label{flex:0 0 auto}
+.ttk-stack-ctrl{display:flex;align-items:center;gap:8px}
+.ttk-stack-ctrl .app-slider{flex:1 1 auto;min-width:0}
+/* Burst-settings info column: optimal pause + hints sit in the right half of the
+   row (beside the cooling slider) in a fixed area, so dragging the slider updates
+   the text in place instead of reflowing content below it. */
+.ttk-burst-info{display:flex;flex-direction:column;gap:2px;min-width:0;justify-content:center}
+.ttk-burst-info .ttk-srow-hint{padding-left:0}
+/* Checkbox row inside a TTK section. */
+/* Same size + gap as .defl-checkbox (the "Apply armor durability" toggle in
+   the opponent section) so both checkboxes in the dialog read as one family. */
+.ttk-opt-check{display:flex;align-items:center;gap:8px;padding:6px 0 2px;font-size:.78rem;color:var(--text2);cursor:pointer}
+.ttk-results-table{width:100%;border-collapse:collapse;font-size:.82rem}
+/* Gold uppercase headers, matching the verification log table below, the
+   picker (.lo-picker-table th) and deflection (.defl-mitig-table th). The
+   primary output table should not be the one dialog table with grey headers. */
+.ttk-results-table thead th{text-align:right;color:var(--gold);font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;font-weight:600;padding:6px 12px;border-bottom:1px solid var(--border)}
+.ttk-results-table thead th:first-child{text-align:left}
+.ttk-results-table td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums}
+/* Align the table's outer columns to the dialog's 14px gutter (cells default to
+   12px) so the first column and the right edge line up with the section headers. */
+.ttk-results-table th:first-child,.ttk-results-table td:first-child{padding-left:14px}
+.ttk-results-table th:last-child,.ttk-results-table td:last-child{padding-right:14px}
+.ttk-results-table td.ttk-outcome{text-align:left;color:var(--text);white-space:nowrap}
+.ttk-results-table td.ttk-dps{color:var(--text);font-variant-numeric:tabular-nums}
+.ttk-outcome i{vertical-align:middle;margin-right:6px;color:var(--text2)}
+.ttk-val{color:var(--cyan);font-weight:700}
+.ttk-val-inf{color:var(--text2);font-weight:700}
+.ttk-state{color:var(--text)}
+.ttk-note{color:var(--text2);font-size:.78rem}
+.ttk-reason{color:var(--text2);font-size:.72rem;margin-top:2px;white-space:nowrap}
+.ttk-pause-optimal{color:var(--text2);font-size:.72rem;font-weight:400;margin-left:6px}
+.ttk-log-toggle{font-size:.7rem;color:var(--text2);text-transform:uppercase;letter-spacing:.7px}
+/* No outer gutter - the log table sits flush like every other table in the
+   app (picker, deflection, results). Cell padding on th/td handles spacing. */
+.ttk-log-host{padding:0;overflow:auto}
+/* Verification log table matches the app's standard table sizing
+   (.78rem body / .68rem gold header), same as the picker + deflection
+   tables, rather than the cramped .7/.62 it used before. */
+.ttk-log-table{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}
+.ttk-log-table th{position:sticky;top:0;background:var(--bg3);color:var(--gold);font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.ttk-log-table td{padding:4px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+.ttk-log-table td.ttk-log-thr{color:var(--text2);font-size:.72rem}
+.ttk-shot-toggle{cursor:pointer;color:var(--cyan);user-select:none;white-space:nowrap}
+.ttk-shot-toggle:hover{text-decoration:underline}
+.ttk-log-burstrow{cursor:pointer}
+.ttk-shot-row td{background:var(--bg);color:var(--text2);font-size:.72rem;padding:3px 8px}
+.ttk-shot-row td.ttk-shot-wpn{color:var(--text);padding-left:14px}
+.ttk-shot-row .ttk-note{color:var(--text3)}
+
+.defl-opponent-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg2);
+}
+.defl-field{display:flex;flex-direction:column;gap:4px;text-transform:none;letter-spacing:normal;font-size:inherit;color:var(--text);position:relative}
+/* Field label sits above each dropdown. Sentence case in natural muted
+   text - matches the row labels in the mitigation table (Deflection
+   Threshold, Shield Resistance, etc) rather than the gold uppercase
+   section-header pattern. */
+.defl-field-label{font-size:.75rem;color:var(--text2)}
+.defl-select{
+  background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+  color:var(--text);padding:7px 10px;font-size:.82rem;outline:none;
+}
+.defl-select:hover{border-color:var(--text2)}
+.defl-select:focus{border-color:var(--cyan)}
+.defl-toggle{
+  background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+  color:var(--text);padding:7px 10px;font-size:.82rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  user-select:none;
+}
+.defl-toggle:hover{border-color:var(--text2)}
+.defl-toggle.open{border-color:var(--cyan)}
+.defl-toggle-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.defl-dropdown{
+  position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:60;
+  background:var(--bg);border:1px solid var(--border);border-radius:3px;
+  display:none;flex-direction:column;max-height:280px;overflow:hidden;
+}
+.defl-dropdown.open{display:flex}
+.defl-dropdown .ms-search{
+  margin:6px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);font-size:.82rem;outline:none;
+}
+.defl-dropdown .ms-search:focus{border-color:var(--cyan)}
+.defl-list{overflow-y:auto;max-height:230px}
+.defl-list .ms-ship-opt{
+  padding:5px 10px;cursor:pointer;font-size:.82rem;
+}
+.defl-list .ms-ship-opt:hover,
+.defl-list .ms-ship-opt.keynav{background:var(--hover-bg)}
+.defl-list .ms-ship-opt.active{color:var(--cyan)}
+
+/* Read-only mitigation table inside the Deflection Calculator. Reuses
+   the .lo-picker-table look (bg3 header strip, .68rem gold uppercase
+   header text, border-top row separators, 8/10 + 6/10 padding) so it
+   reads as one design family with the weapon picker / loadout listings.
+   No clickable / sortable / hover behaviour because this is data
+   display, not a picker. */
+.defl-mitig-host{padding:0;background:var(--bg)}
+.defl-mitig-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.defl-mitig-table th{
+  padding:8px 10px;text-align:right;background:var(--bg3);
+  color:var(--gold);font-weight:600;text-transform:uppercase;
+  font-size:.68rem;letter-spacing:.5px;white-space:nowrap;
+  border-bottom:1px solid var(--border);
+}
+.defl-mitig-table th:first-child{text-align:left}
+.defl-mitig-table td{
+  padding:6px 10px;text-align:right;color:var(--text);
+  font-variant-numeric:tabular-nums;border-top:1px solid var(--border);
+  white-space:nowrap;
+}
+.defl-mitig-table td:first-child{text-align:left;color:var(--text)}
+/* Owner-benefit colour convention (see UI_GUIDE "Stat row colour convention"):
+   good for the owner = green, bad = red, neutral = the default white td. The
+   per-cell helpers wrap good/bad values in these spans; neutral 0% is rendered
+   bare so it inherits the white td. */
+.defl-mitig-table .green{color:var(--green-soft)}
+.defl-mitig-table .red{color:var(--red-soft)}
+
+.defl-sliders{padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.defl-slider-row{display:grid;grid-template-columns:60px 1fr 48px 1fr;gap:10px;align-items:center;padding:4px 0}
+.defl-slider-label{color:var(--text2);font-size:.78rem;font-weight:600}
+/* .defl-slider visual style merged into the shared rule next to .cc-slider
+   above so the two sliders render identically. Local layout only here. */
+.defl-slider-val{color:var(--cyan);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.defl-slider-total{color:var(--text2);font-size:.72rem;font-variant-numeric:tabular-nums}
+
+/* "My loadout" reuses .lo-section-header; no per-section overrides needed -
+   the spvi-weapon icon and h3 styling come from the global rules. */
+
+.defl-weapons-host{padding:0;background:var(--bg)}
+.defl-empty{padding:24px 20px;color:var(--text2);font-size:.78rem;text-align:center}
+
+/* Per-loadout damage table. Shares the .lo-picker-table look (bg3 thead
+   strip, .68rem gold uppercase column heads) with the mitigation table
+   above so the two read as the same family. Per-weapon group:
+   - one .defl-weapon-head row spanning all 5 cols (name + alpha)
+   - .defl-weapon-data row "Damage/shot" with Shield / Armor / Hull / Components
+   - .defl-weapon-data row "Shots to break" with the same columns */
+.defl-weapons-table{width:100%;border-collapse:collapse;font-size:.78rem;table-layout:fixed}
+/* Column-header row repeated under every weapon name band. Gold uppercase
+   to match other table headers in the dialog, but transparent background
+   (the table body is already the dialog's bg, no need for a bg3 strip
+   like the mitigation table thead). */
+.defl-weapons-table .defl-weapon-cols th{
+  padding:6px 10px;text-align:right;background:transparent;
+  color:var(--gold);font-weight:600;text-transform:uppercase;
+  font-size:.68rem;letter-spacing:.5px;white-space:nowrap;
+  border-bottom:1px solid var(--border);
+}
+.defl-weapons-table .defl-weapon-cols th:first-child{
+  text-align:left;width:120px;
+}
+.defl-weapons-table td{
+  padding:6px 10px;text-align:right;color:var(--cyan);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+/* The "Damage/shot" / "Shots to break" row labels sit in column 1. */
+.defl-weapons-table .defl-chain-row-label{
+  text-align:left;color:var(--text2);font-size:.7rem;
+}
+/* Weapon name band spans all columns. The td keeps its native
+   display:table-cell so the bg2 fills the entire row width; the
+   name + alpha layout uses flex on an inner div instead. */
+.defl-weapon-head td{
+  padding:8px 10px;background:var(--bg2);
+  border-top:1px solid var(--border);text-align:left;
+}
+.defl-weapon-head-inner{
+  display:flex;align-items:baseline;gap:10px;
+}
+/* Global .lo-name has flex:1 (so weapon names fill the slot row). In the
+   table head row we want it to hug its content so the alpha sits right
+   next to the name instead of getting pushed to the far edge. */
+.defl-weapon-head .lo-name{color:var(--text);font-weight:600;font-size:.82rem;flex:0 0 auto}
+.defl-weapon-head .defl-row-alpha{
+  color:var(--text2);font-size:.72rem;
+  /* Pushes the alpha value to the right edge while name + quality badge
+     stay together at the left. */
+  margin-left:auto;
+}
+.defl-weapon-head .defl-row-alpha-val{
+  color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums;
+  /* Same size as the weapon name (.lo-name above) so the number reads
+     as the row's primary stat, mirroring how the main loadout panel
+     pairs weapon name with DPS (matching size, muted unit). */
+  font-size:.82rem;
+}
+/* Crafting-quality badge inside the weapon-head row. .cc-indicator brings
+   the wrench + number look from the loadout panel; this override just
+   tightens vertical alignment for the inline placement next to the name. */
+.defl-quality-badge{vertical-align:baseline;cursor:default}
+/* Penetration column shows "X.X" + unit. The number stays cyan/600;
+   the " m" suffix dims to text2 to match the .mini-unit pattern in the
+   Ship Details overlay. */
+.defl-weapons-table .defl-stage-unit{
+  color:var(--text2);font-weight:400;font-size:.7rem;
+}
+/* First weapon header doesn't need a top border (thead already gives one). */
+.defl-weapons-table tbody tr:first-child.defl-weapon-head td{border-top:none}
+/* Data rows: subtle border between the two rows within a weapon group. */
+.defl-weapon-data + .defl-weapon-data td{border-top:1px solid var(--border)}
+/* Deflected weapons fade out so they're scannable but not noisy. */
+.defl-weapon-deflected{opacity:.65}
+
+.defl-row{
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:4px;
+}
+.defl-row:hover{background:var(--hover-bg)}
+.defl-row-deflected{opacity:.65}
+.defl-row-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.defl-row-alpha{color:var(--text2);font-size:.72rem;font-variant-numeric:tabular-nums}
+/* Row identifier in the chain / ammo rows ("Per shot" / "Shots to break")
+   so the user can read what the numbers in each row represent without
+   guessing. Muted + fixed-ish width so the chain/ammo cells line up
+   between the two rows. */
+.defl-row-label{
+  color:var(--text2);font-size:.7rem;font-style:italic;
+  min-width:84px;flex-shrink:0;
+}
+.defl-row-chain{
+  display:flex;align-items:center;gap:6px;
+  font-size:.72rem;color:var(--text2);
+}
+.defl-stage{display:inline-flex;align-items:baseline;gap:4px}
+/* Component stage stacks its damage value over a small PEN distance
+   sub-line. The other four stages stay single-baseline; only this one
+   flips to column. */
+.defl-stage-component{flex-direction:column;align-items:center;gap:1px}
+.defl-stage-pen{
+  color:var(--text2);font-size:.62rem;font-variant-numeric:tabular-nums;
+  letter-spacing:.3px;
+}
+/* Stage / ammo / arrow labels use text2 (lighter muted grey) so they
+   read against the dark dialog background. text3 was too dim - it's
+   the "disabled / placeholder" tone and made the per-weapon chain
+   hard to scan. Matches the muted label colour used on rows in the
+   main loadout panel. */
+.defl-stage-label{color:var(--text2);font-size:.72rem}
+.defl-stage-val{color:var(--cyan);font-variant-numeric:tabular-nums;font-weight:600}
+.defl-stage-deflected .defl-stage-val,.defl-stage-deflected-val{color:var(--red);font-size:.7rem;letter-spacing:.5px}
+.defl-stage-na{color:var(--text2)}
+.defl-arrow{color:var(--text2)}
+.defl-ammo-note{color:var(--text2);font-style:italic;font-size:.65rem}
+
+.defl-row-ammo{
+  display:flex;gap:14px;font-size:.7rem;color:var(--text2);
+  font-variant-numeric:tabular-nums;
+}
+.defl-ammo-cell{display:inline-flex;gap:5px;align-items:baseline}
+.defl-ammo-label{color:var(--text2);font-size:.72rem}
+/* Numeric value in the per-weapon ammo line. Cyan + medium weight so the
+   number pops against the muted "Shield" / "Armor" / "Vital" label, same
+   pattern the chain row above uses for stage values. */
+.defl-ammo-val{color:var(--cyan);font-variant-numeric:tabular-nums;font-weight:600}
+.defl-ammo-unit{color:var(--text2);font-size:.7rem}
+
+.defl-options-row{
+  padding:8px 14px;display:flex;align-items:center;gap:14px;
+  border-top:1px solid var(--border);background:var(--bg2);
+}
+/* Override the generic label{} rule (text-transform:uppercase,
+   letter-spacing:1px, margin-bottom) so the checkbox label renders
+   as written in sentence case. */
+.defl-checkbox{
+  display:inline-flex;align-items:center;gap:8px;font-size:.78rem;
+  color:var(--text2);cursor:pointer;user-select:none;
+  text-transform:none;letter-spacing:normal;margin-bottom:0;
+}
+.defl-checkbox input{cursor:pointer}
+.defl-options-link{
+  color:var(--text3);font-size:.72rem;text-decoration:none;
+  display:inline-flex;align-items:center;
+}
+.defl-options-link:hover{color:var(--cyan)}
+
+.craft-summary-empty{
+  padding:24px 20px;color:var(--text2);font-size:.78rem;
+  line-height:1.5;text-align:center;
+}
+
+/* Per-row grid layout overlaid on top of `.lo-slot`. The count rides
+   inline with the name (uses `.lo-count`, same as weapon slot rows), so
+   the row is just checkbox + name + a second-line pills wrap. */
+.craft-summary-row{
+  display:grid;grid-template-columns:auto 1fr;align-items:center;
+  column-gap:10px;row-gap:4px;
+}
+/* Reusable checkbox style for all in-app forms (dialogs, summaries,
+   inline toggles). Matches the .ms-option dropdown-checkmark feel:
+   square box with cyan border + cyan checkmark when checked. Keeps
+   the native <input type="checkbox"> in place so existing JS that
+   reads .checked still works - only the appearance is custom.
+
+   Usage: <input type="checkbox" class="app-check">                  */
+.app-check{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;flex-shrink:0;margin:0;
+  border:1px solid var(--border);border-radius:2px;
+  background:var(--bg);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:border-color .12s,background .12s;
+}
+.app-check:hover{border-color:var(--text2)}
+.app-check:checked{background:var(--cyan-08);border-color:var(--cyan)}
+.app-check:checked::after{
+  content:"\2713";color:var(--cyan);
+  font-size:.85rem;line-height:1;font-weight:700;
+}
+
+.craft-summary-check{}
+.craft-summary-resources{
+  grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:4px;
+}
+
+/* Resource pills - first usage of a pill-shaped badge in the loadout UI.
+   Colour follows the convention spelled out in UI_GUIDE.md (SCU → cyan,
+   harvestable Units → gold). Font size matches `.cc-slot-cost` so pills
+   sit visually next to the existing per-slot Cost label. */
+.craft-pill{
+  display:inline-block;padding:1px 7px;border-radius:9px;
+  font-size:.68rem;font-variant-numeric:tabular-nums;
+  background:var(--bg3);border:1px solid var(--border);
+}
+.craft-pill-scu{color:var(--cyan)}
+.craft-pill-units{color:var(--gold)}
+
+/* Totals section - scrollable container under the sticky section header.
+   Each row inside uses `.lo-summary-row` directly. */
+.craft-summary-totals{border-top:1px solid var(--border)}
+.craft-summary-totals .lo-section-header{position:sticky;top:0;z-index:1}
+.craft-summary-totals-list{max-height:35vh;overflow-y:auto}
+.craft-total-qty{color:var(--cyan);font-variant-numeric:tabular-nums;font-weight:600}
+.craft-total-unit{color:var(--text2);font-size:.66rem;margin-left:2px;font-weight:400}
+.craft-total-empty{padding:12px 16px;color:var(--text3);font-size:.78rem;text-align:center}

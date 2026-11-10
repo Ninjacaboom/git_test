@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPV Icons Reference</title>
+<style>
+  @font-face{
+    font-family:spv-icons;
+    src:url(../fonts/spv-icons-BrXfL6RU.eot);
+    src:url(../fonts/spv-icons-BrXfL6RU.eot) format("embedded-opentype"),
+       url(../fonts/spv-icons-BiMDeAR2.woff2) format("woff2"),
+       url(../fonts/spv-icons-Bp97_FSD.woff) format("woff");
+    font-weight:400;font-style:normal
+  }
+  :root{--bg:#1a1d20;--bg2:#22262a;--border:#333;--text:#ccc;--text2:#888;--cyan:#3bb8d9}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;padding:24px}
+  h1{color:var(--cyan);margin-bottom:8px;font-size:1.4rem}
+  .subtitle{color:var(--text2);margin-bottom:24px;font-size:.85rem}
+  .search{width:100%;max-width:400px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.9rem;margin-bottom:20px;outline:none}
+  .search:focus{border-color:var(--cyan)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s}
+  .card:hover{border-color:var(--cyan)}
+  .card.hidden{display:none}
+  .icon-preview{font-family:spv-icons;font-size:28px;color:var(--cyan);width:36px;text-align:center;flex-shrink:0}
+  .icon-info{flex:1;min-width:0}
+  .icon-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:2px;word-break:break-all}
+  .icon-code{font-size:.72rem;color:var(--text2);font-family:monospace}
+  .icon-css{font-size:.72rem;color:var(--text2);font-family:monospace;margin-top:1px}
+  .copied{position:fixed;top:20px;right:20px;background:var(--cyan);color:#000;padding:8px 16px;border-radius:4px;font-size:.85rem;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none}
+  .copied.show{opacity:1}
+  .stats{color:var(--text2);font-size:.8rem;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<h1>SPV Icons Reference</h1>
+<p class="subtitle">Click any icon to copy its CSS class to clipboard</p>
+<input type="text" class="search" placeholder="Filter icons..." id="search">
+<p class="stats" id="stats"></p>
+<div class="grid" id="grid"></div>
+<div class="copied" id="copied">Copied!</div>
+
+<script>
+const ICONS = [
+  ["cooler","ea02"],["countermeasure","ea04"],["dimensions","ea05"],["crew","ea06"],
+  ["drive","ea07"],["crewoperator","ea08"],["emp","ea09"],["dashboard","ea0a"],
+  ["engine","ea0b"],["down","ea0d"],["flair","ea0e"],["fuelgauge","ea0f"],
+  ["fuelpump","ea10"],["gimbal","ea11"],["health","ea12"],["electric","ea13"],
+  ["jumpmodule","ea14"],["lockers","ea15"],["hydrogenfueltank","ea16"],["insurance","ea17"],
+  ["fuelintake","ea18"],["infrared","ea19"],["missile","ea1a"],["max","ea1b"],
+  ["missilerack","ea1d"],["paint","ea1e"],["parts","ea1f"],["modularity","ea20"],
+  ["pod","ea21"],["qdrive","ea22"],["pilot","ea23"],["gear","ea24"],
+  ["qed","ea25"],["powerplant","ea26"],["mass","ea27"],["pyr","ea28"],
+  ["radar","ea29"],["ramp","ea2a"],["mining","ea2b"],["reverse","ea2c"],
+  ["quantumfueltank","ea2d"],["scmnav","ea2e"],["shield","ea2f"],["shelve","ea31"],
+  ["scm","ea35"],["stealth","ea36"],["stealthv","ea37"],["slowdown","ea38"],
+  ["thrustermain","ea39"],["speedup","ea3a"],["thrustermainretro","ea3b"],["thrusterman","ea3c"],
+  ["timer","ea3d"],["up","ea3e"],["utility","ea3f"],["vault","ea40"],
+  ["weapon","ea41"],["weaponcrew","ea42"],["weaponturret","ea43"],["acceleration","ea44"],
+  ["armor","ea45"],["bomb","ea46"],["boost","ea47"],["spool","ea48"],
+  ["cargo","ea49"],["strafe","ea4a"],["cargogrid","ea4b"],["cash","ea4c"],
+  ["coins","ea4d"],["brake","ea4e"],["break","ea4f"],["crosssection","ea50"],
+  ["icon_common_ship_component_wear","ea59"],["icon_common_cross_section","ea5b"],
+  ["Engineering_Icon_ItemThrusters","ea5c"],["icon_common_EMP","ea5d"],
+  ["icon_common_QED","ea5e"],["icon_common_coolant","ea5f"],
+  ["icon_common_generator_shield","ea60"],["icon_common_life_support","ea61"],
+  ["icon_common_quantum","ea62"],["icon_common_radar","ea63"],
+  ["icon_common_tractor-beam","ea65"],["icon_common_vehicle_wheel_control","ea66"],
+  ["icon_common_weapon_gun","ea67"],["MFD-Icon-Generator","ea69"],
+  ["shieldfrontback","ea6b"],["shieldbubble","ea6c"],["shieldquadrant","ea6d"],
+  ["icon_common_mining","ea6e"],["Engineering_Icon_ItemShields","ea6f"],
+  ["PU_mobiapp_icon_mission_salvage","ea70"],["icon_common_3D_cargo_boxes","ea71"],
+  ["icon_common_fuel_quantum","ea73"],["icon_common_fuel_hydrogen","ea74"],
+  ["icon_room_type_locker_room","ea75"],["icon_common_grenade_coil","ea76"],
+  ["icon_services_refuel_a","ea77"],["icon_common_gimbal_mode","ea78"],
+  ["Engineering_Icon_ItemTurret","ea79"],["standard_control","ea7a"],
+  ["ui_icon_vehicle_ground","ea7b"],["icon_common_healing_target_health","ea7c"],
+  ["salvage","ea7d"],["icon_hullscraping_temperature","ea7e"],
+  ["icon_common_warning_overheat","ea7f"],["icon_mining_laserfocuser","ea80"],
+  ["computer","ea81"],["icon_services_app_cockpit","ea83"],
+  ["restart_alt","ea84"],["drag_indicator","ea85"],["power_button","ea86"],
+  ["icon_common_warning_nopower","ea87"],["AEGS_ENV_Icon_Systems","ea88"]
+];
+
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const stats = document.getElementById('stats');
+const copiedEl = document.getElementById('copied');
+
+stats.textContent = `${ICONS.length} icons available`;
+
+for (const [name, hex] of ICONS) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.name = name.toLowerCase();
+  card.innerHTML = `
+    <span class="icon-preview">&#x${hex};</span>
+    <div class="icon-info">
+      <div class="icon-name">${name}</div>
+      <div class="icon-code">\\${hex} &nbsp; &lt;i class="spvi-${name}"&gt;&lt;/i&gt;</div>
+      <div class="icon-css">.spvi-${name}:before{content:"\\${hex}"}</div>
+    </div>
+  `;
+  card.addEventListener('click', () => {
+    navigator.clipboard.writeText(`<i class="spvi-${name}"></i>`);
+    copiedEl.textContent = `Copied: <i class="spvi-${name}"></i>`;
+    copiedEl.classList.add('show');
+    setTimeout(() => copiedEl.classList.remove('show'), 1500);
+  });
+  grid.appendChild(card);
+}
+
+search.addEventListener('input', () => {
+  const q = search.value.toLowerCase();
+  let visible = 0;
+  for (const card of grid.children) {
+    const match = !q || card.dataset.name.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  }
+  stats.textContent = q ? `${visible} of ${ICONS.length} icons` : `${ICONS.length} icons available`;
+});
+</script>
+</body>
+</html>

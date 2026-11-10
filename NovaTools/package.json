@@ -1,0 +1,16 @@
+{
+  "name": "novatools",
+  "version": "1.0.0",
+  "description": "Nova Tools - SC loadout configurator",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "vitest": "^4.1.2"
+  }
+}

@@ -1,0 +1,18 @@
+# Sensitive data — never commit
+data/shop_data.json
+
+# SQLite databases (runtime data, not tracked)
+data/*.db
+
+# Local Claude Code settings (machine-specific)
+.claude/settings.local.json
+
+# Node dependencies
+node_modules/
+
+# Extracted/derived data
+data/temp/
+__pycache__/
+
+# Stale bootstrap artifact (untracked 2026-07-02)
+NovaTools.zip
