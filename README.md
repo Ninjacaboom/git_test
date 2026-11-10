@@ -39,6 +39,7 @@ Open http://localhost:5173. The Vite dev server forwards `/api` calls to the bac
 | Method | URL                        | What it does       |
 | ------ | -------------------------- | ------------------ |
 | GET    | /api/hello                 | Test message       |
+| GET    | /api/materials             | Ores and minerals with their fixed quality tiers |
 | GET    | /api/todos                 | List to-dos        |
 | POST   | /api/todos                 | Add `{ "title" }`  |
 | PUT    | /api/todos/{id}/toggle     | Flip done / undone |

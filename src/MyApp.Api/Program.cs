@@ -1,3 +1,6 @@
+using System.Text.Json;
+using MyApp.Api.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
@@ -7,6 +10,15 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi(); // OpenAPI spec at /openapi/v1.json
 }
+
+// Material catalog (ores + minerals and the fixed qualities they exist at).
+// Loaded from Data/materials.json. This moves into the database later.
+var materialsPath = Path.Combine(app.Environment.ContentRootPath, "Data", "materials.json");
+var materials = JsonSerializer.Deserialize<List<Material>>(
+    File.ReadAllText(materialsPath),
+    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? [];
+
+app.MapGet("/api/materials", () => materials);
 
 // In-memory list for now. Swap for a database (EF Core) later.
 var todos = new List<Todo>

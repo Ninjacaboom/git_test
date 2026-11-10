@@ -1,0 +1,1366 @@
+[
+  {
+    "name": "Agricium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 346
+      },
+      {
+        "tier": "E",
+        "quality": 588
+      },
+      {
+        "tier": "D",
+        "quality": 667
+      },
+      {
+        "tier": "C",
+        "quality": 796
+      },
+      {
+        "tier": "B",
+        "quality": 852
+      },
+      {
+        "tier": "A",
+        "quality": 943
+      },
+      {
+        "tier": "S",
+        "quality": 971
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Aluminum",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 318
+      },
+      {
+        "tier": "E",
+        "quality": 511
+      },
+      {
+        "tier": "D",
+        "quality": 614
+      },
+      {
+        "tier": "C",
+        "quality": 783
+      },
+      {
+        "tier": "B",
+        "quality": 896
+      },
+      {
+        "tier": "A",
+        "quality": 919
+      },
+      {
+        "tier": "S",
+        "quality": 953
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Aslarite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 287
+      },
+      {
+        "tier": "E",
+        "quality": 575
+      },
+      {
+        "tier": "D",
+        "quality": 602
+      },
+      {
+        "tier": "C",
+        "quality": 741
+      },
+      {
+        "tier": "B",
+        "quality": 854
+      },
+      {
+        "tier": "A",
+        "quality": 927
+      },
+      {
+        "tier": "S",
+        "quality": 963
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Beryl",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 324
+      },
+      {
+        "tier": "E",
+        "quality": 547
+      },
+      {
+        "tier": "D",
+        "quality": 677
+      },
+      {
+        "tier": "C",
+        "quality": 717
+      },
+      {
+        "tier": "B",
+        "quality": 860
+      },
+      {
+        "tier": "A",
+        "quality": 937
+      },
+      {
+        "tier": "S",
+        "quality": 955
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Bexalite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 302
+      },
+      {
+        "tier": "E",
+        "quality": 597
+      },
+      {
+        "tier": "D",
+        "quality": 632
+      },
+      {
+        "tier": "C",
+        "quality": 756
+      },
+      {
+        "tier": "B",
+        "quality": 875
+      },
+      {
+        "tier": "A",
+        "quality": 941
+      },
+      {
+        "tier": "S",
+        "quality": 959
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Borase",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 359
+      },
+      {
+        "tier": "E",
+        "quality": 584
+      },
+      {
+        "tier": "D",
+        "quality": 676
+      },
+      {
+        "tier": "C",
+        "quality": 743
+      },
+      {
+        "tier": "B",
+        "quality": 892
+      },
+      {
+        "tier": "A",
+        "quality": 903
+      },
+      {
+        "tier": "S",
+        "quality": 976
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Copper",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 359
+      },
+      {
+        "tier": "E",
+        "quality": 593
+      },
+      {
+        "tier": "D",
+        "quality": 652
+      },
+      {
+        "tier": "C",
+        "quality": 742
+      },
+      {
+        "tier": "B",
+        "quality": 855
+      },
+      {
+        "tier": "A",
+        "quality": 917
+      },
+      {
+        "tier": "S",
+        "quality": 958
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Corundum",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 318
+      },
+      {
+        "tier": "E",
+        "quality": 504
+      },
+      {
+        "tier": "D",
+        "quality": 665
+      },
+      {
+        "tier": "C",
+        "quality": 793
+      },
+      {
+        "tier": "B",
+        "quality": 886
+      },
+      {
+        "tier": "A",
+        "quality": 904
+      },
+      {
+        "tier": "S",
+        "quality": 971
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Gold",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 359
+      },
+      {
+        "tier": "E",
+        "quality": 553
+      },
+      {
+        "tier": "D",
+        "quality": 644
+      },
+      {
+        "tier": "C",
+        "quality": 786
+      },
+      {
+        "tier": "B",
+        "quality": 864
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 959
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Hephaestanite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 330
+      },
+      {
+        "tier": "E",
+        "quality": 572
+      },
+      {
+        "tier": "D",
+        "quality": 692
+      },
+      {
+        "tier": "C",
+        "quality": 758
+      },
+      {
+        "tier": "B",
+        "quality": 896
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 975
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Iron",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 325
+      },
+      {
+        "tier": "E",
+        "quality": 521
+      },
+      {
+        "tier": "D",
+        "quality": 664
+      },
+      {
+        "tier": "C",
+        "quality": 710
+      },
+      {
+        "tier": "B",
+        "quality": 874
+      },
+      {
+        "tier": "A",
+        "quality": 907
+      },
+      {
+        "tier": "S",
+        "quality": 970
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Laranite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 298
+      },
+      {
+        "tier": "E",
+        "quality": 510
+      },
+      {
+        "tier": "D",
+        "quality": 698
+      },
+      {
+        "tier": "C",
+        "quality": 707
+      },
+      {
+        "tier": "B",
+        "quality": 858
+      },
+      {
+        "tier": "A",
+        "quality": 910
+      },
+      {
+        "tier": "S",
+        "quality": 975
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Lindinium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 305
+      },
+      {
+        "tier": "E",
+        "quality": 585
+      },
+      {
+        "tier": "D",
+        "quality": 618
+      },
+      {
+        "tier": "C",
+        "quality": 729
+      },
+      {
+        "tier": "B",
+        "quality": 853
+      },
+      {
+        "tier": "A",
+        "quality": 930
+      },
+      {
+        "tier": "S",
+        "quality": 954
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Ouratite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 310
+      },
+      {
+        "tier": "E",
+        "quality": 523
+      },
+      {
+        "tier": "D",
+        "quality": 647
+      },
+      {
+        "tier": "C",
+        "quality": 779
+      },
+      {
+        "tier": "B",
+        "quality": 860
+      },
+      {
+        "tier": "A",
+        "quality": 912
+      },
+      {
+        "tier": "S",
+        "quality": 960
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Pressurized Ice",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 322
+      },
+      {
+        "tier": "E",
+        "quality": 561
+      },
+      {
+        "tier": "D",
+        "quality": 659
+      },
+      {
+        "tier": "C",
+        "quality": 714
+      },
+      {
+        "tier": "B",
+        "quality": 873
+      },
+      {
+        "tier": "A",
+        "quality": 922
+      },
+      {
+        "tier": "S",
+        "quality": 966
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Quantainium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 344
+      },
+      {
+        "tier": "E",
+        "quality": 514
+      },
+      {
+        "tier": "D",
+        "quality": 669
+      },
+      {
+        "tier": "C",
+        "quality": 762
+      },
+      {
+        "tier": "B",
+        "quality": 852
+      },
+      {
+        "tier": "A",
+        "quality": 901
+      },
+      {
+        "tier": "S",
+        "quality": 974
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Quartz",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 330
+      },
+      {
+        "tier": "E",
+        "quality": 552
+      },
+      {
+        "tier": "D",
+        "quality": 641
+      },
+      {
+        "tier": "C",
+        "quality": 710
+      },
+      {
+        "tier": "B",
+        "quality": 899
+      },
+      {
+        "tier": "A",
+        "quality": 914
+      },
+      {
+        "tier": "S",
+        "quality": 969
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Riccite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 325
+      },
+      {
+        "tier": "E",
+        "quality": 525
+      },
+      {
+        "tier": "D",
+        "quality": 671
+      },
+      {
+        "tier": "C",
+        "quality": 743
+      },
+      {
+        "tier": "B",
+        "quality": 870
+      },
+      {
+        "tier": "A",
+        "quality": 942
+      },
+      {
+        "tier": "S",
+        "quality": 965
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Saldynium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 301
+      },
+      {
+        "tier": "E",
+        "quality": 575
+      },
+      {
+        "tier": "D",
+        "quality": 674
+      },
+      {
+        "tier": "C",
+        "quality": 757
+      },
+      {
+        "tier": "B",
+        "quality": 861
+      },
+      {
+        "tier": "A",
+        "quality": 938
+      },
+      {
+        "tier": "S",
+        "quality": 955
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Savrilium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 322
+      },
+      {
+        "tier": "E",
+        "quality": 580
+      },
+      {
+        "tier": "D",
+        "quality": 636
+      },
+      {
+        "tier": "C",
+        "quality": 776
+      },
+      {
+        "tier": "B",
+        "quality": 878
+      },
+      {
+        "tier": "A",
+        "quality": 905
+      },
+      {
+        "tier": "S",
+        "quality": 967
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Silicon",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 310
+      },
+      {
+        "tier": "E",
+        "quality": 510
+      },
+      {
+        "tier": "D",
+        "quality": 672
+      },
+      {
+        "tier": "C",
+        "quality": 782
+      },
+      {
+        "tier": "B",
+        "quality": 889
+      },
+      {
+        "tier": "A",
+        "quality": 926
+      },
+      {
+        "tier": "S",
+        "quality": 968
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Stileron",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 330
+      },
+      {
+        "tier": "E",
+        "quality": 517
+      },
+      {
+        "tier": "D",
+        "quality": 681
+      },
+      {
+        "tier": "C",
+        "quality": 747
+      },
+      {
+        "tier": "B",
+        "quality": 874
+      },
+      {
+        "tier": "A",
+        "quality": 947
+      },
+      {
+        "tier": "S",
+        "quality": 972
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Taranite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 310
+      },
+      {
+        "tier": "E",
+        "quality": 525
+      },
+      {
+        "tier": "D",
+        "quality": 646
+      },
+      {
+        "tier": "C",
+        "quality": 718
+      },
+      {
+        "tier": "B",
+        "quality": 853
+      },
+      {
+        "tier": "A",
+        "quality": 925
+      },
+      {
+        "tier": "S",
+        "quality": 957
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Tin",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 340
+      },
+      {
+        "tier": "E",
+        "quality": 537
+      },
+      {
+        "tier": "D",
+        "quality": 664
+      },
+      {
+        "tier": "C",
+        "quality": 704
+      },
+      {
+        "tier": "B",
+        "quality": 880
+      },
+      {
+        "tier": "A",
+        "quality": 940
+      },
+      {
+        "tier": "S",
+        "quality": 964
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Titanium",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 295
+      },
+      {
+        "tier": "E",
+        "quality": 516
+      },
+      {
+        "tier": "D",
+        "quality": 622
+      },
+      {
+        "tier": "C",
+        "quality": 784
+      },
+      {
+        "tier": "B",
+        "quality": 866
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 959
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Torite",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 262
+      },
+      {
+        "tier": "E",
+        "quality": 528
+      },
+      {
+        "tier": "D",
+        "quality": 661
+      },
+      {
+        "tier": "C",
+        "quality": 785
+      },
+      {
+        "tier": "B",
+        "quality": 873
+      },
+      {
+        "tier": "A",
+        "quality": 944
+      },
+      {
+        "tier": "S",
+        "quality": 951
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Tungsten",
+    "category": "Ore",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 363
+      },
+      {
+        "tier": "E",
+        "quality": 530
+      },
+      {
+        "tier": "D",
+        "quality": 662
+      },
+      {
+        "tier": "C",
+        "quality": 787
+      },
+      {
+        "tier": "B",
+        "quality": 858
+      },
+      {
+        "tier": "A",
+        "quality": 902
+      },
+      {
+        "tier": "S",
+        "quality": 964
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Aphorite",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 348
+      },
+      {
+        "tier": "E",
+        "quality": 523
+      },
+      {
+        "tier": "D",
+        "quality": 686
+      },
+      {
+        "tier": "C",
+        "quality": 717
+      },
+      {
+        "tier": "B",
+        "quality": 861
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 975
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Beradom",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 287
+      },
+      {
+        "tier": "E",
+        "quality": 578
+      },
+      {
+        "tier": "D",
+        "quality": 656
+      },
+      {
+        "tier": "C",
+        "quality": 723
+      },
+      {
+        "tier": "B",
+        "quality": 881
+      },
+      {
+        "tier": "A",
+        "quality": 937
+      },
+      {
+        "tier": "S",
+        "quality": 969
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Carinite",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "E",
+        "quality": 554
+      },
+      {
+        "tier": "D",
+        "quality": 647
+      },
+      {
+        "tier": "C",
+        "quality": 716
+      },
+      {
+        "tier": "B",
+        "quality": 880
+      },
+      {
+        "tier": "A",
+        "quality": 909
+      },
+      {
+        "tier": "S",
+        "quality": 959
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Dolivine",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 304
+      },
+      {
+        "tier": "E",
+        "quality": 577
+      },
+      {
+        "tier": "D",
+        "quality": 621
+      },
+      {
+        "tier": "C",
+        "quality": 743
+      },
+      {
+        "tier": "B",
+        "quality": 886
+      },
+      {
+        "tier": "A",
+        "quality": 901
+      },
+      {
+        "tier": "S",
+        "quality": 957
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Feynmaline",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 371
+      },
+      {
+        "tier": "E",
+        "quality": 561
+      },
+      {
+        "tier": "D",
+        "quality": 682
+      },
+      {
+        "tier": "C",
+        "quality": 769
+      },
+      {
+        "tier": "B",
+        "quality": 880
+      },
+      {
+        "tier": "A",
+        "quality": 906
+      },
+      {
+        "tier": "S",
+        "quality": 965
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Glacosite",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 360
+      },
+      {
+        "tier": "E",
+        "quality": 567
+      },
+      {
+        "tier": "D",
+        "quality": 678
+      },
+      {
+        "tier": "C",
+        "quality": 724
+      },
+      {
+        "tier": "B",
+        "quality": 857
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 972
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Hadanite",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 274
+      },
+      {
+        "tier": "E",
+        "quality": 526
+      },
+      {
+        "tier": "D",
+        "quality": 665
+      },
+      {
+        "tier": "C",
+        "quality": 762
+      },
+      {
+        "tier": "B",
+        "quality": 867
+      },
+      {
+        "tier": "A",
+        "quality": 916
+      },
+      {
+        "tier": "S",
+        "quality": 959
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Janalite",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 269
+      },
+      {
+        "tier": "E",
+        "quality": 596
+      },
+      {
+        "tier": "D",
+        "quality": 623
+      },
+      {
+        "tier": "C",
+        "quality": 732
+      },
+      {
+        "tier": "B",
+        "quality": 898
+      },
+      {
+        "tier": "A",
+        "quality": 929
+      },
+      {
+        "tier": "S",
+        "quality": 964
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  },
+  {
+    "name": "Sadaryx",
+    "category": "Mineral",
+    "tiers": [
+      {
+        "tier": "F",
+        "quality": 258
+      },
+      {
+        "tier": "E",
+        "quality": 510
+      },
+      {
+        "tier": "D",
+        "quality": 688
+      },
+      {
+        "tier": "C",
+        "quality": 797
+      },
+      {
+        "tier": "B",
+        "quality": 865
+      },
+      {
+        "tier": "A",
+        "quality": 940
+      },
+      {
+        "tier": "S",
+        "quality": 971
+      },
+      {
+        "tier": "Perfect",
+        "quality": 1000
+      }
+    ]
+  }
+]
