@@ -280,8 +280,50 @@ input[type='search'] {
   border-color: var(--accent);
 }
 
-.sentinel {
-  height: 1px;
+/* ---- page numbers under the grid ---- */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+}
+
+.page-btn {
+  min-width: 2.3rem;
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--panel-bg);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled):not(.active) {
+  border-color: var(--accent);
+}
+
+.page-btn.active {
+  color: var(--accent-text);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.page-gap {
+  padding: 0 0.2rem;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 /* ---- pop-up with the item details ---- */
@@ -458,5 +500,17 @@ button.chip:hover {
   .type-list {
     max-height: 200px;
     overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    gap: 0.25rem;
+  }
+
+  .page-btn {
+    min-width: 2rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
   }
 }

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
+import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 
-// The grid shows this many cards at first and adds more as you scroll down.
-const PAGE_SIZE = 60;
+// Cards per page. 24 fills whole rows whether the grid has 1, 2, 3 or 4 columns.
+const PAGE_SIZE = 24;
 
 export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
@@ -12,10 +13,9 @@ export default function App() {
   const [type, setType] = useState('');
   const [includeSkins, setIncludeSkins] = useState(false);
   const [results, setResults] = useState<RecipeSummary[] | null>(null);
-  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Load the type list once.
   useEffect(() => {
@@ -48,25 +48,22 @@ export default function App() {
     };
   }, [search, type, includeSkins]);
 
-  // Start from the top of the grid again whenever the results change.
+  // Go back to page 1 whenever the results change (new search or filter).
   useEffect(() => {
-    setVisible(PAGE_SIZE);
+    setPage(1);
   }, [results]);
 
-  // Load more cards when the bottom of the grid scrolls into view.
   const total = results?.length ?? 0;
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || visible >= total) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setVisible((v) => v + PAGE_SIZE);
-      },
-      { rootMargin: '600px' },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [visible, total]);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const firstShown = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = (results ?? []).slice(firstShown, firstShown + PAGE_SIZE);
+
+  // Switch page and jump back to the top so the new page starts in view.
+  const goToPage = (p: number) => {
+    setPage(Math.min(Math.max(p, 1), totalPages));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Close the pop-up with Escape, and stop the page scrolling behind it.
   useEffect(() => {
@@ -143,12 +140,18 @@ export default function App() {
         </aside>
 
         <main className="results-area">
-          {results && <p className="count">{results.length} items</p>}
+          {results && results.length > 0 && (
+            <p className="count">
+              {results.length <= PAGE_SIZE
+                ? `${results.length} items`
+                : `Showing ${firstShown + 1}–${firstShown + pageItems.length} of ${results.length} items`}
+            </p>
+          )}
           {results === null && !error && <p className="count">Loading...</p>}
           {results && results.length === 0 && <p className="count">No items match your filters.</p>}
 
           <ul className="cards">
-            {(results ?? []).slice(0, visible).map((r) => {
+            {pageItems.map((r) => {
               const subtitle = [prettyType(r.type), r.manufacturer].filter(Boolean).join(' · ');
               return (
                 <li key={r.id}>
@@ -166,7 +169,7 @@ export default function App() {
             })}
           </ul>
 
-          {visible < total && <div ref={sentinelRef} className="sentinel" />}
+          <Pagination page={currentPage} totalPages={totalPages} onChange={goToPage} />
         </main>
       </div>
 
