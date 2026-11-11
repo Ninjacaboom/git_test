@@ -4,7 +4,15 @@
 | ---- | ---------- |
 | `materials.json` | The 36 ores/minerals and the fixed qualities (0-1000) each exists at, by tier (F, E, D, C, B, A, S, Perfect). |
 | `resources.json` | The 37 crafting resources used by blueprints. `material` links to a name in `materials.json` (null if it has no tier table). |
-| `recipes.json` | 1,617 crafting blueprints: slots, what each slot costs, and how the slot's material quality changes stats. |
+| `recipes.json` | 1,617 crafting blueprints: item details, slots, what each slot costs, and how the slot's material quality changes stats. |
+
+Rebuild `resources.json` and `recipes.json` after a game patch with:
+
+```
+node tools/build-databank.mjs "<folder with the extractor's JSON files>"
+```
+
+(needs `blueprints.json`, `resources.json`, `fps_equipment.json`, `vehicle_equipment.json` from the extractor output).
 
 ## Source
 
@@ -18,14 +26,13 @@ after a game patch.
 
 ```
 {
-  id, className, name, type, subType, size, craftTimeSeconds,
+  id, className, name, description, type, subType, size, grade, manufacturer, craftTimeSeconds,
+  variantOf,   // className of the base item if this recipe is itself a skin, else null
+  skins: [ { className, name, recipeId } ],   // skins of this item (recipeId null if the skin has no recipe of its own)
   slots: [
     {
       name, displayName,
-      costs: [
-        { kind: "resource", resourceId, material, quantity }   // a material
-        { kind: "item", itemId, itemName, quantity }           // a component item
-      ],
+      costs: [ { resourceId, material, unitType, quantity } ],   // unitType: "SCU" (ore) or "Units" (harvested items)
       modifiers: [
         { stat, kind, qualityMin, qualityMax, valueMin, valueMax }
       ]
@@ -58,11 +65,12 @@ This is the same rule NovaTools uses (`NovaTools/js/craftingModifiers.js`).
 
 ## Known gaps
 
-- 298 slots cost a **component item** (11 distinct items) instead of a material. The extracted
-  data does not name these, so `itemName` is `null`.
+- 298 slot costs are harvested items counted in `Units` (for example Hadanite, Dolivine) rather than mined ore in `SCU`.
 - `Yormandi Eye` is in `resources.json` but has no quality tier table (`material` is null).
 - Game data spells three materials differently from the tier table. They are mapped:
   `Aluminium` -> `Aluminum`, `Quantanium` -> `Quantainium`, `Saldynium (Ore)` -> `Saldynium`.
-- Resource quantities are as given by the game data. `unitType` in `resources.json` is `SCU`.
-  Check unit meaning before showing quantities to players.
+- Quantities are as given by the game data. Check what they mean in the game before showing them to players.
+- `manufacturer` and `grade` are only filled for the 642 recipes that match a weapon or ship component in the
+  equipment data. Armor and the rest have `null` there. `skins` is only filled for weapons and ship components,
+  and armor variants (such as Shrike and Talon) are separate recipes instead.
 - One blueprint in the source had no name and was dropped (1,618 -> 1,617).

@@ -40,6 +40,11 @@ Open http://localhost:5173. The Vite dev server forwards `/api` calls to the bac
 | ------ | -------------------------- | ------------------ |
 | GET    | /api/hello                 | Test message       |
 | GET    | /api/materials             | Ores and minerals with their fixed quality tiers |
+| GET    | /api/resources             | Crafting resources used by recipes |
+| GET    | /api/recipe-types          | Recipe types with counts |
+| GET    | /api/recipes               | Search recipes: `?search=aves&type=Char_Armor_Torso&includeSkins=false` |
+| GET    | /api/recipes/{id}          | One recipe: slots, costs and quality modifiers |
+| POST   | /api/recipes/{id}/stats    | Stat changes for chosen qualities: `{ "qualities": { "SHELL": 800 } }` |
 | GET    | /api/todos                 | List to-dos        |
 | POST   | /api/todos                 | Add `{ "title" }`  |
 | PUT    | /api/todos/{id}/toggle     | Flip done / undone |

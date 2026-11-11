@@ -1,4 +1,3 @@
-using System.Text.Json;
 using MyApp.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,14 +10,37 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi(); // OpenAPI spec at /openapi/v1.json
 }
 
-// Material catalog (ores + minerals and the fixed qualities they exist at).
-// Loaded from Data/materials.json. This moves into the database later.
-var materialsPath = Path.Combine(app.Environment.ContentRootPath, "Data", "materials.json");
-var materials = JsonSerializer.Deserialize<List<Material>>(
-    File.ReadAllText(materialsPath),
-    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? [];
+// Game reference data (materials, resources, recipes), loaded once from the Data folder.
+var bank = DataBank.Load(Path.Combine(app.Environment.ContentRootPath, "Data"));
 
-app.MapGet("/api/materials", () => materials);
+app.MapGet("/api/materials", () => bank.Materials);
+
+app.MapGet("/api/resources", () => bank.Resources);
+
+app.MapGet("/api/recipe-types", () => bank.RecipeTypes());
+
+// Example: /api/recipes?search=aves&type=Char_Armor_Torso&includeSkins=false
+app.MapGet("/api/recipes", (string? search, string? type, bool? includeSkins) =>
+    bank.Search(search, type, includeSkins ?? true));
+
+app.MapGet("/api/recipes/{id}", (string id) =>
+    bank.GetRecipe(id) is { } recipe ? Results.Ok(recipe) : Results.NotFound());
+
+// Body: { "qualities": { "SHELL": 800, "COOLANT": 650 } }  (slot name -> quality 0-1000).
+// Slots left out count as 500 (baseline). Returns the combined effect on each stat.
+app.MapPost("/api/recipes/{id}/stats", (string id, StatsRequest request) =>
+{
+    if (bank.GetRecipe(id) is not { } recipe) return Results.NotFound();
+
+    var qualities = request.Qualities ?? new Dictionary<string, int>();
+    var unknown = qualities.Keys.Where(k => recipe.Slots.All(s => s.Name != k)).ToList();
+    if (unknown.Count > 0)
+    {
+        return Results.BadRequest(new { error = $"Unknown slot(s): {string.Join(", ", unknown)}" });
+    }
+
+    return Results.Ok(QualityMath.RecipeEffects(recipe, qualities));
+});
 
 // In-memory list for now. Swap for a database (EF Core) later.
 var todos = new List<Todo>
@@ -58,5 +80,6 @@ app.MapDelete("/api/todos/{id:int}", (int id) =>
 
 app.Run();
 
+record StatsRequest(Dictionary<string, int>? Qualities);
 record Todo(int Id, string Title, bool Done);
 record NewTodo(string Title);
