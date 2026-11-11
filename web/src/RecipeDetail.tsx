@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
-import { formatDuration, formatEffect, formatQuantity, prettyType } from './format';
+import { formatAmount, formatDuration, formatEffect, prettyType } from './format';
 
 const BASELINE = 500;
 
@@ -120,7 +120,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
                 <div className="slot-head">
                   <strong>{slot.displayName}</strong>
                   <span className="muted small">
-                    {slot.costs.map((c) => `${formatQuantity(c.quantity)} ${c.unitType} ${c.material}`).join(', ')}
+                    {slot.costs.map((c) => `${formatAmount(c.quantity, c.unitType)} ${c.material}`).join(', ')}
                   </span>
                 </div>
                 <p className="muted small">{affects.length ? `Affects: ${affects.join(', ')}` : 'No stat effect'}</p>
@@ -181,7 +181,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
         <ul className="totals">
           {totals.map((t) => (
             <li key={`${t.material}|${t.unitType}`}>
-              {formatQuantity(t.quantity)} {t.unitType} {t.material}
+              {formatAmount(t.quantity, t.unitType)} {t.material}
             </li>
           ))}
         </ul>

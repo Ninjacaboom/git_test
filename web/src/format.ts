@@ -20,8 +20,15 @@ export function formatDuration(totalSeconds: number): string {
   return parts.join(' ');
 }
 
-export function formatQuantity(quantity: number): string {
-  return Number(quantity.toFixed(3)).toString();
+const trim = (n: number) => Number(n.toFixed(2)).toString();
+
+/**
+ * Ore amounts are stored in SCU but shown in cSCU (1 SCU = 100 cSCU), e.g. 0.05 SCU -> "5 cSCU".
+ * Harvested items are counted in Units and shown as they are.
+ */
+export function formatAmount(quantity: number, unitType: string): string {
+  if (unitType === 'SCU') return `${trim(quantity * 100)} cSCU`;
+  return `${trim(quantity)} ${unitType}`;
 }
 
 /** Multipliers show as a percentage change (1.1 -> +10%), additive values as a signed number. */

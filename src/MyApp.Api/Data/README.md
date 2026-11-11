@@ -77,7 +77,7 @@ This is the same rule NovaTools uses (`NovaTools/js/craftingModifiers.js`).
 - `Yormandi Eye` is in `resources.json` but has no quality tier table (`material` is null).
 - Game data spells three materials differently from the tier table. They are mapped:
   `Aluminium` -> `Aluminum`, `Quantanium` -> `Quantainium`, `Saldynium (Ore)` -> `Saldynium`.
-- Quantities are as given by the game data. Check what they mean in the game before showing them to players.
+- Quantities are stored as given by the game data (ore in SCU). The web page shows ore in cSCU (1 SCU = 100 cSCU), see `web/src/format.ts`. Check what the amounts mean in the game before relying on them.
 - `manufacturer` and `grade` are only filled for the 642 recipes that match a weapon or ship component in the
   equipment data. Armor and the rest have `null` there. `skins` is only filled for weapons and ship components,
   and armor variants (such as Shrike and Talon) are separate recipes instead.
