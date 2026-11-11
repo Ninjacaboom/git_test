@@ -88,9 +88,18 @@ const manufacturerOf = (item) => {
 const cleanText = (t) => (t ? String(t).replace(/\\n/g, '\n').trim() : null);
 
 // ---- recipes ----
-// Recipes we leave out of the store: weapon ammo (magazines and batteries).
-const EXCLUDED = [{ type: 'WeaponAttachment', subType: 'Magazine' }];
-const isExcluded = (b) => EXCLUDED.some((e) => e.type === b.TargetType && e.subType === b.TargetSubType);
+// Recipes we leave out of the store. A rule matches when every field it lists matches.
+const EXCLUDED = [
+  { type: 'WeaponAttachment', subType: 'Magazine' }, // weapon ammo (magazines and batteries)
+  { className: 'Carryable_2H_FL_MissionItem_prototype_ship_component_2_a' }, // TH-01 Propulsor
+];
+const isExcluded = (b) =>
+  EXCLUDED.some(
+    (e) =>
+      (e.type === undefined || e.type === b.TargetType) &&
+      (e.subType === undefined || e.subType === b.TargetSubType) &&
+      (e.className === undefined || e.className === b.TargetClassName),
+  );
 
 const named = blueprints.filter((b) => b.TargetName && !isExcluded(b));
 for (const b of named) {
