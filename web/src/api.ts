@@ -1,28 +1,90 @@
-export type Todo = {
-  id: number;
-  title: string;
-  done: boolean;
+export type MaterialTier = { tier: string; quality: number };
+export type Material = { name: string; category: string; tiers: MaterialTier[] };
+
+export type Cost = {
+  resourceId: string;
+  material: string;
+  unitType: string;
+  quantity: number;
 };
+
+export type Modifier = {
+  stat: string;
+  kind: 'multiplier' | 'additive';
+  qualityMin: number;
+  qualityMax: number;
+  valueMin: number;
+  valueMax: number;
+};
+
+export type Slot = {
+  name: string;
+  displayName: string;
+  costs: Cost[];
+  modifiers: Modifier[];
+};
+
+export type Skin = { className: string; name: string | null; recipeId: string | null };
+
+export type Recipe = {
+  id: string;
+  className: string;
+  name: string;
+  description: string | null;
+  type: string;
+  subType: string;
+  size: number;
+  grade: number | null;
+  manufacturer: string | null;
+  craftTimeSeconds: number;
+  variantOf: string | null;
+  skins: Skin[];
+  slots: Slot[];
+};
+
+export type RecipeSummary = {
+  id: string;
+  name: string;
+  type: string;
+  subType: string;
+  size: number;
+  grade: number | null;
+  manufacturer: string | null;
+  isSkin: boolean;
+};
+
+export type TypeCount = { type: string; count: number };
+
+export type StatEffect = { kind: 'multiplier' | 'additive'; value: number };
+export type StatEffects = Record<string, StatEffect>;
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, options);
   if (!res.ok) {
     throw new Error(`Request failed: ${res.status}`);
   }
-  return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
+  return (await res.json()) as T;
 }
 
-export const getTodos = () => request<Todo[]>('/api/todos');
+export const getMaterials = () => request<Material[]>('/api/materials');
 
-export const addTodo = (title: string) =>
-  request<Todo>('/api/todos', {
+export const getRecipeTypes = () => request<TypeCount[]>('/api/recipe-types');
+
+export function searchRecipes(search: string, type: string, includeSkins: boolean) {
+  const params = new URLSearchParams();
+  if (search.trim()) params.set('search', search.trim());
+  if (type) params.set('type', type);
+  params.set('includeSkins', String(includeSkins));
+  return request<RecipeSummary[]>(`/api/recipes?${params.toString()}`);
+}
+
+export const getRecipe = (id: string) =>
+  request<Recipe>(`/api/recipes/${encodeURIComponent(id)}`);
+
+/** qualities: slot name -> quality (0-1000). Slots left out count as 500. */
+export const getStats = (id: string, qualities: Record<string, number>) =>
+  request<StatEffects>(`/api/recipes/${encodeURIComponent(id)}/stats`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ qualities }),
   });
-
-export const toggleTodo = (id: number) =>
-  request<Todo>(`/api/todos/${id}/toggle`, { method: 'PUT' });
-
-export const deleteTodo = (id: number) =>
-  request<void>(`/api/todos/${id}`, { method: 'DELETE' });

@@ -32,7 +32,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. The Vite dev server forwards `/api` calls to the backend.
+Open http://localhost:5173 for the recipe browser. The Vite dev server forwards `/api` calls to the backend.
 
 ## API
 
