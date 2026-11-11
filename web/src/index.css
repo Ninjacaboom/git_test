@@ -1,6 +1,7 @@
 :root {
   --bg: #f5f5f7;
   --panel: #ffffff;
+  --panel-bg: rgba(255, 255, 255, 0.92);
   --text: #1d1d1f;
   --muted: #6b6b73;
   --border: #dcdce0;
@@ -15,6 +16,7 @@
   :root {
     --bg: #14151a;
     --panel: #1d1f26;
+    --panel-bg: rgba(29, 31, 38, 0.88);
     --text: #ececf1;
     --muted: #9a9aa6;
     --border: #2d2f39;
@@ -33,9 +35,37 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: var(--bg);
+  background: #1a0f08; /* shown while the image loads */
   color: var(--text);
   line-height: 1.45;
+}
+
+/* Blurred background image, fixed behind the page. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -24px; /* extends past the screen so the blurred edges are never visible */
+  z-index: -2;
+  background: url('/background.jpg') center / cover no-repeat;
+  filter: blur(6px);
+}
+
+/* Dark tint over the image so text stays readable. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(10, 6, 3, 0.45);
+}
+
+header {
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+header .muted {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .app {
@@ -68,7 +98,16 @@ h3 {
 }
 
 .error {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
   color: var(--error);
+  background: var(--panel-bg);
+  border-radius: 8px;
+}
+
+.panel .error {
+  padding: 0;
+  background: none;
 }
 
 .layout {
@@ -81,7 +120,8 @@ h3 {
 
 .browser,
 .panel {
-  background: var(--panel);
+  background: var(--panel-bg);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
