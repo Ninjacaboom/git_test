@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  getMaterials,
-  getRecipeTypes,
-  searchRecipes,
-  type Material,
-  type RecipeSummary,
-  type TypeCount,
-} from './api';
+import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
 import RecipeDetail from './RecipeDetail';
 
@@ -14,7 +7,6 @@ const MAX_SHOWN = 200;
 
 export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
-  const [materials, setMaterials] = useState<Map<string, Material>>(new Map());
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [includeSkins, setIncludeSkins] = useState(false);
@@ -22,12 +14,11 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Load the lookup data once.
+  // Load the type list once.
   useEffect(() => {
-    Promise.all([getRecipeTypes(), getMaterials()])
-      .then(([t, m]) => {
+    getRecipeTypes()
+      .then((t) => {
         setTypes(t);
-        setMaterials(new Map(m.map((x) => [x.name, x])));
         setError(null);
       })
       .catch(() => setError('Could not reach the API. Is the backend running?'));
@@ -111,7 +102,7 @@ export default function App() {
 
         <main className="panel">
           {selectedId ? (
-            <RecipeDetail recipeId={selectedId} materials={materials} onSelect={setSelectedId} />
+            <RecipeDetail recipeId={selectedId} onSelect={setSelectedId} />
           ) : (
             <p className="muted">Pick an item on the left to see its materials and stats.</p>
           )}

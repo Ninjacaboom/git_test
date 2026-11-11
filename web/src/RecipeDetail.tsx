@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getRecipe, getStats, type Material, type Recipe, type StatEffects } from './api';
+import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
 import { formatDuration, formatEffect, formatQuantity, prettyType } from './format';
 
 const BASELINE = 500;
 
 type Props = {
   recipeId: string;
-  materials: Map<string, Material>;
   onSelect: (id: string) => void;
 };
 
-export default function RecipeDetail({ recipeId, materials, onSelect }: Props) {
+export default function RecipeDetail({ recipeId, onSelect }: Props) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [qualities, setQualities] = useState<Record<string, number>>({});
@@ -109,10 +108,8 @@ export default function RecipeDetail({ recipeId, materials, onSelect }: Props) {
         </p>
         <div className="slots">
           {recipe.slots.map((slot) => {
-            const mainCost = slot.costs[0];
-            const material = mainCost ? materials.get(mainCost.material) : undefined;
             const options = [
-              ...(material?.tiers.map((t) => ({ quality: t.quality, label: `${t.tier} tier · ${t.quality}` })) ?? []),
+              ...slot.tiers.map((t) => ({ quality: t.quality, label: `${t.tier} tier · ${t.quality}` })),
               { quality: BASELINE, label: `NPC store · ${BASELINE}` },
             ].sort((a, b) => a.quality - b.quality);
             const current = qualities[slot.name] ?? BASELINE;
@@ -128,7 +125,7 @@ export default function RecipeDetail({ recipeId, materials, onSelect }: Props) {
                 </div>
                 <p className="muted small">{affects.length ? `Affects: ${affects.join(', ')}` : 'No stat effect'}</p>
                 {affects.length > 0 &&
-                  (material ? (
+                  (slot.tiers.length > 0 ? (
                     <select
                       value={current}
                       onChange={(e) => setQualities({ ...qualities, [slot.name]: Number(e.target.value) })}

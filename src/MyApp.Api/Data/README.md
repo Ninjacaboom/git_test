@@ -32,6 +32,7 @@ after a game patch.
   slots: [
     {
       name, displayName,
+      tiers: [ { tier, quality } ],   // qualities this slot's material can be used at (see "F tier" below)
       costs: [ { resourceId, material, unitType, quantity } ],   // unitType: "SCU" (ore) or "Units" (harvested items)
       modifiers: [
         { stat, kind, qualityMin, qualityMax, valueMin, valueMax }
@@ -42,6 +43,13 @@ after a game patch.
 ```
 
 Each recipe has one tier in the game data, so slots sit directly on the recipe.
+
+## F tier
+
+F tier (the lowest quality of each material) is only offered for **mining lasers** (type `WeaponMining`).
+Every other recipe's `slots[].tiers` starts at E tier. To change which recipe types may use F tier, edit
+`F_TIER_ALLOWED_TYPES` in `tools/build-databank.mjs` and rebuild. `materials.json` itself still holds
+every tier.
 
 ## Quality to stat value
 

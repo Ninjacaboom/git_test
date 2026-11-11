@@ -12,7 +12,11 @@ public record Modifier(string Stat, string Kind, int QualityMin, int QualityMax,
 /// <summary>What a slot costs. UnitType is "SCU" (mined ore) or "Units" (harvested items).</summary>
 public record Cost(string ResourceId, string Material, string UnitType, double Quantity);
 
-public record Slot(string Name, string DisplayName, List<Cost> Costs, List<Modifier> Modifiers);
+/// <summary>
+/// Tiers is the list of qualities this slot's material can be used at.
+/// F tier is left out except for mining lasers.
+/// </summary>
+public record Slot(string Name, string DisplayName, List<MaterialTier> Tiers, List<Cost> Costs, List<Modifier> Modifiers);
 
 /// <summary>A skin variant of an item. RecipeId is set when the skin has its own recipe.</summary>
 public record Skin(string ClassName, string? Name, string? RecipeId);

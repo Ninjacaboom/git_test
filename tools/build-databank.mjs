@@ -34,6 +34,16 @@ const equipment = [
 ];
 const ownMaterials = readJson(`${OUT}/materials.json`);
 const ownNames = new Set(ownMaterials.map((m) => m.name));
+const materialByName = new Map(ownMaterials.map((m) => [m.name, m]));
+
+// F tier materials are only offered for these recipe types (mining lasers).
+// Every other recipe is limited to E tier and above.
+const F_TIER_ALLOWED_TYPES = new Set(['WeaponMining']);
+const tiersFor = (materialName, recipeType) => {
+  const material = materialByName.get(materialName);
+  if (!material) return [];
+  return material.tiers.filter((t) => t.tier !== 'F' || F_TIER_ALLOWED_TYPES.has(recipeType));
+};
 
 // The game data spells a few materials differently from the tier table.
 const ALIASES = {
@@ -102,6 +112,8 @@ const recipes = named.map((b) => {
     slots: tier.Slots.map((s) => ({
       name: s.Name,
       displayName: s.DisplayName,
+      // Qualities this slot's material can be used at (F tier left out except for mining lasers).
+      tiers: tiersFor(s.Costs[0] ? canonical(resById[s.Costs[0].GUID].Name) : null, b.TargetType),
       costs: s.Costs.map((c) => {
         const r = resById[c.GUID];
         if (!r) throw new Error(`Cost GUID ${c.GUID} not found in resources (${b.TargetName})`);

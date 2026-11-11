@@ -20,6 +20,8 @@ export type Modifier = {
 export type Slot = {
   name: string;
   displayName: string;
+  /** Qualities this slot's material can be used at (F tier left out except for mining lasers). */
+  tiers: MaterialTier[];
   costs: Cost[];
   modifiers: Modifier[];
 };
