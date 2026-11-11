@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
 import RecipeDetail from './RecipeDetail';
 
-const MAX_SHOWN = 200;
+// The grid shows this many cards at first and adds more as you scroll down.
+const PAGE_SIZE = 60;
 
 export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [includeSkins, setIncludeSkins] = useState(false);
-  const [results, setResults] = useState<RecipeSummary[]>([]);
+  const [results, setResults] = useState<RecipeSummary[] | null>(null);
+  const [visible, setVisible] = useState(PAGE_SIZE);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Load the type list once.
   useEffect(() => {
@@ -45,7 +48,47 @@ export default function App() {
     };
   }, [search, type, includeSkins]);
 
-  const shown = results.slice(0, MAX_SHOWN);
+  // Start from the top of the grid again whenever the results change.
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [results]);
+
+  // Load more cards when the bottom of the grid scrolls into view.
+  const total = results?.length ?? 0;
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || visible >= total) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setVisible((v) => v + PAGE_SIZE);
+      },
+      { rootMargin: '600px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible, total]);
+
+  // Close the pop-up with Escape, and stop the page scrolling behind it.
+  useEffect(() => {
+    if (!selectedId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedId(null);
+    };
+    window.addEventListener('keydown', onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedId]);
+
+  const filtersActive = search !== '' || type !== '' || includeSkins;
+  const clearFilters = () => {
+    setSearch('');
+    setType('');
+    setIncludeSkins(false);
+  };
 
   return (
     <div className="app">
@@ -57,57 +100,86 @@ export default function App() {
       {error && <p className="error">{error}</p>}
 
       <div className="layout">
-        <aside className="browser">
+        <aside className="filters">
+          <h2 className="filter-title">Search</h2>
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name or manufacturer"
+            placeholder="Name or manufacturer"
             aria-label="Search recipes"
           />
-          <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Filter by type">
-            <option value="">All types</option>
+
+          <h2 className="filter-title">Type</h2>
+          <ul className="type-list">
+            <li>
+              <button className={type === '' ? 'type-btn active' : 'type-btn'} onClick={() => setType('')}>
+                All types
+              </button>
+            </li>
             {types.map((t) => (
-              <option key={t.type} value={t.type}>
-                {prettyType(t.type)} ({t.count})
-              </option>
+              <li key={t.type}>
+                <button
+                  className={type === t.type ? 'type-btn active' : 'type-btn'}
+                  onClick={() => setType(t.type)}
+                >
+                  {prettyType(t.type)}
+                </button>
+              </li>
             ))}
-          </select>
+          </ul>
+
+          <h2 className="filter-title">Options</h2>
           <label className="check">
             <input type="checkbox" checked={includeSkins} onChange={(e) => setIncludeSkins(e.target.checked)} />
             Include skin variants
           </label>
 
-          <p className="muted small">
-            {results.length} found{results.length > MAX_SHOWN ? `, showing the first ${MAX_SHOWN}` : ''}
-          </p>
-
-          <ul className="results">
-            {shown.map((r) => (
-              <li key={r.id}>
-                <button
-                  className={r.id === selectedId ? 'result selected' : 'result'}
-                  onClick={() => setSelectedId(r.id)}
-                >
-                  <span>{r.name}</span>
-                  <span className="muted small">
-                    {prettyType(r.type)}
-                    {r.manufacturer ? ` · ${r.manufacturer}` : ''}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          {filtersActive && (
+            <button className="clear" onClick={clearFilters}>
+              Clear filters
+            </button>
+          )}
         </aside>
 
-        <main className="panel">
-          {selectedId ? (
-            <RecipeDetail recipeId={selectedId} onSelect={setSelectedId} />
-          ) : (
-            <p className="muted">Pick an item on the left to see its materials and stats.</p>
-          )}
+        <main className="results-area">
+          {results && <p className="count">{results.length} items</p>}
+          {results === null && !error && <p className="count">Loading...</p>}
+          {results && results.length === 0 && <p className="count">No items match your filters.</p>}
+
+          <ul className="cards">
+            {(results ?? []).slice(0, visible).map((r) => {
+              const subtitle = [prettyType(r.type), r.manufacturer].filter(Boolean).join(' · ');
+              return (
+                <li key={r.id}>
+                  <button className="card" onClick={() => setSelectedId(r.id)}>
+                    <span className="card-name">{r.name}</span>
+                    <span className="muted small">{subtitle}</span>
+                    <span className="badges">
+                      {r.size > 0 && <span className="badge">Size {r.size}</span>}
+                      {r.grade ? <span className="badge">Grade {r.grade}</span> : null}
+                      {r.isSkin && <span className="badge skin">Skin</span>}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {visible < total && <div ref={sentinelRef} className="sentinel" />}
         </main>
       </div>
+
+      {selectedId && (
+        <div className="modal-backdrop" onClick={() => setSelectedId(null)}>
+          <div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelectedId(null)} aria-label="Close">
+              ×
+            </button>
+            <RecipeDetail recipeId={selectedId} onSelect={setSelectedId} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
