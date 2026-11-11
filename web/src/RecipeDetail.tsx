@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
 import { formatAmount, formatDuration, formatEffect, prettyType } from './format';
-
-const BASELINE = 500;
+import QualitySlider from './QualitySlider';
+import { BASELINE } from './quality';
 
 type Props = {
   recipeId: string;
@@ -35,18 +35,22 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
   }, [recipeId]);
 
   // Ask the backend for the stat changes whenever the quality choices change.
+  // The short delay stops a request per pixel while a slider is being dragged.
   useEffect(() => {
     if (!recipe) return;
     let cancelled = false;
-    getStats(recipe.id, qualities)
-      .then((e) => {
-        if (!cancelled) setEffects(e);
-      })
-      .catch(() => {
-        if (!cancelled) setEffects(null);
-      });
+    const timer = setTimeout(() => {
+      getStats(recipe.id, qualities)
+        .then((e) => {
+          if (!cancelled) setEffects(e);
+        })
+        .catch(() => {
+          if (!cancelled) setEffects(null);
+        });
+    }, 120);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
   }, [recipe, qualities]);
 
@@ -104,15 +108,22 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <section>
         <h3>Materials and quality</h3>
         <p className="muted small">
-          Pick the material quality for each part. NPC-store items are 500 in every part.
+          Set the material quality for each part with the slider or the list. The{' '}
+          <span className="key-mark">coloured lines</span> are the qualities that material is found at, and the
+          dashed line is 500, the quality of NPC-store items.
         </p>
         <div className="slots">
           {recipe.slots.map((slot) => {
+            const current = qualities[slot.name] ?? BASELINE;
             const options = [
               ...slot.tiers.map((t) => ({ quality: t.quality, label: `${t.tier} tier · ${t.quality}` })),
               { quality: BASELINE, label: `NPC store · ${BASELINE}` },
-            ].sort((a, b) => a.quality - b.quality);
-            const current = qualities[slot.name] ?? BASELINE;
+            ];
+            // A value between real tiers (dragged there with the slider) gets its own entry.
+            if (!options.some((o) => o.quality === current)) {
+              options.push({ quality: current, label: `Custom · ${current}` });
+            }
+            options.sort((a, b) => a.quality - b.quality);
             const affects = [...new Set(slot.modifiers.map((m) => m.stat))];
 
             return (
@@ -124,31 +135,29 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
                   </span>
                 </div>
                 <p className="muted small">{affects.length ? `Affects: ${affects.join(', ')}` : 'No stat effect'}</p>
-                {affects.length > 0 &&
-                  (slot.tiers.length > 0 ? (
-                    <select
+                {affects.length > 0 && (
+                  <>
+                    <QualitySlider
                       value={current}
-                      onChange={(e) => setQualities({ ...qualities, [slot.name]: Number(e.target.value) })}
-                      aria-label={`Quality for ${slot.displayName}`}
-                    >
-                      {options.map((o) => (
-                        <option key={o.quality} value={o.quality}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <label className="range">
-                      <input
-                        type="range"
-                        min={0}
-                        max={1000}
+                      tiers={slot.tiers}
+                      label={slot.displayName}
+                      onChange={(q) => setQualities({ ...qualities, [slot.name]: q })}
+                    />
+                    {slot.tiers.length > 0 && (
+                      <select
                         value={current}
                         onChange={(e) => setQualities({ ...qualities, [slot.name]: Number(e.target.value) })}
-                      />
-                      <span>{current}</span>
-                    </label>
-                  ))}
+                        aria-label={`Material tier for ${slot.displayName}`}
+                      >
+                        {options.map((o) => (
+                          <option key={o.quality} value={o.quality}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </>
+                )}
               </div>
             );
           })}
