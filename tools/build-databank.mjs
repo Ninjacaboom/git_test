@@ -88,7 +88,11 @@ const manufacturerOf = (item) => {
 const cleanText = (t) => (t ? String(t).replace(/\\n/g, '\n').trim() : null);
 
 // ---- recipes ----
-const named = blueprints.filter((b) => b.TargetName);
+// Recipes we leave out of the store: weapon ammo (magazines and batteries).
+const EXCLUDED = [{ type: 'WeaponAttachment', subType: 'Magazine' }];
+const isExcluded = (b) => EXCLUDED.some((e) => e.type === b.TargetType && e.subType === b.TargetSubType);
+
+const named = blueprints.filter((b) => b.TargetName && !isExcluded(b));
 for (const b of named) {
   if (b.Tiers.length !== 1) throw new Error(`Unexpected tier count on ${b.TargetName}`);
 }

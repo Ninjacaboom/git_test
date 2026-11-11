@@ -4,7 +4,7 @@
 | ---- | ---------- |
 | `materials.json` | The 36 ores/minerals and the fixed qualities (0-1000) each exists at, by tier (F, E, D, C, B, A, S, Perfect). |
 | `resources.json` | The 37 crafting resources used by blueprints. `material` links to a name in `materials.json` (null if it has no tier table). |
-| `recipes.json` | 1,617 crafting blueprints: item details, slots, what each slot costs, and how the slot's material quality changes stats. |
+| `recipes.json` | 1,581 crafting blueprints: item details, slots, what each slot costs, and how the slot's material quality changes stats. |
 
 Rebuild `resources.json` and `recipes.json` after a game patch with:
 
@@ -82,3 +82,5 @@ This is the same rule NovaTools uses (`NovaTools/js/craftingModifiers.js`).
   equipment data. Armor and the rest have `null` there. `skins` is only filled for weapons and ship components,
   and armor variants (such as Shrike and Talon) are separate recipes instead.
 - One blueprint in the source had no name and was dropped (1,618 -> 1,617).
+- Weapon ammo (the 36 magazines and batteries, type `WeaponAttachment`) is left out on purpose
+  (1,617 -> 1,581). To change what is excluded, edit `EXCLUDED` in `tools/build-databank.mjs` and rebuild.
