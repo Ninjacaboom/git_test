@@ -119,19 +119,13 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <section>
         <h3>Materials and quality</h3>
         <p className="muted small">
-          Move the slider into a quality section, or pick from the list. Anywhere inside a section gives that
+          Move the slider into a quality section. Anywhere inside a section gives that
           section's material quality. The{' '}
           <span className="key-mark">coloured lines</span> are the qualities that material is found at, and the
           dashed line is 500, the quality of NPC-store items.
         </p>
         <div className="slots">
           {recipe.slots.map((slot) => {
-            const current = qualities[slot.name] ?? BASELINE;
-            const options = [
-              ...slot.tiers.map((t) => ({ quality: t.quality, label: `${t.tier} tier · ${t.quality}` })),
-              ...(slot.tiers.some((t) => t.quality === BASELINE) ? [] : [{ quality: BASELINE, label: `NPC store · ${BASELINE}` }]),
-            ];
-            options.sort((a, b) => a.quality - b.quality);
             const affects = [...new Set(slot.modifiers.map((m) => m.stat))];
 
             return (
@@ -151,19 +145,6 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
                       label={slot.displayName}
                       onChange={(p) => setPositions({ ...positions, [slot.name]: p })}
                     />
-                    {slot.tiers.length > 0 && (
-                      <select
-                        value={current}
-                        onChange={(e) => setPositions({ ...positions, [slot.name]: Number(e.target.value) })}
-                        aria-label={`Material tier for ${slot.displayName}`}
-                      >
-                        {options.map((o) => (
-                          <option key={o.quality} value={o.quality}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    )}
                   </>
                 )}
               </div>
