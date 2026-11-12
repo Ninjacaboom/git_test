@@ -703,3 +703,11 @@ button.chip:hover {
   margin: 0.2rem 0 0.1rem;
   color: var(--mark);
 }
+
+/* A section that can't be chosen because it adds nothing over a lower tier. */
+.qband.blocked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0 4px, rgba(0, 0, 0, 0.15) 4px 8px);
+}

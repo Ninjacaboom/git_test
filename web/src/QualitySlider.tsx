@@ -36,11 +36,22 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
   const min = sliderMin(tiers);
   const shown = Math.max(position, min);
   const quality = qualityAt(shown, tiers, redundant);
-  const own = sectionQuality(shown, tiers);
-  const skipped = redundant?.has(own) ? tiers.find((t) => t.quality === own) : undefined;
   const info = { ...describeQuality(quality, tiers, min), band: bandRange(bandOf(shown), min) };
   const active = bandOf(shown);
   const bands = visibleBands(min);
+
+  // Sections that add nothing over a lower tier can't be selected: the thumb moves on to the next
+  // useful tier in the direction it was dragged, or back to the tier it matches.
+  const choose = (p: number) => {
+    const own = sectionQuality(p, tiers);
+    const lower = redundant?.get(own);
+    if (lower === undefined) {
+      onChange(p);
+      return;
+    }
+    const ahead = p > shown ? tiers.filter((t) => t.quality > own && !redundant?.has(t.quality)) : [];
+    onChange(ahead.length > 0 ? Math.min(...ahead.map((t) => t.quality)) : lower);
+  };
 
   // Arrow keys jump between the real qualities instead of moving one point at a time.
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -65,12 +76,6 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
         </span>
         {info.note && <span className="muted small">{info.note}</span>}
       </div>
-      {skipped && (
-        <p className="qskip small">
-          {skipped.tier} tier adds nothing over {info.note || `quality ${quality}`}, so it uses that instead. Save the better
-          material for another item.
-        </p>
-      )}
 
       <div className="qrow">
         <div className="qtrack">
@@ -80,16 +85,20 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
                 return (
                   <span
                     key={b.from}
-                    className={b === active ? 'qband qcap active' : 'qband qcap'}
+                    className={`qband qcap${b === active ? ' active' : ''}${
+                      tiers.some((t) => t.quality === MAX_QUALITY && redundant?.has(t.quality)) ? ' blocked' : ''
+                    }`}
                     style={{ background: b.color }}
                   />
                 );
               }
               const box = bandBox(b, min);
+              const tier = tiers.find((t) => bandOf(t.quality) === b);
+              const blocked = tier !== undefined && redundant?.has(tier.quality);
               return (
                 <span
                   key={b.from}
-                  className={b === active ? 'qband active' : 'qband'}
+                  className={`qband${b === active ? ' active' : ''}${blocked ? ' blocked' : ''}`}
                   style={{ left: `${box.left}%`, width: `${box.width}%`, background: b.color }}
                 />
               );
@@ -110,7 +119,7 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
           value={shown}
           aria-label={`Quality for ${label}`}
           aria-valuetext={`${quality}${info.note ? `, ${info.note}` : ''}`}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => choose(Number(e.target.value))}
           onKeyDown={onKeyDown}
         />
       </div>
