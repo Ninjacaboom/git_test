@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
-import { formatAmount, formatDuration, applyQualityToStats, formatEffect, parseItemStats, prettyType } from './format';
+import { formatAmount, formatDuration, applyQualityToStats, displayEffect, formatEffect, parseItemStats, prettyType } from './format';
 import QualitySlider from './QualitySlider';
 import { BASELINE, qualityAt } from './quality';
 
@@ -121,7 +121,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
           <table className="stats">
             <tbody>
               {Object.entries(effects).map(([stat, effect]) => {
-                const f = formatEffect(effect);
+                const f = formatEffect(displayEffect(stat, effect));
                 return (
                   <tr key={stat}>
                     <td>{stat}</td>

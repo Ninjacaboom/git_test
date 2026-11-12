@@ -110,3 +110,14 @@ export function applyQualityToStats(
     return { label, value: text, base: value, modified };
   });
 }
+
+/** Stats where the game's multiplier goes down as quality goes up, but a higher number is the better result. */
+const FLIPPED_STATS = new Set(['Recoil Smoothness', 'Recoil Handling']);
+
+/** The effect as it is shown: for flipped stats a 20% lower multiplier is shown as +20%. */
+export function displayEffect(stat: string, effect: StatEffect): StatEffect {
+  if (FLIPPED_STATS.has(stat) && effect.kind === 'multiplier') {
+    return { kind: 'multiplier', value: 2 - effect.value };
+  }
+  return effect;
+}
