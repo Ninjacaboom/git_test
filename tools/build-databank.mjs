@@ -174,6 +174,18 @@ for (const r of recipes) {
     .map((s) => ({ ...s, recipeId: recipeByClass.get(s.className)?.id ?? null }))
     .sort((a, b) => a.className.localeCompare(b.className));
 }
+// A skin lists the base item and its sibling skins, so you can keep switching between variants from any of them.
+const recipeByClassAll = new Map(recipes.map((r) => [r.className, r]));
+for (const r of recipes) {
+  if (!r.variantOf) continue;
+  const base = recipeByClassAll.get(r.variantOf);
+  const baseEntry = { className: r.variantOf, name: base?.name ?? itemByClass.get(r.variantOf)?.stdItem?.Name ?? null, recipeId: base?.id ?? null };
+  const siblings = (skinsByBase.get(r.variantOf) ?? [])
+    .filter((x) => x.className !== r.className)
+    .map((x) => ({ ...x, recipeId: recipeByClassAll.get(x.className)?.id ?? null }))
+    .sort((a, b) => a.className.localeCompare(b.className));
+  r.skins = [baseEntry, ...siblings];
+}
 recipes.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
 
 writeFileSync(`${OUT}/resources.json`, JSON.stringify(resourcesOut, null, 2) + '\n');

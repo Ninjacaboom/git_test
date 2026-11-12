@@ -16,12 +16,12 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
   const [positions, setPositions] = useState<Record<string, number>>({});
   const [effects, setEffects] = useState<StatEffects | null>(null);
 
-  // Load the recipe and reset the quality choices whenever a different recipe is picked.
+  // Load the recipe when a different one is picked. The slider positions are kept, because skins of the
+  // same item have the same material slots; they start fresh when the pop-up is opened again.
   useEffect(() => {
     let cancelled = false;
     setRecipe(null);
     setError(null);
-    setPositions({});
     setEffects(null);
     getRecipe(recipeId)
       .then((r) => {
