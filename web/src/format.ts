@@ -42,3 +42,23 @@ export function formatEffect(effect: StatEffect): { text: string; direction: 'up
   if (Math.abs(pct) < 0.05) return { text: '0%', direction: 'none' };
   return { text: `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`, direction: pct > 0 ? 'up' : 'down' };
 }
+
+/**
+ * The item's own stats, taken from the top of its description ("Item Type: Cooler", "Size: 2", ...).
+ * The story text underneath is left out.
+ */
+export function parseItemStats(description: string | null | undefined): { label: string; value: string }[] {
+  if (!description) return [];
+  const out: { label: string; value: string }[] = [];
+  for (const raw of description.split('\n')) {
+    const line = raw.trim();
+    if (line === '') {
+      if (out.length > 0) break; // end of the stats block
+      continue;
+    }
+    const m = /^([^:]{1,40}):\s*(.+)$/.exec(line);
+    if (!m) break;
+    out.push({ label: m[1].trim(), value: m[2].trim() });
+  }
+  return out;
+}
