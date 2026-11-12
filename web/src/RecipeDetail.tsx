@@ -95,7 +95,6 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <h2>{recipe.name}</h2>
       <p className="meta">{meta.join(' · ')}</p>
       <p className="meta">Craft time: {formatDuration(recipe.craftTimeSeconds)}</p>
-      {recipe.description && <p className="description">{recipe.description}</p>}
 
       {recipe.skins.length > 0 && (
         <section>
