@@ -36,22 +36,10 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
   const min = sliderMin(tiers);
   const shown = Math.max(position, min);
   const quality = qualityAt(shown, tiers, redundant);
+  const blockedHere = redundant?.has(sectionQuality(shown, tiers)) ?? false;
   const info = { ...describeQuality(quality, tiers, min), band: bandRange(bandOf(shown), min) };
   const active = bandOf(shown);
   const bands = visibleBands(min);
-
-  // Sections that add nothing over a lower tier can't be selected: the thumb moves on to the next
-  // useful tier in the direction it was dragged, or back to the tier it matches.
-  const choose = (p: number) => {
-    const own = sectionQuality(p, tiers);
-    const lower = redundant?.get(own);
-    if (lower === undefined) {
-      onChange(p);
-      return;
-    }
-    const ahead = p > shown ? tiers.filter((t) => t.quality > own && !redundant?.has(t.quality)) : [];
-    onChange(ahead.length > 0 ? Math.min(...ahead.map((t) => t.quality)) : lower);
-  };
 
   // Arrow keys jump between the real qualities instead of moving one point at a time.
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -76,6 +64,11 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
         </span>
         {info.note && <span className="muted small">{info.note}</span>}
       </div>
+      {redundant && redundant.size > 0 && (
+        <p className="qskip small">
+          {blockedHere ? 'No extra benefit in this section, so the lower tier is used. Save the better material.' : '\u00a0'}
+        </p>
+      )}
 
       <div className="qrow">
         <div className="qtrack">
@@ -105,9 +98,11 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
             })}
           </div>
           <span className="qbase" style={{ left: `${percent(BASELINE, min)}%` }} />
-          {tiers.map((t) => (
-            <span key={t.tier} className={redundant?.has(t.quality) ? 'qmark off' : 'qmark'} style={{ left: `${percent(t.quality, min)}%` }} />
-          ))}
+          {tiers
+            .filter((t) => !redundant?.has(t.quality))
+            .map((t) => (
+              <span key={t.tier} className="qmark" style={{ left: `${percent(t.quality, min)}%` }} />
+            ))}
         </div>
 
         <input
@@ -119,7 +114,7 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
           value={shown}
           aria-label={`Quality for ${label}`}
           aria-valuetext={`${quality}${info.note ? `, ${info.note}` : ''}`}
-          onChange={(e) => choose(Number(e.target.value))}
+          onChange={(e) => onChange(Number(e.target.value))}
           onKeyDown={onKeyDown}
         />
       </div>
