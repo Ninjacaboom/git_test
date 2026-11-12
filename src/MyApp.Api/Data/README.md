@@ -91,4 +91,4 @@ Each recipe has `baseStats`: extra item stats that are not in the description te
 
 ## Blueprints with no mission source
 
-A blueprint is only listed if `blueprints.json` gives at least one mission (`RewardSources`) that can reward it. Blueprints with none are left out because they cannot be obtained. This is the `REQUIRE_MISSION_SOURCE` switch in `tools/build-databank.mjs`. Note this only reflects the extractor's mission data; a blueprint could still come from something it does not cover (store, event, pledge).
+A blueprint is only listed if `blueprints.json` gives at least one mission (`RewardSources`) that can reward it. Missions the game marks as not-for-release or work-in-progress (`missions.json`) do not count. Blueprints with no usable mission are left out because they cannot be obtained. This is the `REQUIRE_MISSION_SOURCE` switch in `tools/build-databank.mjs`. Note this only reflects the extractor's mission data; a blueprint could still come from something it does not cover (store, event, pledge).

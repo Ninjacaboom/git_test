@@ -5,11 +5,12 @@
  * Usage:
  *   node tools/build-databank.mjs "<folder with the extractor's JSON files>"
  *
- * Reads from that folder:  blueprints.json, resources.json, fps_equipment.json, vehicle_equipment.json
+ * Reads from that folder:  blueprints.json, resources.json, fps_equipment.json, vehicle_equipment.json,
+ *                           missions.json (optional: used to ignore missions that are not released)
  * Writes to Data/:         resources.json, recipes.json
  * Reads from Data/:        materials.json (the hand-entered ore/mineral quality tiers)
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -104,7 +105,18 @@ const isExcluded = (b) =>
 // Blueprints with no mission that can reward them cannot be obtained, so they are left out.
 // Set to false to list every blueprint again.
 const REQUIRE_MISSION_SOURCE = true;
-const hasMissionSource = (b) => Array.isArray(b.RewardSources) && b.RewardSources.length > 0;
+// Missions the game marks as work-in-progress or not-for-release cannot be played, so they do not count.
+const unreleasedMissions = new Set();
+if (existsSync(`${SRC}/missions.json`)) {
+  for (const m of readJson(`${SRC}/missions.json`)) {
+    if (m.NotForRelease || m.WorkInProgress) unreleasedMissions.add(m.ClassName);
+  }
+} else {
+  console.warn('missions.json not found: not-for-release missions are NOT being ignored');
+}
+const hasMissionSource = (b) =>
+  Array.isArray(b.RewardSources) &&
+  b.RewardSources.some((s) => s.Kind !== 'Contract' || !unreleasedMissions.has(s.MissionClassName));
 
 const named = blueprints.filter(
   (b) => b.TargetName && !isExcluded(b) && (!REQUIRE_MISSION_SOURCE || hasMissionSource(b)),
