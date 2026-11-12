@@ -90,7 +90,10 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
     recipe.manufacturer,
   ].filter(Boolean);
   // Stats from the description, with the game data's weapon damage / fire rate taking priority.
-  const baseStats = parseItemStats(recipe.description);
+  // Manufacturer and item type are already in the line under the title.
+  const baseStats = parseItemStats(recipe.description).filter(
+    (s) => !['manufacturer', 'item type'].includes(s.label.toLowerCase()),
+  );
   for (const extra of recipe.baseStats ?? []) {
     const i = baseStats.findIndex((s) => s.label.toLowerCase() === extra.label.toLowerCase());
     if (i >= 0) baseStats[i] = extra;
