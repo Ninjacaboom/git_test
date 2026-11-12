@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
 import { formatAmount, formatDuration, formatEffect, prettyType } from './format';
 import QualitySlider from './QualitySlider';
-import { BASELINE } from './quality';
+import { BASELINE, qualityAt } from './quality';
 
 type Props = {
   recipeId: string;
@@ -12,7 +12,8 @@ type Props = {
 export default function RecipeDetail({ recipeId, onSelect }: Props) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [qualities, setQualities] = useState<Record<string, number>>({});
+  // Where each slider thumb is. The quality actually used is worked out from it (see `qualities`).
+  const [positions, setPositions] = useState<Record<string, number>>({});
   const [effects, setEffects] = useState<StatEffects | null>(null);
 
   // Load the recipe and reset the quality choices whenever a different recipe is picked.
@@ -20,7 +21,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
     let cancelled = false;
     setRecipe(null);
     setError(null);
-    setQualities({});
+    setPositions({});
     setEffects(null);
     getRecipe(recipeId)
       .then((r) => {
@@ -33,6 +34,15 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       cancelled = true;
     };
   }, [recipeId]);
+
+  // The real material quality for each slot: anywhere in a section gives that section's quality.
+  const qualities = useMemo(() => {
+    const q: Record<string, number> = {};
+    for (const slot of recipe?.slots ?? []) q[slot.name] = qualityAt(positions[slot.name] ?? BASELINE, slot.tiers);
+    return q;
+  }, [recipe, positions]);
+  // Only changes when a quality really changes, so dragging inside one section asks for nothing new.
+  const qualitiesKey = JSON.stringify(qualities);
 
   // Ask the backend for the stat changes whenever the quality choices change.
   // The short delay stops a request per pixel while a slider is being dragged.
@@ -52,7 +62,8 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [recipe, qualities]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipe, qualitiesKey]);
 
   const totals = useMemo(() => {
     if (!recipe) return [];
@@ -108,7 +119,8 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <section>
         <h3>Materials and quality</h3>
         <p className="muted small">
-          Set the material quality for each part with the slider or the list. The{' '}
+          Move the slider into a quality section, or pick from the list. Anywhere inside a section gives that
+          section's material quality. The{' '}
           <span className="key-mark">coloured lines</span> are the qualities that material is found at, and the
           dashed line is 500, the quality of NPC-store items.
         </p>
@@ -117,12 +129,8 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
             const current = qualities[slot.name] ?? BASELINE;
             const options = [
               ...slot.tiers.map((t) => ({ quality: t.quality, label: `${t.tier} tier · ${t.quality}` })),
-              { quality: BASELINE, label: `NPC store · ${BASELINE}` },
+              ...(slot.tiers.some((t) => t.quality === BASELINE) ? [] : [{ quality: BASELINE, label: `NPC store · ${BASELINE}` }]),
             ];
-            // A value between real tiers (dragged there with the slider) gets its own entry.
-            if (!options.some((o) => o.quality === current)) {
-              options.push({ quality: current, label: `Custom · ${current}` });
-            }
             options.sort((a, b) => a.quality - b.quality);
             const affects = [...new Set(slot.modifiers.map((m) => m.stat))];
 
@@ -138,15 +146,15 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
                 {affects.length > 0 && (
                   <>
                     <QualitySlider
-                      value={current}
+                      position={positions[slot.name] ?? BASELINE}
                       tiers={slot.tiers}
                       label={slot.displayName}
-                      onChange={(q) => setQualities({ ...qualities, [slot.name]: q })}
+                      onChange={(p) => setPositions({ ...positions, [slot.name]: p })}
                     />
                     {slot.tiers.length > 0 && (
                       <select
                         value={current}
-                        onChange={(e) => setQualities({ ...qualities, [slot.name]: Number(e.target.value) })}
+                        onChange={(e) => setPositions({ ...positions, [slot.name]: Number(e.target.value) })}
                         aria-label={`Material tier for ${slot.displayName}`}
                       >
                         {options.map((o) => (

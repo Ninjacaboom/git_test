@@ -1,26 +1,61 @@
+import type { KeyboardEvent } from 'react';
 import type { MaterialTier } from './api';
-import { BANDS, BASELINE, MAX_QUALITY, bandBox, bandRange, describeQuality, percent } from './quality';
+import {
+  BASELINE,
+  MAX_QUALITY,
+  bandBox,
+  bandOf,
+  bandRange,
+  describeQuality,
+  percent,
+  qualityAt,
+  sliderMin,
+  stops,
+  visibleBands,
+} from './quality';
 
 type Props = {
-  value: number;
+  /** Where the thumb is. The quality used is worked out from the section it is in. */
+  position: number;
   /** The qualities the material is found at; each is marked with a coloured line. */
   tiers: MaterialTier[];
   label: string;
-  onChange: (quality: number) => void;
+  onChange: (position: number) => void;
 };
 
 /**
- * A 0-1000 quality slider split into sections. Coloured lines mark the qualities the
- * material really comes in, and a dashed white line marks 500 (NPC store).
+ * A quality slider split into sections. Put the thumb anywhere inside a section and you get that
+ * section's real material quality. Coloured lines mark the real qualities, and a dashed white
+ * line marks 500 (NPC store). If the material has nothing below 500 the slider starts at 500.
  */
-export default function QualitySlider({ value, tiers, label, onChange }: Props) {
-  const info = describeQuality(value, tiers);
+export default function QualitySlider({ position, tiers, label, onChange }: Props) {
+  const min = sliderMin(tiers);
+  const shown = Math.max(position, min);
+  const quality = qualityAt(shown, tiers);
+  const info = describeQuality(quality, tiers, min);
+  const active = bandOf(shown);
+  const bands = visibleBands(min);
+
+  // Arrow keys jump between the real qualities instead of moving one point at a time.
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (tiers.length === 0) return;
+    const list = stops(tiers);
+    const i = list.indexOf(quality);
+    let next: number | null = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = list[Math.min(i + 1, list.length - 1)];
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = list[Math.max(i - 1, 0)];
+    else if (e.key === 'Home') next = list[0];
+    else if (e.key === 'End') next = list[list.length - 1];
+    if (next === null) return;
+    e.preventDefault();
+    onChange(next);
+  };
 
   return (
     <div className="qslider">
       <div className="qreadout">
         <span>
-          <strong>{value}</strong> <span className="muted">· section {info.band}</span>
+          Quality <strong>{quality}</strong> <span className="muted">· section {info.band}</span>
         </span>
         {info.note && <span className="muted small">{info.note}</span>}
       </div>
@@ -28,50 +63,58 @@ export default function QualitySlider({ value, tiers, label, onChange }: Props) 
       <div className="qrow">
         <div className="qtrack">
           <div className="qbands">
-            {BANDS.map((b) => {
+            {bands.map((b) => {
               if (b.from === MAX_QUALITY) {
-                return <span key={b.from} className="qband qcap" style={{ background: b.color }} />;
+                return (
+                  <span
+                    key={b.from}
+                    className={b === active ? 'qband qcap active' : 'qband qcap'}
+                    style={{ background: b.color }}
+                  />
+                );
               }
-              const box = bandBox(b);
+              const box = bandBox(b, min);
               return (
                 <span
                   key={b.from}
-                  className="qband"
+                  className={b === active ? 'qband active' : 'qband'}
                   style={{ left: `${box.left}%`, width: `${box.width}%`, background: b.color }}
                 />
               );
             })}
           </div>
-          <span className="qbase" style={{ left: `${percent(BASELINE)}%` }} />
+          <span className="qbase" style={{ left: `${percent(BASELINE, min)}%` }} />
           {tiers.map((t) => (
-            <span key={t.tier} className="qmark" style={{ left: `${percent(t.quality)}%` }} />
+            <span key={t.tier} className="qmark" style={{ left: `${percent(t.quality, min)}%` }} />
           ))}
         </div>
 
         <input
           className="qinput"
           type="range"
-          min={0}
+          min={min}
           max={MAX_QUALITY}
           step={1}
-          value={value}
+          value={shown}
           aria-label={`Quality for ${label}`}
+          aria-valuetext={`${quality}${info.note ? `, ${info.note}` : ''}`}
           onChange={(e) => onChange(Number(e.target.value))}
+          onKeyDown={onKeyDown}
         />
       </div>
 
       <div className="qlabels" aria-hidden="true">
-        {BANDS.map((b) => (
-          <span
-            key={b.from}
-            // 900, 950 and 1000 are too close together, so 950 sits on a second row.
-            className={b.from === 950 ? 'qlabel low' : 'qlabel'}
-            style={{ left: `${percent(b.from)}%` }}
-            title={bandRange(b)}
-          >
-            {b.from}
-          </span>
-        ))}
+        {bands.map((b) => {
+          const from = Math.max(b.from, min);
+          // 900, 950 and 1000 are too close together, so 950 sits on a second row,
+          // and on a phone the 900 label is dropped when the slider starts at 0.
+          const cls = b.from === 950 ? 'qlabel low' : b.from === 900 && min === 0 ? 'qlabel hide-sm' : 'qlabel';
+          return (
+            <span key={b.from} className={cls} style={{ left: `${percent(from, min)}%` }} title={bandRange(b, min)}>
+              {from}
+            </span>
+          );
+        })}
       </div>
     </div>
   );
