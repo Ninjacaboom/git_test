@@ -101,7 +101,14 @@ const isExcluded = (b) =>
       (e.className === undefined || e.className === b.TargetClassName),
   );
 
-const named = blueprints.filter((b) => b.TargetName && !isExcluded(b));
+// Blueprints with no mission that can reward them cannot be obtained, so they are left out.
+// Set to false to list every blueprint again.
+const REQUIRE_MISSION_SOURCE = true;
+const hasMissionSource = (b) => Array.isArray(b.RewardSources) && b.RewardSources.length > 0;
+
+const named = blueprints.filter(
+  (b) => b.TargetName && !isExcluded(b) && (!REQUIRE_MISSION_SOURCE || hasMissionSource(b)),
+);
 for (const b of named) {
   if (b.Tiers.length !== 1) throw new Error(`Unexpected tier count on ${b.TargetName}`);
 }

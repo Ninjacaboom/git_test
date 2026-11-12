@@ -88,3 +88,7 @@ This is the same rule NovaTools uses (`NovaTools/js/craftingModifiers.js`).
 ## Weapon stats
 
 Each recipe has `baseStats`: extra item stats that are not in the description text. For weapons these are `Damage` (impact damage per hit, all damage types added, with the pellet count for shotguns) and `Rate Of Fire` (rounds per minute of the first firing mode). The front end uses these instead of any matching line in the description.
+
+## Blueprints with no mission source
+
+A blueprint is only listed if `blueprints.json` gives at least one mission (`RewardSources`) that can reward it. Blueprints with none are left out because they cannot be obtained. This is the `REQUIRE_MISSION_SOURCE` switch in `tools/build-databank.mjs`. Note this only reflects the extractor's mission data; a blueprint could still come from something it does not cover (store, event, pledge).
