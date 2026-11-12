@@ -36,10 +36,13 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
   const min = sliderMin(tiers);
   const shown = Math.max(position, min);
   const quality = qualityAt(shown, tiers, redundant);
-  const blockedHere = redundant?.has(sectionQuality(shown, tiers)) ?? false;
-  const info = { ...describeQuality(quality, tiers, min), band: bandRange(bandOf(shown), min) };
-  const active = bandOf(shown);
+  const info = describeQuality(quality, tiers, min);
+  const active = bandOf(quality);
   const bands = visibleBands(min);
+  const isBlocked = (b: (typeof bands)[number]) => {
+    const t = tiers.find((x) => bandOf(x.quality) === b);
+    return t !== undefined && (redundant?.has(t.quality) ?? false);
+  };
 
   // Arrow keys jump between the real qualities instead of moving one point at a time.
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -64,11 +67,6 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
         </span>
         {info.note && <span className="muted small">{info.note}</span>}
       </div>
-      {redundant && redundant.size > 0 && (
-        <p className="qskip small">
-          {blockedHere ? 'No extra benefit in this section, so the lower tier is used. Save the better material.' : '\u00a0'}
-        </p>
-      )}
 
       <div className="qrow">
         <div className="qtrack">
@@ -78,20 +76,17 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
                 return (
                   <span
                     key={b.from}
-                    className={`qband qcap${b === active ? ' active' : ''}${
-                      tiers.some((t) => t.quality === MAX_QUALITY && redundant?.has(t.quality)) ? ' blocked' : ''
-                    }`}
+                    className={`qband qcap${b === active && !isBlocked(b) ? ' active' : ''}${isBlocked(b) ? ' blocked' : ''}`}
                     style={{ background: b.color }}
                   />
                 );
               }
               const box = bandBox(b, min);
-              const tier = tiers.find((t) => bandOf(t.quality) === b);
-              const blocked = tier !== undefined && redundant?.has(tier.quality);
+              const blocked = isBlocked(b);
               return (
                 <span
                   key={b.from}
-                  className={`qband${b === active ? ' active' : ''}${blocked ? ' blocked' : ''}`}
+                  className={`qband${b === active && !blocked ? ' active' : ''}${blocked ? ' blocked' : ''}`}
                   style={{ left: `${box.left}%`, width: `${box.width}%`, background: b.color }}
                 />
               );
@@ -120,7 +115,7 @@ export default function QualitySlider({ position, tiers, label, redundant, onCha
       </div>
 
       <div className="qlabels" aria-hidden="true">
-        {bands.map((b) => {
+        {bands.filter((b) => !isBlocked(b)).map((b) => {
           const from = Math.max(b.from, min);
           // 900, 950 and 1000 are too close together, so 950 sits on a second row,
           // and on a phone the 900 label is dropped when the slider starts at 0.

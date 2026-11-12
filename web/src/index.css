@@ -699,16 +699,7 @@ button.chip:hover {
   opacity: 0.55;
 }
 
-.qskip {
-  min-height: 1.3em; /* always reserved, so the slider doesn't jump while dragging */
-  margin: 0.2rem 0 0.1rem;
-  color: var(--mark);
-}
-
-/* A section that can't be chosen because it adds nothing over a lower tier. */
-.qband.blocked::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0 4px, transparent 4px 8px);
+/* A section that adds nothing over a lower tier: left as plain empty track, with no label. */
+.qband.blocked {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
