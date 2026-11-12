@@ -21,6 +21,9 @@ public record Slot(string Name, string DisplayName, List<MaterialTier> Tiers, Li
 /// <summary>A skin variant of an item. RecipeId is set when the skin has its own recipe.</summary>
 public record Skin(string ClassName, string? Name, string? RecipeId);
 
+/// <summary>An extra item stat that is not in the description text (weapon damage, fire rate).</summary>
+public record BaseStat(string Label, string Value);
+
 public record Recipe(
     string Id,
     string ClassName,
@@ -34,7 +37,8 @@ public record Recipe(
     int CraftTimeSeconds,
     string? VariantOf,
     List<Skin> Skins,
-    List<Slot> Slots);
+    List<Slot> Slots,
+    List<BaseStat>? BaseStats = null);
 
 /// <summary>Short form used for lists and search results.</summary>
 public record RecipeSummary(

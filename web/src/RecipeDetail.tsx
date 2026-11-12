@@ -89,7 +89,12 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
     recipe.grade ? `Grade ${recipe.grade}` : null,
     recipe.manufacturer,
   ].filter(Boolean);
-  const itemStats = applyQualityToStats(parseItemStats(recipe.description), effects);
+  // Stats from the description, plus weapon damage / fire rate where the description lacks them.
+  const baseStats = parseItemStats(recipe.description);
+  for (const extra of recipe.baseStats ?? []) {
+    if (!baseStats.some((s) => s.label.toLowerCase() === extra.label.toLowerCase())) baseStats.push(extra);
+  }
+  const itemStats = applyQualityToStats(baseStats, effects);
 
   return (
     <article className="detail">

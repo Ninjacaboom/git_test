@@ -42,6 +42,7 @@ export type Recipe = {
   variantOf: string | null;
   skins: Skin[];
   slots: Slot[];
+  baseStats?: { label: string; value: string }[] | null;
 };
 
 export type RecipeSummary = {

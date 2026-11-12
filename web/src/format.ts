@@ -52,10 +52,7 @@ export function parseItemStats(description: string | null | undefined): { label:
   const out: { label: string; value: string }[] = [];
   for (const raw of description.split('\n')) {
     const line = raw.trim();
-    if (line === '') {
-      if (out.length > 0) break; // end of the stats block
-      continue;
-    }
+    if (line === '') continue; // stat lines can be split into groups by blank lines
     const m = /^([^:]{1,40}):\s*(.+)$/.exec(line);
     if (!m) break;
     out.push({ label: m[1].trim(), value: m[2].trim() });
@@ -69,6 +66,11 @@ export function parseItemStats(description: string | null | undefined): { label:
  */
 const EFFECT_TARGETS: Record<string, { label: string; index: number }[]> = {
   'Damage Mitigation': [{ label: 'Damage Reduction', index: 0 }],
+  'Impact Force': [{ label: 'Damage', index: 0 }],
+  'Fire Rate': [
+    { label: 'Rate Of Fire', index: 0 },
+    { label: 'Rate of Fire', index: 0 },
+  ],
   'Min Temp': [{ label: 'Temp. Rating', index: 0 }],
   'Max Temp': [{ label: 'Temp. Rating', index: 1 }],
   'Radiation Dissipation': [{ label: 'Radiation Scrub Rate', index: 0 }],

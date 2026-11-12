@@ -84,3 +84,7 @@ This is the same rule NovaTools uses (`NovaTools/js/craftingModifiers.js`).
 - One blueprint in the source had no name and was dropped (1,618 -> 1,617).
 - Weapon ammo (the 36 magazines and batteries, type `WeaponAttachment`) is left out on purpose
   and the TH-01 Propulsor mission item is too (1,617 -> 1,580). To change what is excluded, edit `EXCLUDED` in `tools/build-databank.mjs` and rebuild.
+
+## Weapon stats
+
+Each recipe has `baseStats`: extra item stats that are not in the description text. For weapons these are `Damage` (impact damage per hit, all damage types added, with the pellet count for shotguns) and `Rate Of Fire` (rounds per minute of the first firing mode). The front end shows `Rate Of Fire` from the description when it has one.

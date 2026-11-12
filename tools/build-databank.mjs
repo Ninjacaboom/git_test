@@ -106,6 +106,24 @@ for (const b of named) {
   if (b.Tiers.length !== 1) throw new Error(`Unexpected tier count on ${b.TargetName}`);
 }
 
+// Weapon numbers that the item's description text does not give: damage per hit and fire rate.
+const round2 = (n) => Number(n.toFixed(2));
+function weaponStats(item) {
+  const w = item?.stdItem?.Weapon;
+  if (!w) return [];
+  const out = [];
+  const impact = w.Ammunition?.ImpactDamage ?? {};
+  const kinds = Object.entries(impact).filter(([, v]) => v > 0);
+  const firing = (w.Firing ?? []).find((f) => f.RoundsPerMinute > 0) ?? null;
+  if (kinds.length > 0) {
+    const total = kinds.reduce((n, [, v]) => n + v, 0);
+    const pellets = firing?.PelletsPerShot > 1 ? ` x ${firing.PelletsPerShot} pellets` : '';
+    out.push({ label: 'Damage', value: `${round2(total)} ${kinds.map(([k]) => k).join('/')}${pellets}` });
+  }
+  if (firing) out.push({ label: 'Rate Of Fire', value: `${round2(firing.RoundsPerMinute)} rpm` });
+  return out;
+}
+
 const recipes = named.map((b) => {
   const tier = b.Tiers[0];
   const item = itemByClass.get(b.TargetClassName) ?? null;
@@ -122,6 +140,7 @@ const recipes = named.map((b) => {
     craftTimeSeconds: tier.CraftTimeSeconds,
     variantOf: item ? variantOf(item) : null, // className of the base item if this is a skin
     skins: [], // filled in below
+    baseStats: weaponStats(item),
     slots: tier.Slots.map((s) => ({
       name: s.Name,
       displayName: s.DisplayName,
