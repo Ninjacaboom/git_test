@@ -686,3 +686,9 @@ button.chip:hover {
   grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 0 1.5rem;
 }
+
+/* An item stat the chosen material quality has changed. */
+.stats .value.modified {
+  color: #4ade80;
+  font-weight: 600;
+}

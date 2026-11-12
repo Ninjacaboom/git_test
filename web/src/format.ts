@@ -62,3 +62,51 @@ export function parseItemStats(description: string | null | undefined): { label:
   }
   return out;
 }
+
+/**
+ * Which item stat each quality effect changes: the label in the item's stat list, and which number
+ * in that value it applies to ("Temp. Rating: -75 / 105 °C" holds two: min first, then max).
+ */
+const EFFECT_TARGETS: Record<string, { label: string; index: number }[]> = {
+  'Damage Mitigation': [{ label: 'Damage Reduction', index: 0 }],
+  'Min Temp': [{ label: 'Temp. Rating', index: 0 }],
+  'Max Temp': [{ label: 'Temp. Rating', index: 1 }],
+  'Radiation Dissipation': [{ label: 'Radiation Scrub Rate', index: 0 }],
+  Integrity: [{ label: 'Max. Integrity', index: 0 }],
+  'Full Strength Dist.': [{ label: 'Full Strength Distance', index: 0 }],
+  'Max. Distance': [{ label: 'Max Range', index: 0 }],
+  Radius: [{ label: 'Radius', index: 0 }],
+  Speed: [{ label: 'Extraction Speed', index: 0 }],
+  Efficiency: [{ label: 'Extraction Efficiency', index: 0 }],
+};
+
+export type ItemStatRow = { label: string; value: string; base: string; modified: boolean };
+
+/** Item stats with the quality effects worked into the numbers. Changed values are flagged. */
+export function applyQualityToStats(
+  stats: { label: string; value: string }[],
+  effects: Record<string, StatEffect> | null,
+): ItemStatRow[] {
+  return stats.map(({ label, value }) => {
+    let text = value;
+    let modified = false;
+    for (const [stat, targets] of Object.entries(EFFECT_TARGETS)) {
+      const effect = effects?.[stat];
+      if (!effect) continue;
+      for (const t of targets) {
+        if (t.label !== label) continue;
+        let n = -1;
+        text = text.replace(/-?\d+(?:\.\d+)?/g, (num) => {
+          n++;
+          if (n !== t.index) return num;
+          const base = Number(num);
+          const next = effect.kind === 'additive' ? base + effect.value : base * effect.value;
+          if (Math.abs(next - base) < 0.005) return num;
+          modified = true;
+          return String(Number(next.toFixed(2)));
+        });
+      }
+    }
+    return { label, value: text, base: value, modified };
+  });
+}

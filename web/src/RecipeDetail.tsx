@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
-import { formatAmount, formatDuration, formatEffect, parseItemStats, prettyType } from './format';
+import { formatAmount, formatDuration, applyQualityToStats, formatEffect, parseItemStats, prettyType } from './format';
 import QualitySlider from './QualitySlider';
 import { BASELINE, qualityAt } from './quality';
 
@@ -89,7 +89,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
     recipe.grade ? `Grade ${recipe.grade}` : null,
     recipe.manufacturer,
   ].filter(Boolean);
-  const itemStats = parseItemStats(recipe.description);
+  const itemStats = applyQualityToStats(parseItemStats(recipe.description), effects);
 
   return (
     <article className="detail">
@@ -106,7 +106,9 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
               {itemStats.map((s) => (
                 <tr key={s.label}>
                   <td>{s.label}</td>
-                  <td className="value">{s.value}</td>
+                  <td className={s.modified ? 'value modified' : 'value'} title={s.modified ? `Base: ${s.base}` : undefined}>
+                    {s.value}
+                  </td>
                 </tr>
               ))}
             </tbody>
