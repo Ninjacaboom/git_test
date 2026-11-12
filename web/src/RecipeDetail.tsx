@@ -89,10 +89,12 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
     recipe.grade ? `Grade ${recipe.grade}` : null,
     recipe.manufacturer,
   ].filter(Boolean);
-  // Stats from the description, plus weapon damage / fire rate where the description lacks them.
+  // Stats from the description, with the game data's weapon damage / fire rate taking priority.
   const baseStats = parseItemStats(recipe.description);
   for (const extra of recipe.baseStats ?? []) {
-    if (!baseStats.some((s) => s.label.toLowerCase() === extra.label.toLowerCase())) baseStats.push(extra);
+    const i = baseStats.findIndex((s) => s.label.toLowerCase() === extra.label.toLowerCase());
+    if (i >= 0) baseStats[i] = extra;
+    else baseStats.push(extra);
   }
   const itemStats = applyQualityToStats(baseStats, effects);
 
