@@ -11,6 +11,7 @@ public class DataBank
 {
     private readonly Dictionary<string, Recipe> _recipesById;
     private readonly Dictionary<string, Material> _materialsByName;
+    private readonly HashSet<string> _classNames;
 
     public IReadOnlyList<Material> Materials { get; }
     public IReadOnlyList<Resource> Resources { get; }
@@ -22,6 +23,7 @@ public class DataBank
         Resources = resources;
         Recipes = recipes;
         _recipesById = recipes.ToDictionary(r => r.Id);
+        _classNames = recipes.Select(r => r.ClassName).ToHashSet();
         _materialsByName = materials.ToDictionary(m => m.Name, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -67,12 +69,18 @@ public class DataBank
 
         if (!includeSkins)
         {
-            query = query.Where(r => r.VariantOf == null);
+            query = query.Where(r => !IsSkin(r));
         }
 
         return query.Select(r => new RecipeSummary(
-            r.Id, r.Name, r.Type, r.SubType, r.Size, r.Grade, r.Manufacturer, r.VariantOf != null));
+            r.Id, r.Name, r.Type, r.SubType, r.Size, r.Grade, r.Manufacturer, IsSkin(r)));
     }
+
+    /// <summary>
+    /// A skin is a variant of an item that has its own recipe. A variant whose base item has no recipe
+    /// (for example the Skarnov "Raider Camo" Rifle) is the only way to craft that item, so it counts as a normal item.
+    /// </summary>
+    private bool IsSkin(Recipe r) => r.VariantOf != null && _classNames.Contains(r.VariantOf);
 
     public IEnumerable<TypeCount> RecipeTypes() =>
         Recipes
