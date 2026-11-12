@@ -679,3 +679,10 @@ button.chip:hover {
     display: none;
   }
 }
+
+/* Item stats and the stats quality changes, side by side when there is room. */
+.stat-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 0 1.5rem;
+}

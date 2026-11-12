@@ -97,8 +97,9 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <p className="meta">{meta.join(' · ')}</p>
       <p className="meta">Craft time: {formatDuration(recipe.craftTimeSeconds)}</p>
 
+      <div className="stat-panels">
       {itemStats.length > 0 && (
-        <section>
+        <section className="stat-panel">
           <h3>Item stats</h3>
           <table className="stats">
             <tbody>
@@ -112,6 +113,27 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
           </table>
         </section>
       )}
+      <section className="stat-panel">
+        <h3>Stats affected by quality</h3>
+        {effects && Object.keys(effects).length > 0 ? (
+          <table className="stats">
+            <tbody>
+              {Object.entries(effects).map(([stat, effect]) => {
+                const f = formatEffect(effect);
+                return (
+                  <tr key={stat}>
+                    <td>{stat}</td>
+                    <td className={`value ${f.direction}`}>{f.text}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <p className="muted small">None of this item's stats change with material quality.</p>
+        )}
+      </section>
+      </div>
 
       {recipe.skins.length > 0 && (
         <section>
@@ -167,27 +189,6 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
             );
           })}
         </div>
-      </section>
-
-      <section>
-        <h3>Stat changes</h3>
-        {effects && Object.keys(effects).length > 0 ? (
-          <table className="stats">
-            <tbody>
-              {Object.entries(effects).map(([stat, effect]) => {
-                const f = formatEffect(effect);
-                return (
-                  <tr key={stat}>
-                    <td>{stat}</td>
-                    <td className={`value ${f.direction}`}>{f.text}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        ) : (
-          <p className="muted small">This item has no quality-based stat changes.</p>
-        )}
       </section>
 
       <section>
