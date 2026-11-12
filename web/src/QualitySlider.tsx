@@ -9,6 +9,8 @@ import {
   describeQuality,
   percent,
   qualityAt,
+  sectionQuality,
+  type Redundant,
   sliderMin,
   stops,
   visibleBands,
@@ -20,6 +22,8 @@ type Props = {
   /** The qualities the material is found at; each is marked with a coloured line. */
   tiers: MaterialTier[];
   label: string;
+  /** Tiers that give nothing more than a lower tier; they are greyed out and not used. */
+  redundant?: Redundant;
   onChange: (position: number) => void;
 };
 
@@ -28,18 +32,20 @@ type Props = {
  * section's real material quality. Coloured lines mark the real qualities, and a dashed white
  * line marks 500 (NPC store). If the material has nothing below 500 the slider starts at 500.
  */
-export default function QualitySlider({ position, tiers, label, onChange }: Props) {
+export default function QualitySlider({ position, tiers, label, redundant, onChange }: Props) {
   const min = sliderMin(tiers);
   const shown = Math.max(position, min);
-  const quality = qualityAt(shown, tiers);
-  const info = describeQuality(quality, tiers, min);
+  const quality = qualityAt(shown, tiers, redundant);
+  const own = sectionQuality(shown, tiers);
+  const skipped = redundant?.has(own) ? tiers.find((t) => t.quality === own) : undefined;
+  const info = { ...describeQuality(quality, tiers, min), band: bandRange(bandOf(shown), min) };
   const active = bandOf(shown);
   const bands = visibleBands(min);
 
   // Arrow keys jump between the real qualities instead of moving one point at a time.
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (tiers.length === 0) return;
-    const list = stops(tiers);
+    const list = stops(tiers, redundant);
     const i = list.indexOf(quality);
     let next: number | null = null;
     if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = list[Math.min(i + 1, list.length - 1)];
@@ -59,6 +65,12 @@ export default function QualitySlider({ position, tiers, label, onChange }: Prop
         </span>
         {info.note && <span className="muted small">{info.note}</span>}
       </div>
+      {skipped && (
+        <p className="qskip small">
+          {skipped.tier} tier adds nothing over {info.note || `quality ${quality}`}, so it uses that instead. Save the better
+          material for another item.
+        </p>
+      )}
 
       <div className="qrow">
         <div className="qtrack">
@@ -85,7 +97,7 @@ export default function QualitySlider({ position, tiers, label, onChange }: Prop
           </div>
           <span className="qbase" style={{ left: `${percent(BASELINE, min)}%` }} />
           {tiers.map((t) => (
-            <span key={t.tier} className="qmark" style={{ left: `${percent(t.quality, min)}%` }} />
+            <span key={t.tier} className={redundant?.has(t.quality) ? 'qmark off' : 'qmark'} style={{ left: `${percent(t.quality, min)}%` }} />
           ))}
         </div>
 

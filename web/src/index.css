@@ -692,3 +692,14 @@ button.chip:hover {
   color: #4ade80;
   font-weight: 600;
 }
+
+/* A tier that adds nothing over a lower one is greyed out. */
+.qmark.off {
+  background: rgba(150, 150, 150, 0.6);
+  opacity: 0.55;
+}
+
+.qskip {
+  margin: 0.2rem 0 0.1rem;
+  color: var(--mark);
+}

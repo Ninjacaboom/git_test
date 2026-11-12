@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
 import { formatAmount, formatDuration, applyQualityToStats, displayEffect, formatEffect, parseItemStats, prettyType } from './format';
 import QualitySlider from './QualitySlider';
-import { BASELINE, qualityAt } from './quality';
+import { BASELINE, qualityAt, redundantTiers } from './quality';
 
 type Props = {
   recipeId: string;
@@ -38,7 +38,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
   // The real material quality for each slot: anywhere in a section gives that section's quality.
   const qualities = useMemo(() => {
     const q: Record<string, number> = {};
-    for (const slot of recipe?.slots ?? []) q[slot.name] = qualityAt(positions[slot.name] ?? BASELINE, slot.tiers);
+    for (const slot of recipe?.slots ?? []) q[slot.name] = qualityAt(positions[slot.name] ?? BASELINE, slot.tiers, redundantTiers(slot));
     return q;
   }, [recipe, positions]);
   // Only changes when a quality really changes, so dragging inside one section asks for nothing new.
@@ -192,6 +192,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
                     <QualitySlider
                       position={positions[slot.name] ?? BASELINE}
                       tiers={slot.tiers}
+                      redundant={redundantTiers(slot)}
                       label={slot.displayName}
                       onChange={(p) => setPositions({ ...positions, [slot.name]: p })}
                     />
