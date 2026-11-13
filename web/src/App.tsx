@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 
-// Cards per page. 24 fills whole rows whether the grid has 1, 2, 3 or 4 columns.
-const PAGE_SIZE = 24;
+// Cards per page when the page can scroll (phones and small windows). 24 fills whole rows in 1, 2, 3, 4 or 6 columns.
+const DEFAULT_PAGE_SIZE = 24;
+// On a desktop window the whole site fits the screen, and the page size is however many cards fit.
+const FIT_TO_SCREEN = '(min-width: 801px) and (min-height: 560px)';
 
 export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
@@ -14,6 +16,10 @@ export default function App() {
   const [includeSkins, setIncludeSkins] = useState(false);
   const [results, setResults] = useState<RecipeSummary[] | null>(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const gridRef = useRef<HTMLUListElement | null>(null);
+  const pageSizeRef = useRef(DEFAULT_PAGE_SIZE);
+  const pageRef = useRef(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +31,38 @@ export default function App() {
         setError(null);
       })
       .catch(() => setError('Could not reach the API. Is the backend running?'));
+  }, []);
+
+  // Work out how many cards fit in the grid without scrolling, and again whenever the window changes size.
+  useLayoutEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const measure = () => {
+      let size = DEFAULT_PAGE_SIZE;
+      if (window.matchMedia(FIT_TO_SCREEN).matches) {
+        const style = getComputedStyle(grid);
+        const columns = style.gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+        const cardHeight = parseFloat(style.getPropertyValue('--card-h')) || 140;
+        const gap = parseFloat(style.rowGap) || 0;
+        const rows = Math.max(1, Math.floor((grid.clientHeight + gap) / (cardHeight + gap)));
+        size = columns * rows;
+      }
+      if (size !== pageSizeRef.current) {
+        // Keep the first card that is on screen on screen after the page size changes.
+        const first = (pageRef.current - 1) * pageSizeRef.current;
+        pageSizeRef.current = size;
+        setPageSize(size);
+        setPage(Math.floor(first / size) + 1);
+      }
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(grid);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   // Search whenever the filters change (with a short delay while typing).
@@ -54,10 +92,11 @@ export default function App() {
   }, [results]);
 
   const total = results?.length ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const currentPage = Math.min(page, totalPages);
-  const firstShown = (currentPage - 1) * PAGE_SIZE;
-  const pageItems = (results ?? []).slice(firstShown, firstShown + PAGE_SIZE);
+  pageRef.current = currentPage;
+  const firstShown = (currentPage - 1) * pageSize;
+  const pageItems = (results ?? []).slice(firstShown, firstShown + pageSize);
 
   // Switch page and jump back to the top so the new page starts in view.
   const goToPage = (p: number) => {
@@ -142,7 +181,7 @@ export default function App() {
         <main className="results-area">
           {results && results.length > 0 && (
             <p className="count">
-              {results.length <= PAGE_SIZE
+              {results.length <= pageSize
                 ? `${results.length} items`
                 : `Showing ${firstShown + 1}–${firstShown + pageItems.length} of ${results.length} items`}
             </p>
@@ -150,7 +189,7 @@ export default function App() {
           {results === null && !error && <p className="count">Loading...</p>}
           {results && results.length === 0 && <p className="count">No items match your filters.</p>}
 
-          <ul className="cards">
+          <ul className="cards" ref={gridRef}>
             {pageItems.map((r) => {
               const subtitle = [prettyType(r.type), r.manufacturer].filter(Boolean).join(' · ');
               return (
