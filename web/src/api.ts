@@ -73,10 +73,10 @@ export const getMaterials = () => request<Material[]>('/api/materials');
 
 export const getRecipeTypes = () => request<TypeCount[]>('/api/recipe-types');
 
-export function searchRecipes(search: string, type: string, includeSkins: boolean) {
+export function searchRecipes(search: string, types: string[], includeSkins: boolean) {
   const params = new URLSearchParams();
   if (search.trim()) params.set('search', search.trim());
-  if (type) params.set('type', type);
+  if (types.length > 0) params.set('type', types.join(','));
   params.set('includeSkins', String(includeSkins));
   return request<RecipeSummary[]>(`/api/recipes?${params.toString()}`);
 }

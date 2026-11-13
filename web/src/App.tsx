@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
+import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 
@@ -12,7 +13,7 @@ const FIT_TO_SCREEN = '(min-width: 801px) and (min-height: 560px)';
 export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
   const [search, setSearch] = useState('');
-  const [type, setType] = useState('');
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [includeSkins, setIncludeSkins] = useState(false);
   const [results, setResults] = useState<RecipeSummary[] | null>(null);
   const [page, setPage] = useState(1);
@@ -69,7 +70,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     const timer = setTimeout(() => {
-      searchRecipes(search, type, includeSkins)
+      searchRecipes(search, selectedTypes, includeSkins)
         .then((r) => {
           if (!cancelled) {
             setResults(r);
@@ -84,7 +85,7 @@ export default function App() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, type, includeSkins]);
+  }, [search, selectedTypes, includeSkins]);
 
   // Go back to page 1 whenever the results change (new search or filter).
   useEffect(() => {
@@ -119,10 +120,10 @@ export default function App() {
     };
   }, [selectedId]);
 
-  const filtersActive = search !== '' || type !== '' || includeSkins;
+  const filtersActive = search !== '' || selectedTypes.length > 0 || includeSkins;
   const clearFilters = () => {
     setSearch('');
-    setType('');
+    setSelectedTypes([]);
     setIncludeSkins(false);
   };
 
@@ -147,23 +148,7 @@ export default function App() {
           />
 
           <h2 className="filter-title">Type</h2>
-          <ul className="type-list">
-            <li>
-              <button className={type === '' ? 'type-btn active' : 'type-btn'} onClick={() => setType('')}>
-                All types
-              </button>
-            </li>
-            {types.map((t) => (
-              <li key={t.type}>
-                <button
-                  className={type === t.type ? 'type-btn active' : 'type-btn'}
-                  onClick={() => setType(t.type)}
-                >
-                  {prettyType(t.type)}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <TypeFilter types={types} selected={selectedTypes} onChange={setSelectedTypes} />
 
           <h2 className="filter-title">Options</h2>
           <label className="check">

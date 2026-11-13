@@ -816,3 +816,66 @@ button.chip:hover {
     margin-top: 0.75rem;
   }
 }
+
+/* ---- type filter: drop-down check lists ---- */
+
+.type-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.type-group {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.type-group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.6rem;
+}
+
+.type-group-toggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem 0.55rem 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.type-group-count {
+  padding: 0 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.type-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0.1rem 0.75rem 0.6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}

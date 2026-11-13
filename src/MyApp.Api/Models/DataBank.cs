@@ -50,14 +50,16 @@ public class DataBank
     public Material? GetMaterial(string name) =>
         _materialsByName.TryGetValue(name, out var material) ? material : null;
 
-    /// <summary>Search recipes by name or manufacturer text, optionally limited to one type.</summary>
+    /// <summary>Search recipes by name or manufacturer text, optionally limited to one or more types (comma separated).</summary>
     public IEnumerable<RecipeSummary> Search(string? text, string? type, bool includeSkins = true)
     {
         IEnumerable<Recipe> query = Recipes;
 
         if (!string.IsNullOrWhiteSpace(type))
         {
-            query = query.Where(r => r.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+            // One type, or several separated by commas (any of them matches).
+            var wanted = type.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            query = query.Where(r => wanted.Contains(r.Type, StringComparer.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(text))
