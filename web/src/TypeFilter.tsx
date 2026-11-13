@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { TypeCount } from './api';
 import { prettyType } from './format';
 import { buildGroups } from './typeGroups';
+import AmmoFilter from './AmmoFilter';
 import WeightFilter from './WeightFilter';
 
 type Props = {
@@ -12,10 +13,13 @@ type Props = {
   /** The ticked armour weights (light, medium, heavy, superheavy). Shown inside the Armour group. */
   weights: string[];
   onWeightsChange: (weights: string[]) => void;
+  /** The ticked ammo types (ballistic, energy). Shown inside the FPS weapons group. */
+  ammo: string[];
+  onAmmoChange: (ammo: string[]) => void;
 };
 
 /** Drop-down check lists: one group each for armour, FPS weapons and ship components. */
-export default function TypeFilter({ types, selected, onChange, weights, onWeightsChange }: Props) {
+export default function TypeFilter({ types, selected, onChange, weights, onWeightsChange, ammo, onAmmoChange }: Props) {
   const groups = useMemo(() => buildGroups(types, prettyType), [types]);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const chosen = new Set(selected);
@@ -41,8 +45,8 @@ export default function TypeFilter({ types, selected, onChange, weights, onWeigh
       {groups.map((g) => {
         const all = g.items.map((i) => i.type);
         const typeCount = all.filter((t) => chosen.has(t)).length;
-        const weightCount = g.id === 'armour' ? weights.length : 0;
-        const count = typeCount + weightCount;
+        const extraCount = g.id === 'armour' ? weights.length : g.id === 'fps' ? ammo.length : 0;
+        const count = typeCount + extraCount;
         const isOpen = open[g.id] ?? count > 0;
         return (
           <div className="type-group" key={g.id}>
@@ -80,6 +84,12 @@ export default function TypeFilter({ types, selected, onChange, weights, onWeigh
                   </li>
                 ))}
               </ul>
+            )}
+            {isOpen && g.id === 'fps' && (
+              <>
+                <p className="type-subtitle">Ammo type</p>
+                <AmmoFilter selected={ammo} onChange={onAmmoChange} />
+              </>
             )}
             {isOpen && g.id === 'armour' && (
               <>

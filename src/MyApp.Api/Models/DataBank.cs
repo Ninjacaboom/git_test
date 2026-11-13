@@ -51,7 +51,7 @@ public class DataBank
         _materialsByName.TryGetValue(name, out var material) ? material : null;
 
     /// <summary>Search recipes by name or manufacturer text, optionally limited to one or more types (comma separated).</summary>
-    public IEnumerable<RecipeSummary> Search(string? text, string? type, bool includeSkins = true, string? weight = null)
+    public IEnumerable<RecipeSummary> Search(string? text, string? type, bool includeSkins = true, string? weight = null, string? ammo = null)
     {
         IEnumerable<Recipe> query = Recipes;
 
@@ -72,6 +72,13 @@ public class DataBank
             // Armour weight classes (light, medium, heavy, superheavy), comma separated. Items with no weight do not match.
             var weights = weight.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             query = query.Where(r => r.ArmourWeight != null && weights.Contains(r.ArmourWeight, StringComparer.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(ammo))
+        {
+            // FPS weapon ammo type (ballistic, energy), comma separated. Items with no ammo type do not match.
+            var ammoTypes = ammo.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            query = query.Where(r => r.WeaponClass != null && ammoTypes.Contains(r.WeaponClass, StringComparer.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(text))

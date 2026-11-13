@@ -40,7 +40,8 @@ public record Recipe(
     List<Slot> Slots,
     List<BaseStat>? BaseStats = null,
     string? ArmourWeight = null,
-    string? WeaponCategory = null);
+    string? WeaponCategory = null,
+    string? WeaponClass = null);
 
 /// <summary>Short form used for lists and search results.</summary>
 public record RecipeSummary(

@@ -116,3 +116,7 @@ Clothing (`Char_Clothing_*`) is left out of the store (`EXCLUDED_TYPE_PREFIXES` 
 ## FPS weapon category
 
 Hand-held weapons have `weaponCategory` (`pistol`, `smg`, `rifle`, `sniper`, `shotgun`, `lmg`, `special`), from the `Item Type` line of the description. `rifle` covers the Assault Rifles and the two energy Rifles, `lmg` is the LMGs, and `special` is the Vendetta HMG and the crossbows. The search takes `type=WeaponPersonal:pistol`.
+
+## FPS weapon ammo type
+
+Hand-held weapons have `weaponClass`: `ballistic` or `energy` (lasers, plasma and the electron/distortion guns), from the `Class` line of the description. The crossbows have no `Class` line, so they go by the damage type of their ammo (physical = ballistic). The search takes `ammo=ballistic,energy`.

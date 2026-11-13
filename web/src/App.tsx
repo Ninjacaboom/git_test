@@ -15,6 +15,7 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [weights, setWeights] = useState<string[]>([]);
+  const [ammo, setAmmo] = useState<string[]>([]);
   const [includeSkins, setIncludeSkins] = useState(false);
   const [results, setResults] = useState<RecipeSummary[] | null>(null);
   const [page, setPage] = useState(1);
@@ -71,7 +72,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     const timer = setTimeout(() => {
-      searchRecipes(search, selectedTypes, includeSkins, weights)
+      searchRecipes(search, selectedTypes, includeSkins, weights, ammo)
         .then((r) => {
           if (!cancelled) {
             setResults(r);
@@ -86,7 +87,7 @@ export default function App() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, selectedTypes, includeSkins, weights]);
+  }, [search, selectedTypes, includeSkins, weights, ammo]);
 
   // Go back to page 1 whenever the results change (new search or filter).
   useEffect(() => {
@@ -121,11 +122,12 @@ export default function App() {
     };
   }, [selectedId]);
 
-  const filtersActive = search !== '' || selectedTypes.length > 0 || weights.length > 0 || includeSkins;
+  const filtersActive = search !== '' || selectedTypes.length > 0 || weights.length > 0 || ammo.length > 0 || includeSkins;
   const clearFilters = () => {
     setSearch('');
     setSelectedTypes([]);
     setWeights([]);
+    setAmmo([]);
     setIncludeSkins(false);
   };
 
@@ -156,6 +158,8 @@ export default function App() {
             onChange={setSelectedTypes}
             weights={weights}
             onWeightsChange={setWeights}
+            ammo={ammo}
+            onAmmoChange={setAmmo}
           />
 
           <h2 className="filter-title">Options</h2>

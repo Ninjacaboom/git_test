@@ -894,3 +894,31 @@ button.chip:hover {
   color: var(--muted);
   border-top: 1px solid var(--border);
 }
+
+/* Toggle boxes, e.g. ballistic / energy. */
+.ammo-pills {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem 0.65rem 2rem;
+}
+
+.pill {
+  padding: 0.3rem 0.8rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pill:hover {
+  border-color: var(--accent);
+}
+
+.pill.active {
+  color: var(--accent-text);
+  background: var(--accent);
+  border-color: var(--accent);
+}

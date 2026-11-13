@@ -177,6 +177,19 @@ function weaponCategory(b) {
   return null;
 }
 
+// Ammo type of an FPS weapon: ballistic or energy (lasers, plasma and the electron/distortion guns). From the
+// "Class" line of the description; weapons without one (the crossbows) go by the damage type of their ammo.
+function weaponClass(b, stats) {
+  if (b.TargetType !== 'WeaponPersonal') return null;
+  const c = (/Class:\s*([^\n]+)/.exec(cleanText(b.TargetDescription) ?? '')?.[1] ?? '').trim();
+  if (/ballistic/i.test(c)) return 'ballistic';
+  if (/energy|laser|plasma|electron/i.test(c)) return 'energy';
+  const dmg = stats.find((x) => x.label === 'Damage')?.value ?? '';
+  if (/physical/i.test(dmg)) return 'ballistic';
+  if (/energy|distortion/i.test(dmg)) return 'energy';
+  return null;
+}
+
 const recipes = named.map((b) => {
   const tier = b.Tiers[0];
   const item = itemByClass.get(b.TargetClassName) ?? null;
@@ -196,6 +209,7 @@ const recipes = named.map((b) => {
     baseStats: weaponStats(item),
     armourWeight: armourWeight(b, item),
     weaponCategory: weaponCategory(b),
+    weaponClass: weaponClass(b, weaponStats(item)),
     slots: tier.Slots.map((s) => ({
       name: s.Name,
       displayName: s.DisplayName,
