@@ -96,3 +96,7 @@ A blueprint is only listed if `blueprints.json` gives at least one mission (`Rew
 ## Armour variants
 
 Armour colour and pattern variants are separate items in the game data. The build groups them by class name (the family is the class name without its last two `_xx_yy` parts), picks the `_01_01_01` item as the base (or the shortest name if there isn't one) and sets `variantOf` on the others, so they appear as skins of the base armour.
+
+## Armour third material (added by the build)
+
+The extractor gives the third material of most 3-material armours no stat effect, but in game it adds the missing part of Damage Mitigation (every armour reaches about 46% at best on a 40% base). The build adds `Damage Mitigation` x0.95-1.05 to the empty last slot of 3-material armours whose other slot is x0.9-1.1 (and x0.925-1.075 for the Chiron pieces, matching their other slot). Armours with a different range (BUL-H4: 0.975-1.025; Corbel Core and Dust Devil: 0.85-1.1) are left as the extractor gave them until the real in-game values are known. Temperatures are not touched, and radiation does not change with crafting.

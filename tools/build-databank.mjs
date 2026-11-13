@@ -187,6 +187,36 @@ const recipes = named.map((b) => {
   };
 });
 
+// The extractor leaves the third material of most 3-material armours with no stat effect, but in the game it
+// adds the missing +-5% of Damage Mitigation (two-material armours reach 0.85-1.15; these only reach 0.9-1.1,
+// and the game shows 46% at best on a 40% armour). Add that effect to the empty (last) slot.
+let armourFixed = 0;
+const armourSkippedOdd = [];
+for (const r of recipes) {
+  if (!r.type.startsWith('Char_Armor_') || r.slots.length < 3) continue;
+  const empty = r.slots.filter((sl) => sl.modifiers.length === 0);
+  if (empty.length === 0) continue;
+  const dm = r.slots.flatMap((sl) => sl.modifiers).filter((m) => m.stat === 'Damage Mitigation');
+  if (dm.length !== 1) continue;
+  // 0.9-1.1 gets +-5%; 0.925-1.075 (Chiron) already has a matching +-7.5% slot, so its empty slot gets the same.
+  const extra = dm[0].valueMin === 0.9 && dm[0].valueMax === 1.1 ? [0.95, 1.05] : dm[0].valueMin === 0.925 && dm[0].valueMax === 1.075 ? [0.925, 1.075] : null;
+  if (extra) {
+    empty[empty.length - 1].modifiers.push({
+      stat: 'Damage Mitigation',
+      kind: 'multiplier',
+      qualityMin: 0,
+      qualityMax: 1000,
+      valueMin: extra[0],
+      valueMax: extra[1],
+    });
+    armourFixed++;
+  } else {
+    armourSkippedOdd.push(`${r.name} (${dm[0].valueMin}-${dm[0].valueMax})`);
+  }
+}
+console.log(`armour third slot given a Damage Mitigation effect: ${armourFixed}`);
+if (armourSkippedOdd.length) console.log(`armour with an empty slot but a different range, left as is: ${armourSkippedOdd.join('; ')}`);
+
 // Armour colour/pattern variants are separate items in the game data (not marked as cosmetic variants).
 // Group them by class name ("qrt_specialist_heavy_arms_01_01_12" -> family "qrt_specialist_heavy_arms_01"),
 // pick one as the base and treat the rest as its skins, so the list shows one entry per armour.
