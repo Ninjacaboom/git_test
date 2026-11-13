@@ -151,10 +151,10 @@ function armourWeight(b, item) {
   const m = /_(superheavy|heavy|medium|light)_/.exec(cn);
   if (m) return m[1];
   const t = /Item Type:\s*([^\n]+)/.exec(b.TargetDescription ?? '')?.[1] ?? '';
-  if (/super\s*heavy/i.test(t)) return 'superheavy';
-  if (/heavy/i.test(t)) return 'heavy';
-  if (/medium/i.test(t)) return 'medium';
-  if (/light/i.test(t)) return 'light';
+  if (/\bsuper\s*heavy\b/i.test(t)) return 'superheavy';
+  if (/\bheavy\b/i.test(t)) return 'heavy';
+  if (/\bmedium\b/i.test(t)) return 'medium';
+  if (/\blight\b/i.test(t)) return 'light';
   return null;
 }
 
