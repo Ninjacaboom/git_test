@@ -97,9 +97,9 @@ A blueprint is only listed if `blueprints.json` gives at least one mission (`Rew
 
 Armour colour and pattern variants are separate items in the game data. The build groups them by class name (the family is the class name without its last two `_xx_yy` parts), picks the `_01_01_01` item as the base (or the shortest name if there isn't one) and sets `variantOf` on the others, so they appear as skins of the base armour.
 
-## Armour third material (added by the build)
+## Armour Damage Mitigation (completed by the build)
 
-The extractor gives the third material of most 3-material armours no stat effect, but in game it adds the missing part of Damage Mitigation (every armour reaches about 46% at best on a 40% base). The build adds `Damage Mitigation` x0.95-1.05 to the empty last slot of 3-material armours whose other slot is x0.9-1.1 (also those at x0.85-1.1, the Corbel Core and Dust Devil pieces, so heavy armour reaches 46% at best; the low end of those is a guess), and x0.925-1.075 for the Chiron pieces, matching their other slot. The BUL-H4 juggernaut suit (0.975-1.025) is left as the extractor gave it. Temperatures are not touched, and radiation does not change with crafting.
+All armour Damage Mitigation runs from -15% at 0 quality to +15% at 1000 (0% at 500). The extractor gives the third material of most 3-material armours no stat effect, so the build puts whatever the other materials do not cover on that empty last slot (for example x0.95-1.05 next to a x0.9-1.1 slot, x1.0-1.05 next to x0.85-1.1, x0.875-1.125 next to the BUL-H4's x0.975-1.025). A single-material armour whose low end is out of line (Venture Legs, 0.8) is set to 0.85. Temperatures are not touched, and radiation does not change with crafting.
 
 ## How effects from several slots combine
 

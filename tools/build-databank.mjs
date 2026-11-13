@@ -187,36 +187,45 @@ const recipes = named.map((b) => {
   };
 });
 
-// The extractor leaves the third material of most 3-material armours with no stat effect, but in the game it
-// adds the missing +-5% of Damage Mitigation (two-material armours reach 0.85-1.15; these only reach 0.9-1.1,
-// and the game shows 46% at best on a 40% armour). Add that effect to the empty (last) slot.
+// Armour Damage Mitigation always runs from -15% at 0 quality to +15% at 1000 (0% at 500). The extractor gives
+// the third material of most 3-material armours no stat effect, so that material makes up the difference:
+// whatever the other materials do not cover of the -15% / +15% goes on the empty (last) slot.
+// (Two-material armours already cover the full range by themselves.)
+const DM_TARGET = 0.15;
+const round4 = (n) => Math.round(n * 1e4) / 1e4;
 let armourFixed = 0;
-const armourSkippedOdd = [];
+const armourNotFull = [];
 for (const r of recipes) {
-  if (!r.type.startsWith('Char_Armor_') || r.slots.length < 3) continue;
-  const empty = r.slots.filter((sl) => sl.modifiers.length === 0);
-  if (empty.length === 0) continue;
+  if (!r.type.startsWith('Char_Armor_')) continue;
   const dm = r.slots.flatMap((sl) => sl.modifiers).filter((m) => m.stat === 'Damage Mitigation');
-  if (dm.length !== 1) continue;
-  // 0.9-1.1 gets +-5%; 0.925-1.075 (Chiron) already has a matching +-7.5% slot, so its empty slot gets the same.
-  // Corbel Core / Dust Devil (heavy, 0.85-1.1) are given the same +-5%: the game shows 46% at best on every heavy armour.
-  const extra = (dm[0].valueMin === 0.9 || dm[0].valueMin === 0.85) && dm[0].valueMax === 1.1 ? [0.95, 1.05] : dm[0].valueMin === 0.925 && dm[0].valueMax === 1.075 ? [0.925, 1.075] : null;
-  if (extra) {
-    empty[empty.length - 1].modifiers.push({
-      stat: 'Damage Mitigation',
-      kind: 'multiplier',
-      qualityMin: 0,
-      qualityMax: 1000,
-      valueMin: extra[0],
-      valueMax: extra[1],
-    });
+  if (dm.length === 0) continue;
+  const low = dm.reduce((n, m) => n + (m.valueMin - 1), 0);
+  const high = dm.reduce((n, m) => n + (m.valueMax - 1), 0);
+  if (Math.abs(low + DM_TARGET) < 1e-6 && Math.abs(high - DM_TARGET) < 1e-6) continue; // already -15% / +15%
+  const empty = r.slots.filter((sl) => sl.modifiers.length === 0);
+  const valueMin = round4(1 + (-DM_TARGET - low));
+  const valueMax = round4(1 + (DM_TARGET - high));
+  if (empty.length === 0 && dm.length === 1 && Math.abs(high - DM_TARGET) < 1e-6) {
+    dm[0].valueMin = 1 - DM_TARGET; // the data's low end (e.g. Venture Legs 0.8) is out of line: all armour is -15%
     armourFixed++;
-  } else {
-    armourSkippedOdd.push(`${r.name} (${dm[0].valueMin}-${dm[0].valueMax})`);
+    continue;
   }
+  if (empty.length === 0 || valueMin > 1 || valueMax < 1) {
+    armourNotFull.push(`${r.name} (${round4(low * 100)}% to +${round4(high * 100)}%)`);
+    continue;
+  }
+  empty[empty.length - 1].modifiers.push({
+    stat: 'Damage Mitigation',
+    kind: 'multiplier',
+    qualityMin: 0,
+    qualityMax: 1000,
+    valueMin,
+    valueMax,
+  });
+  armourFixed++;
 }
-console.log(`armour third slot given a Damage Mitigation effect: ${armourFixed}`);
-if (armourSkippedOdd.length) console.log(`armour with an empty slot but a different range, left as is: ${armourSkippedOdd.join('; ')}`);
+console.log(`armour given the missing Damage Mitigation on its empty slot: ${armourFixed}`);
+if (armourNotFull.length) console.log(`armour NOT at -15%/+15% and nothing to fill: ${armourNotFull.join('; ')}`);
 
 // Armour colour/pattern variants are separate items in the game data (not marked as cosmetic variants).
 // Group them by class name ("qrt_specialist_heavy_arms_01_01_12" -> family "qrt_specialist_heavy_arms_01"),
