@@ -314,6 +314,11 @@ for (const r of recipes) {
 }
 recipes.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
 
+// Only skins that can be crafted are listed: a skin without a recipe is dropped from every skins list.
+const skinsBefore = recipes.reduce((n, r) => n + r.skins.length, 0);
+for (const r of recipes) r.skins = r.skins.filter((sk) => sk.recipeId);
+console.log(`skins dropped because they cannot be crafted: ${skinsBefore - recipes.reduce((n, r) => n + r.skins.length, 0)}`);
+
 writeFileSync(`${OUT}/resources.json`, JSON.stringify(resourcesOut, null, 2) + '\n');
 writeFileSync(`${OUT}/recipes.json`, JSON.stringify(recipes) + '\n');
 
