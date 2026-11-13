@@ -26,13 +26,13 @@ const GROUPS: { id: string; title: string; items: [string, string][] }[] = [
     title: 'FPS weapons',
     // "WeaponPersonal:pistol" means the pistol category of the WeaponPersonal type.
     items: [
-      ['WeaponPersonal:pistol', 'Pistols'],
-      ['WeaponPersonal:smg', 'SMGs'],
-      ['WeaponPersonal:rifle', 'Assault rifles'],
-      ['WeaponPersonal:sniper', 'Sniper rifles'],
-      ['WeaponPersonal:shotgun', 'Shotguns'],
-      ['WeaponPersonal:mg', 'Machine guns'],
-      ['WeaponPersonal:crossbow', 'Crossbows'],
+      ['WeaponPersonal:pistol', 'Pistol'],
+      ['WeaponPersonal:smg', 'SMG'],
+      ['WeaponPersonal:rifle', 'Rifles'],
+      ['WeaponPersonal:sniper', 'Sniper'],
+      ['WeaponPersonal:shotgun', 'Shotgun'],
+      ['WeaponPersonal:lmg', 'LMG'],
+      ['WeaponPersonal:special', 'Special'],
     ],
   },
   {

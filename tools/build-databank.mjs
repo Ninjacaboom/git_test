@@ -165,9 +165,9 @@ const WEAPON_CATEGORIES = [
   [/^pistol$/i, 'pistol'],
   [/^smg$/i, 'smg'],
   [/rifle$/i, 'rifle'], // "Assault Rifle" and the energy "Rifle"; sniper rifles are matched first below
-  [/^(lmg|hmg)$/i, 'mg'],
+  [/^lmg$/i, 'lmg'],
   [/^shotgun$/i, 'shotgun'],
-  [/^crossbow$/i, 'crossbow'],
+  [/^(hmg|crossbow)$/i, 'special'], // the Vendetta machine gun and the crossbows
 ];
 function weaponCategory(b) {
   if (b.TargetType !== 'WeaponPersonal') return null;

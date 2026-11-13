@@ -115,4 +115,4 @@ Clothing (`Char_Clothing_*`) is left out of the store (`EXCLUDED_TYPE_PREFIXES` 
 
 ## FPS weapon category
 
-Hand-held weapons have `weaponCategory` (`pistol`, `smg`, `rifle`, `sniper`, `shotgun`, `mg`, `crossbow`), from the `Item Type` line of the description. `rifle` covers the Assault Rifles and the two energy Rifles, `mg` covers LMGs and the HMG. The search takes `type=WeaponPersonal:pistol`.
+Hand-held weapons have `weaponCategory` (`pistol`, `smg`, `rifle`, `sniper`, `shotgun`, `lmg`, `special`), from the `Item Type` line of the description. `rifle` covers the Assault Rifles and the two energy Rifles, `lmg` is the LMGs, and `special` is the Vendetta HMG and the crossbows. The search takes `type=WeaponPersonal:pistol`.
