@@ -104,3 +104,7 @@ All armour Damage Mitigation runs from -15% at 0 quality to +15% at 1000 (0% at 
 ## How effects from several slots combine
 
 Percentage (`multiplier`) effects on the same stat from different slots add their changes: slots at +10% and +5% give +15%, not x1.1 x1.05. This matches the game (a heavy armour crafts to exactly 46%, not 46.2%). The rule is in `QualityMath.RecipeEffects`.
+
+## Armour weight
+
+Armour recipes have `armourWeight`: `light`, `medium`, `heavy` or `superheavy` (the juggernaut suit), taken from the class name, or the `Item Type` line when the class name has none. Flight suits and helmets, and everything that is not armour, have none. The site's "Armour weight" filter uses it.

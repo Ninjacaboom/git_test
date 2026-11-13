@@ -19,9 +19,9 @@ app.MapGet("/api/resources", () => bank.Resources);
 
 app.MapGet("/api/recipe-types", () => bank.RecipeTypes());
 
-// Example: /api/recipes?search=aves&type=Char_Armor_Torso&includeSkins=false
-app.MapGet("/api/recipes", (string? search, string? type, bool? includeSkins) =>
-    bank.Search(search, type, includeSkins ?? true));
+// Example: /api/recipes?search=aves&type=Char_Armor_Torso&weight=heavy,medium&includeSkins=false
+app.MapGet("/api/recipes", (string? search, string? type, bool? includeSkins, string? weight) =>
+    bank.Search(search, type, includeSkins ?? true, weight));
 
 app.MapGet("/api/recipes/{id}", (string id) =>
     bank.GetRecipe(id) is { } recipe ? Results.Ok(recipe) : Results.NotFound());

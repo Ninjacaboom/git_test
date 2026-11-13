@@ -51,7 +51,7 @@ public class DataBank
         _materialsByName.TryGetValue(name, out var material) ? material : null;
 
     /// <summary>Search recipes by name or manufacturer text, optionally limited to one or more types (comma separated).</summary>
-    public IEnumerable<RecipeSummary> Search(string? text, string? type, bool includeSkins = true)
+    public IEnumerable<RecipeSummary> Search(string? text, string? type, bool includeSkins = true, string? weight = null)
     {
         IEnumerable<Recipe> query = Recipes;
 
@@ -60,6 +60,13 @@ public class DataBank
             // One type, or several separated by commas (any of them matches).
             var wanted = type.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             query = query.Where(r => wanted.Contains(r.Type, StringComparer.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(weight))
+        {
+            // Armour weight classes (light, medium, heavy, superheavy), comma separated. Items with no weight do not match.
+            var weights = weight.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            query = query.Where(r => r.ArmourWeight != null && weights.Contains(r.ArmourWeight, StringComparer.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrWhiteSpace(text))

@@ -143,6 +143,21 @@ function weaponStats(item) {
   return out;
 }
 
+// Armour weight class: light, medium, heavy or superheavy (the juggernaut suit). From the class name, falling
+// back on the "Item Type" line of the description. Null for anything that is not weighted armour (flight suits...).
+function armourWeight(b, item) {
+  if (!String(b.TargetType ?? '').startsWith('Char_Armor_')) return null;
+  const cn = (item?.className ?? b.TargetClassName ?? '').toLowerCase();
+  const m = /_(superheavy|heavy|medium|light)_/.exec(cn);
+  if (m) return m[1];
+  const t = /Item Type:\s*([^\n]+)/.exec(b.TargetDescription ?? '')?.[1] ?? '';
+  if (/super\s*heavy/i.test(t)) return 'superheavy';
+  if (/heavy/i.test(t)) return 'heavy';
+  if (/medium/i.test(t)) return 'medium';
+  if (/light/i.test(t)) return 'light';
+  return null;
+}
+
 const recipes = named.map((b) => {
   const tier = b.Tiers[0];
   const item = itemByClass.get(b.TargetClassName) ?? null;
@@ -160,6 +175,7 @@ const recipes = named.map((b) => {
     variantOf: item ? variantOf(item) : null, // className of the base item if this is a skin
     skins: [], // filled in below
     baseStats: weaponStats(item),
+    armourWeight: armourWeight(b, item),
     slots: tier.Slots.map((s) => ({
       name: s.Name,
       displayName: s.DisplayName,

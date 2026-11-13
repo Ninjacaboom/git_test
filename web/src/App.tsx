@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
 import TypeFilter from './TypeFilter';
+import WeightFilter from './WeightFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 
@@ -14,6 +15,7 @@ export default function App() {
   const [types, setTypes] = useState<TypeCount[]>([]);
   const [search, setSearch] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [weights, setWeights] = useState<string[]>([]);
   const [includeSkins, setIncludeSkins] = useState(false);
   const [results, setResults] = useState<RecipeSummary[] | null>(null);
   const [page, setPage] = useState(1);
@@ -70,7 +72,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     const timer = setTimeout(() => {
-      searchRecipes(search, selectedTypes, includeSkins)
+      searchRecipes(search, selectedTypes, includeSkins, weights)
         .then((r) => {
           if (!cancelled) {
             setResults(r);
@@ -85,7 +87,7 @@ export default function App() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, selectedTypes, includeSkins]);
+  }, [search, selectedTypes, includeSkins, weights]);
 
   // Go back to page 1 whenever the results change (new search or filter).
   useEffect(() => {
@@ -120,10 +122,11 @@ export default function App() {
     };
   }, [selectedId]);
 
-  const filtersActive = search !== '' || selectedTypes.length > 0 || includeSkins;
+  const filtersActive = search !== '' || selectedTypes.length > 0 || weights.length > 0 || includeSkins;
   const clearFilters = () => {
     setSearch('');
     setSelectedTypes([]);
+    setWeights([]);
     setIncludeSkins(false);
   };
 
@@ -149,6 +152,9 @@ export default function App() {
 
           <h2 className="filter-title">Type</h2>
           <TypeFilter types={types} selected={selectedTypes} onChange={setSelectedTypes} />
+
+          <h2 className="filter-title">Armour weight</h2>
+          <WeightFilter selected={weights} onChange={setWeights} />
 
           <h2 className="filter-title">Options</h2>
           <label className="check">

@@ -38,7 +38,8 @@ public record Recipe(
     string? VariantOf,
     List<Skin> Skins,
     List<Slot> Slots,
-    List<BaseStat>? BaseStats = null);
+    List<BaseStat>? BaseStats = null,
+    string? ArmourWeight = null);
 
 /// <summary>Short form used for lists and search results.</summary>
 public record RecipeSummary(
