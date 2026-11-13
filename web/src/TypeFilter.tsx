@@ -2,16 +2,20 @@ import { useMemo, useState } from 'react';
 import type { TypeCount } from './api';
 import { prettyType } from './format';
 import { buildGroups } from './typeGroups';
+import WeightFilter from './WeightFilter';
 
 type Props = {
   types: TypeCount[];
   /** The ticked types. Empty means every type. */
   selected: string[];
   onChange: (selected: string[]) => void;
+  /** The ticked armour weights (light, medium, heavy, superheavy). Shown inside the Armour group. */
+  weights: string[];
+  onWeightsChange: (weights: string[]) => void;
 };
 
 /** Drop-down check lists: one group each for armour, FPS weapons and ship components. */
-export default function TypeFilter({ types, selected, onChange }: Props) {
+export default function TypeFilter({ types, selected, onChange, weights, onWeightsChange }: Props) {
   const groups = useMemo(() => buildGroups(types, prettyType), [types]);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const chosen = new Set(selected);
@@ -36,18 +40,20 @@ export default function TypeFilter({ types, selected, onChange }: Props) {
     <div className="type-groups">
       {groups.map((g) => {
         const all = g.items.map((i) => i.type);
-        const count = all.filter((t) => chosen.has(t)).length;
+        const typeCount = all.filter((t) => chosen.has(t)).length;
+        const weightCount = g.id === 'armour' ? weights.length : 0;
+        const count = typeCount + weightCount;
         const isOpen = open[g.id] ?? count > 0;
         return (
           <div className="type-group" key={g.id}>
             <div className="type-group-head">
               <input
                 type="checkbox"
-                checked={count === all.length}
+                checked={typeCount === all.length}
                 ref={(el: HTMLInputElement | null) => {
-                  if (el) el.indeterminate = count > 0 && count < all.length;
+                  if (el) el.indeterminate = typeCount > 0 && typeCount < all.length;
                 }}
-                onChange={() => toggleGroup(all, count === all.length)}
+                onChange={() => toggleGroup(all, typeCount === all.length)}
                 aria-label={`All ${g.title}`}
               />
               <button
@@ -74,6 +80,12 @@ export default function TypeFilter({ types, selected, onChange }: Props) {
                   </li>
                 ))}
               </ul>
+            )}
+            {isOpen && g.id === 'armour' && (
+              <>
+                <p className="type-subtitle">Weight</p>
+                <WeightFilter selected={weights} onChange={onWeightsChange} />
+              </>
             )}
           </div>
         );

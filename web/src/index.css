@@ -880,6 +880,17 @@ button.chip:hover {
   gap: 0.3rem;
 }
 
-.weight-checks {
-  padding: 0 0 0 0.25rem;
+.type-checks.weight-checks {
+  padding: 0.1rem 0.75rem 0.6rem 2rem;
+}
+
+.type-subtitle {
+  margin: 0;
+  padding: 0.35rem 0.75rem 0 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
 }

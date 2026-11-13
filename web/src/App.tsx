@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { prettyType } from './format';
 import TypeFilter from './TypeFilter';
-import WeightFilter from './WeightFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 
@@ -151,10 +150,13 @@ export default function App() {
           />
 
           <h2 className="filter-title">Type</h2>
-          <TypeFilter types={types} selected={selectedTypes} onChange={setSelectedTypes} />
-
-          <h2 className="filter-title">Armour weight</h2>
-          <WeightFilter selected={weights} onChange={setWeights} />
+          <TypeFilter
+            types={types}
+            selected={selectedTypes}
+            onChange={setSelectedTypes}
+            weights={weights}
+            onWeightsChange={setWeights}
+          />
 
           <h2 className="filter-title">Options</h2>
           <label className="check">
