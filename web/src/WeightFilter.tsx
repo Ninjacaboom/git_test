@@ -17,15 +17,18 @@ export default function WeightFilter({ selected, onChange }: Props) {
     onChange(selected.includes(id) ? selected.filter((w) => w !== id) : [...selected, id]);
 
   return (
-    <ul className="type-checks weight-checks">
-      {WEIGHTS.map((w) => (
-        <li key={w.id}>
-          <label className="check">
-            <input type="checkbox" checked={selected.includes(w.id)} onChange={() => toggle(w.id)} />
-            {w.label}
-          </label>
-        </li>
+    <div className="ammo-pills">
+      {WEIGHTS.map((x) => (
+        <button
+          key={x.id}
+          type="button"
+          className={selected.includes(x.id) ? 'pill active' : 'pill'}
+          aria-pressed={selected.includes(x.id)}
+          onClick={() => toggle(x.id)}
+        >
+          {x.label}
+        </button>
       ))}
-    </ul>
+    </div>
   );
 }

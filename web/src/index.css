@@ -898,8 +898,9 @@ button.chip:hover {
 /* Toggle boxes, e.g. ballistic / energy. */
 .ammo-pills {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
-  padding: 0.35rem 0.75rem 0.65rem 2rem;
+  padding: 0.35rem 0.75rem 0.65rem 0.75rem;
 }
 
 .pill {

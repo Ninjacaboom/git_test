@@ -74,16 +74,19 @@ export default function TypeFilter({ types, selected, onChange, weights, onWeigh
               </button>
             </div>
             {isOpen && (
-              <ul className="type-checks">
+              <div className="ammo-pills">
                 {g.items.map((i) => (
-                  <li key={i.type}>
-                    <label className="check">
-                      <input type="checkbox" checked={chosen.has(i.type)} onChange={() => toggleType(i.type)} />
-                      {i.label}
-                    </label>
-                  </li>
+                  <button
+                    key={i.type}
+                    type="button"
+                    className={chosen.has(i.type) ? 'pill active' : 'pill'}
+                    aria-pressed={chosen.has(i.type)}
+                    onClick={() => toggleType(i.type)}
+                  >
+                    {i.label}
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
             {isOpen && g.id === 'fps' && (
               <>
