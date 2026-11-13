@@ -99,7 +99,7 @@ Armour colour and pattern variants are separate items in the game data. The buil
 
 ## Armour Damage Mitigation (completed by the build)
 
-All armour Damage Mitigation runs from -15% at 0 quality to +15% at 1000 (0% at 500). The extractor gives the third material of most 3-material armours no stat effect, so the build puts whatever the other materials do not cover on that empty last slot (for example x0.95-1.05 next to a x0.9-1.1 slot, x1.0-1.05 next to x0.85-1.1, x0.875-1.125 next to the BUL-H4's x0.975-1.025). A single-material armour whose low end is out of line (Venture Legs, 0.8) is set to 0.85. Temperatures are not touched, and radiation does not change with crafting.
+All armour Damage Mitigation runs from -15% at 0 quality to +15% at 1000 (0% at 500). The extractor gives the third material of most 3-material armours no stat effect, so the build puts whatever the other materials do not cover on that empty last slot (for example x0.95-1.05 next to a x0.9-1.1 slot, x1.0-1.05 next to x0.85-1.1). A single-material armour whose low end is out of line (Venture Legs, 0.8) is set to 0.85. The BUL-H4 juggernaut suit (class name contains `superheavy`) works differently in game and is left exactly as the extractor gave it. Temperatures are not touched, and radiation does not change with crafting.
 
 ## How effects from several slots combine
 

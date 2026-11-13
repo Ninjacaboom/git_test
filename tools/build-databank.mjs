@@ -197,6 +197,7 @@ let armourFixed = 0;
 const armourNotFull = [];
 for (const r of recipes) {
   if (!r.type.startsWith('Char_Armor_')) continue;
+  if (/superheavy/i.test(r.className)) continue; // the BUL-H4 juggernaut suit works differently: left as the extractor gave it
   const dm = r.slots.flatMap((sl) => sl.modifiers).filter((m) => m.stat === 'Damage Mitigation');
   if (dm.length === 0) continue;
   const low = dm.reduce((n, m) => n + (m.valueMin - 1), 0);
