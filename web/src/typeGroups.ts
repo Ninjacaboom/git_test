@@ -24,7 +24,16 @@ const GROUPS: { id: string; title: string; items: [string, string][] }[] = [
   {
     id: 'fps',
     title: 'FPS weapons',
-    items: [['WeaponPersonal', 'Hand-held weapons']],
+    // "WeaponPersonal:pistol" means the pistol category of the WeaponPersonal type.
+    items: [
+      ['WeaponPersonal:pistol', 'Pistols'],
+      ['WeaponPersonal:smg', 'SMGs'],
+      ['WeaponPersonal:rifle', 'Assault rifles'],
+      ['WeaponPersonal:sniper', 'Sniper rifles'],
+      ['WeaponPersonal:shotgun', 'Shotguns'],
+      ['WeaponPersonal:mg', 'Machine guns'],
+      ['WeaponPersonal:crossbow', 'Crossbows'],
+    ],
   },
   {
     id: 'ship',
@@ -50,8 +59,8 @@ export function buildGroups(types: TypeCount[], prettyType: (t: string) => strin
   const used = new Set<string>();
   const groups: TypeGroup[] = [];
   for (const g of GROUPS) {
-    const items = g.items.filter(([type]) => present.has(type)).map(([type, label]) => ({ type, label }));
-    items.forEach((i) => used.add(i.type));
+    const items = g.items.filter(([type]) => present.has(type.split(':')[0])).map(([type, label]) => ({ type, label }));
+    items.forEach((i) => used.add(i.type.split(':')[0]));
     if (items.length > 0) groups.push({ id: g.id, title: g.title, items });
   }
   const other = types.filter((t) => !used.has(t.type)).map((t) => ({ type: t.type, label: prettyType(t.type) }));

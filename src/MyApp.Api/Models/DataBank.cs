@@ -57,9 +57,14 @@ public class DataBank
 
         if (!string.IsNullOrWhiteSpace(type))
         {
-            // One type, or several separated by commas (any of them matches).
-            var wanted = type.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            query = query.Where(r => wanted.Contains(r.Type, StringComparer.OrdinalIgnoreCase));
+            // One type, or several separated by commas (any of them matches). "Type:category" picks one category of a type.
+            // A value can also name a category inside a type: "WeaponPersonal:pistol".
+            var wanted = type.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(w => w.Split(':', 2))
+                .ToList();
+            query = query.Where(r => wanted.Any(w =>
+                r.Type.Equals(w[0], StringComparison.OrdinalIgnoreCase) &&
+                (w.Length == 1 || string.Equals(r.WeaponCategory, w[1], StringComparison.OrdinalIgnoreCase))));
         }
 
         if (!string.IsNullOrWhiteSpace(weight))

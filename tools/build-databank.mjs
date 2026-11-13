@@ -152,11 +152,28 @@ function armourWeight(b, item) {
   const cn = (item?.className ?? b.TargetClassName ?? '').toLowerCase();
   const m = /_(superheavy|heavy|medium|light)_/.exec(cn);
   if (m) return m[1];
-  const t = /Item Type:\s*([^\n]+)/.exec(b.TargetDescription ?? '')?.[1] ?? '';
+  const t = /Item Type:\s*([^\n]+)/.exec(cleanText(b.TargetDescription) ?? '')?.[1] ?? '';
   if (/\bsuper\s*heavy\b/i.test(t)) return 'superheavy';
   if (/\bheavy\b/i.test(t)) return 'heavy';
   if (/\bmedium\b/i.test(t)) return 'medium';
   if (/\blight\b/i.test(t)) return 'light';
+  return null;
+}
+
+// FPS weapon category for the store filter, from the "Item Type" line of the description.
+const WEAPON_CATEGORIES = [
+  [/^pistol$/i, 'pistol'],
+  [/^smg$/i, 'smg'],
+  [/rifle$/i, 'rifle'], // "Assault Rifle" and the energy "Rifle"; sniper rifles are matched first below
+  [/^(lmg|hmg)$/i, 'mg'],
+  [/^shotgun$/i, 'shotgun'],
+  [/^crossbow$/i, 'crossbow'],
+];
+function weaponCategory(b) {
+  if (b.TargetType !== 'WeaponPersonal') return null;
+  const t = (/Item Type:\s*([^\n]+)/.exec(cleanText(b.TargetDescription) ?? '')?.[1] ?? '').trim();
+  if (/^sniper rifle$/i.test(t)) return 'sniper';
+  for (const [re, id] of WEAPON_CATEGORIES) if (re.test(t)) return id;
   return null;
 }
 
@@ -178,6 +195,7 @@ const recipes = named.map((b) => {
     skins: [], // filled in below
     baseStats: weaponStats(item),
     armourWeight: armourWeight(b, item),
+    weaponCategory: weaponCategory(b),
     slots: tier.Slots.map((s) => ({
       name: s.Name,
       displayName: s.DisplayName,

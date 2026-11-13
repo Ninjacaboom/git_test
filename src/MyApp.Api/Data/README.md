@@ -112,3 +112,7 @@ Armour recipes have `armourWeight`: `light`, `medium`, `heavy` or `superheavy` (
 ## Clothing
 
 Clothing (`Char_Clothing_*`) is left out of the store (`EXCLUDED_TYPE_PREFIXES` in `tools/build-databank.mjs`).
+
+## FPS weapon category
+
+Hand-held weapons have `weaponCategory` (`pistol`, `smg`, `rifle`, `sniper`, `shotgun`, `mg`, `crossbow`), from the `Item Type` line of the description. `rifle` covers the Assault Rifles and the two energy Rifles, `mg` covers LMGs and the HMG. The search takes `type=WeaponPersonal:pistol`.
