@@ -28,7 +28,7 @@ const GROUPS: { id: string; title: string; items: [string, string][] }[] = [
     items: [
       ['WeaponPersonal:pistol', 'Pistol'],
       ['WeaponPersonal:smg', 'SMG'],
-      ['WeaponPersonal:rifle', 'Rifles'],
+      ['WeaponPersonal:rifle', 'Rifle'],
       ['WeaponPersonal:sniper', 'Sniper'],
       ['WeaponPersonal:shotgun', 'Shotgun'],
       ['WeaponPersonal:lmg', 'LMG'],
