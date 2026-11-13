@@ -99,4 +99,8 @@ Armour colour and pattern variants are separate items in the game data. The buil
 
 ## Armour third material (added by the build)
 
-The extractor gives the third material of most 3-material armours no stat effect, but in game it adds the missing part of Damage Mitigation (every armour reaches about 46% at best on a 40% base). The build adds `Damage Mitigation` x0.95-1.05 to the empty last slot of 3-material armours whose other slot is x0.9-1.1 (and x0.925-1.075 for the Chiron pieces, matching their other slot). Armours with a different range (BUL-H4: 0.975-1.025; Corbel Core and Dust Devil: 0.85-1.1) are left as the extractor gave them until the real in-game values are known. Temperatures are not touched, and radiation does not change with crafting.
+The extractor gives the third material of most 3-material armours no stat effect, but in game it adds the missing part of Damage Mitigation (every armour reaches about 46% at best on a 40% base). The build adds `Damage Mitigation` x0.95-1.05 to the empty last slot of 3-material armours whose other slot is x0.9-1.1 (also those at x0.85-1.1, the Corbel Core and Dust Devil pieces, so heavy armour reaches 46% at best; the low end of those is a guess), and x0.925-1.075 for the Chiron pieces, matching their other slot. The BUL-H4 juggernaut suit (0.975-1.025) is left as the extractor gave it. Temperatures are not touched, and radiation does not change with crafting.
+
+## How effects from several slots combine
+
+Percentage (`multiplier`) effects on the same stat from different slots add their changes: slots at +10% and +5% give +15%, not x1.1 x1.05. This matches the game (a heavy armour crafts to exactly 46%, not 46.2%). The rule is in `QualityMath.RecipeEffects`.

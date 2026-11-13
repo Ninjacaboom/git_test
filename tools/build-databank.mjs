@@ -199,7 +199,8 @@ for (const r of recipes) {
   const dm = r.slots.flatMap((sl) => sl.modifiers).filter((m) => m.stat === 'Damage Mitigation');
   if (dm.length !== 1) continue;
   // 0.9-1.1 gets +-5%; 0.925-1.075 (Chiron) already has a matching +-7.5% slot, so its empty slot gets the same.
-  const extra = dm[0].valueMin === 0.9 && dm[0].valueMax === 1.1 ? [0.95, 1.05] : dm[0].valueMin === 0.925 && dm[0].valueMax === 1.075 ? [0.925, 1.075] : null;
+  // Corbel Core / Dust Devil (heavy, 0.85-1.1) are given the same +-5%: the game shows 46% at best on every heavy armour.
+  const extra = (dm[0].valueMin === 0.9 || dm[0].valueMin === 0.85) && dm[0].valueMax === 1.1 ? [0.95, 1.05] : dm[0].valueMin === 0.925 && dm[0].valueMax === 1.075 ? [0.925, 1.075] : null;
   if (extra) {
     empty[empty.length - 1].modifiers.push({
       stat: 'Damage Mitigation',

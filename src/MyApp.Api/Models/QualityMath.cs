@@ -6,7 +6,7 @@ public record StatEffect(string Kind, double Value);
 /// <summary>
 /// Turns material quality (0-1000) into stat changes. 500 is the baseline.
 /// Same rule as NovaTools: straight-line interpolation inside a modifier's quality range,
-/// no change outside every range, multipliers multiply and additive values add.
+/// no change outside every range. Inside one slot, overlapping ranges multiply; between slots, percentage changes add up and additive values add.
 /// </summary>
 public static class QualityMath
 {
@@ -71,7 +71,9 @@ public static class QualityMath
                 }
                 else
                 {
-                    total[stat] = new StatEffect(effect.Kind, existing.Value * effect.Value);
+                    // Percentage effects from different slots add their changes: +10% and +5% make +15%
+                    // (not x1.1 x1.05 = +15.5%). This is why a heavy armour reaches exactly 46% on a 40% base.
+                    total[stat] = new StatEffect(effect.Kind, existing.Value + (effect.Value - 1.0));
                 }
             }
         }
