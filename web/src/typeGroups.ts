@@ -19,10 +19,6 @@ const GROUPS: { id: string; title: string; items: [string, string][] }[] = [
       ['Char_Armor_Legs', 'Legs'],
       ['Char_Armor_Undersuit', 'Undersuits'],
       ['Char_Armor_Backpack', 'Backpacks'],
-      ['Char_Clothing_Feet', 'Clothing: feet'],
-      ['Char_Clothing_Legs', 'Clothing: legs'],
-      ['Char_Clothing_Torso_0', 'Clothing: torso (under)'],
-      ['Char_Clothing_Torso_1', 'Clothing: torso (over)'],
     ],
   },
   {
