@@ -108,3 +108,7 @@ Percentage (`multiplier`) effects on the same stat from different slots add thei
 ## Armour weight
 
 Armour recipes have `armourWeight`: `light`, `medium`, `heavy` or `superheavy` (the juggernaut suit), taken from the class name, or the `Item Type` line when the class name has none. Flight suits and helmets, and everything that is not armour, have none. The site's "Armour weight" filter uses it.
+
+## Clothing
+
+Clothing (`Char_Clothing_*`) is left out of the store (`EXCLUDED_TYPE_PREFIXES` in `tools/build-databank.mjs`).

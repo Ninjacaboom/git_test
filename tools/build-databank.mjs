@@ -94,7 +94,9 @@ const EXCLUDED = [
   { type: 'WeaponAttachment', subType: 'Magazine' }, // weapon ammo (magazines and batteries)
   { className: 'Carryable_2H_FL_MissionItem_prototype_ship_component_2_a' }, // TH-01 Propulsor
 ];
+const EXCLUDED_TYPE_PREFIXES = ['Char_Clothing_']; // clothing is not needed in the store
 const isExcluded = (b) =>
+  EXCLUDED_TYPE_PREFIXES.some((p) => String(b.TargetType ?? '').startsWith(p)) ||
   EXCLUDED.some(
     (e) =>
       (e.type === undefined || e.type === b.TargetType) &&
