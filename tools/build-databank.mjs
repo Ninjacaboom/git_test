@@ -187,6 +187,36 @@ const recipes = named.map((b) => {
   };
 });
 
+// Armour colour/pattern variants are separate items in the game data (not marked as cosmetic variants).
+// Group them by class name ("qrt_specialist_heavy_arms_01_01_12" -> family "qrt_specialist_heavy_arms_01"),
+// pick one as the base and treat the rest as its skins, so the list shows one entry per armour.
+const armourFamilies = new Map();
+for (const r of recipes) {
+  if (!r.type.startsWith('Char_Armor_') || r.variantOf) continue;
+  const m = /^(.*)_[^_]+_[^_]+$/.exec(r.className);
+  if (!m) continue;
+  if (!armourFamilies.has(m[1])) armourFamilies.set(m[1], []);
+  armourFamilies.get(m[1]).push(r);
+}
+let armourGroups = 0;
+let armourSkins = 0;
+for (const members of armourFamilies.values()) {
+  if (members.length < 2) continue;
+  // The base is the standard "_01_01_01" version if it is listed, otherwise the one with the shortest name.
+  const base =
+    members.find((r) => r.className.endsWith('_01_01_01')) ??
+    [...members].sort((a, b) => a.name.length - b.name.length || a.name.localeCompare(b.name))[0];
+  armourGroups++;
+  for (const r of members) {
+    if (r === base) continue;
+    r.variantOf = base.className;
+    if (!skinsByBase.has(base.className)) skinsByBase.set(base.className, []);
+    skinsByBase.get(base.className).push({ className: r.className, name: r.name });
+    armourSkins++;
+  }
+}
+console.log(`armour variants grouped: ${armourSkins} variants under ${armourGroups} base armours`);
+
 const recipeByClass = new Map(recipes.map((r) => [r.className, r]));
 for (const r of recipes) {
   r.skins = (skinsByBase.get(r.className) ?? [])

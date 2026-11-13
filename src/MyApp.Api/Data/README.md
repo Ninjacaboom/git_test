@@ -92,3 +92,7 @@ Each recipe has `baseStats`: extra item stats that are not in the description te
 ## Blueprints with no mission source
 
 A blueprint is only listed if `blueprints.json` gives at least one mission (`RewardSources`) that can reward it. Missions the game marks as not-for-release or work-in-progress (`missions.json`) do not count. Blueprints with no usable mission are left out because they cannot be obtained. This is the `REQUIRE_MISSION_SOURCE` switch in `tools/build-databank.mjs`. Note this only reflects the extractor's mission data; a blueprint could still come from something it does not cover (store, event, pledge).
+
+## Armour variants
+
+Armour colour and pattern variants are separate items in the game data. The build groups them by class name (the family is the class name without its last two `_xx_yy` parts), picks the `_01_01_01` item as the base (or the shortest name if there isn't one) and sets `variantOf` on the others, so they appear as skins of the base armour.
