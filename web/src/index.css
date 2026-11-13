@@ -70,9 +70,9 @@ header .muted {
 }
 
 .app {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  /* Use the whole window width on a desktop screen. */
+  width: 100%;
+  padding: 1.5rem clamp(1rem, 2vw, 2.5rem) 3rem;
 }
 
 h1 {
@@ -228,7 +228,7 @@ input[type='search'] {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
 }
 
@@ -345,7 +345,7 @@ input[type='search'] {
 .modal {
   position: relative;
   width: 100%;
-  max-width: 900px;
+  max-width: min(1400px, 94vw);
   padding: 1.25rem 1.25rem 1.5rem;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -702,4 +702,26 @@ button.chip:hover {
 /* A section that adds nothing over a lower tier: left as plain empty track, with no label. */
 .qband.blocked {
   background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Card columns by window width: 1, 2, 3, 4 or 6, so a page of 24 always fills whole rows. */
+@media (max-width: 700px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1600px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (min-width: 2200px) {
+  .cards {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
