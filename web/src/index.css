@@ -1216,3 +1216,9 @@ input[type='checkbox'] {
   border-color: #f08a24;
   box-shadow: 0 0 0 1px #f08a24;
 }
+
+/* ---- type filter groups (Armour, FPS weapons, Ship components): orange outline ---- */
+.type-group {
+  border: 1px solid #f08a24;
+  background: rgba(240, 138, 36, 0.04);
+}
