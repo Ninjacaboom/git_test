@@ -923,3 +923,270 @@ button.chip:hover {
   background: var(--accent);
   border-color: var(--accent);
 }
+
+/* =====================================================================
+   Terminal theme: dark industrial panels, lime-green highlights, orange
+   edges, "//" section labels, hatched stripes and corner brackets.
+   Kept at the end so it overrides the colours above (also in light mode).
+   ===================================================================== */
+:root:root {
+  --panel: #14130f;
+  --panel-bg: rgba(18, 17, 13, 0.88);
+  --text: #e9e6dc;
+  --muted: #9b978a;
+  --border: #4a4636;
+  --accent: #c8e11f; /* terminal lime */
+  --accent-text: #11140a;
+  --up: #c8e11f;
+  --down: #ff6b57;
+  --error: #ff8a7a;
+  --mark: #f08a24; /* terminal orange */
+  --orange: #f08a24;
+  --red: #b3262e;
+  --lime: #c8e11f;
+  --hatch: repeating-linear-gradient(-45deg, #c8e11f 0 3px, #5d6a0e 3px 6px);
+  --bracket: var(--muted);
+}
+
+body,
+button,
+input,
+select {
+  font-family: 'Rajdhani', 'Bahnschrift', 'Arial Narrow', system-ui, sans-serif;
+}
+
+body {
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+}
+
+/* Tint: warmer and a touch darker, with faint scan lines. */
+body::after {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 3px),
+    rgba(12, 8, 4, 0.55);
+}
+
+/* ---- header: red system bar, big title, hatched stripe ---- */
+header {
+  position: relative;
+  padding: 0.35rem 0 0.6rem 0.9rem;
+  border-left: 4px solid var(--red);
+}
+
+header::before {
+  content: '// CRAFTING SYSTEM';
+  display: block;
+  width: max-content;
+  padding: 0 0.6rem 0 0.3rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: #ffd2cc;
+  background: linear-gradient(90deg, var(--red), transparent);
+}
+
+header::after {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 10px;
+  margin-top: 0.45rem;
+  background: var(--hatch);
+}
+
+h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---- panels: sharp corners, thin border, corner brackets ---- */
+.filters,
+.modal,
+.card,
+.slot,
+.type-group {
+  border-radius: 0;
+}
+
+.filters,
+.modal {
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(var(--bracket), var(--bracket)) top left / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top left / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 2px 12px no-repeat,
+    var(--panel-bg);
+}
+
+/* ---- section labels: grey title bar with a "//" prefix ---- */
+.filter-title,
+.type-subtitle,
+h3 {
+  display: block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d8d4c6;
+  background: rgba(120, 118, 108, 0.35);
+}
+
+.filter-title::before,
+.type-subtitle::before,
+h3::before {
+  content: '// ';
+  color: var(--orange);
+}
+
+/* ---- cards: dark tiles with a lime hatched edge and orange hover ---- */
+.card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-left: 5px solid transparent;
+  border-image: none;
+  background: var(--panel-bg);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: -1px;
+  bottom: -1px;
+  width: 5px;
+  background: var(--hatch);
+  opacity: 0.55;
+}
+
+.card:hover {
+  border-color: var(--orange);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card-name {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge {
+  border-radius: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---- buttons and toggle boxes: orange outline, lime when active ---- */
+.pill,
+.page-btn,
+.clear,
+.type-btn,
+button.chip {
+  border-radius: 0;
+  border: 1px solid var(--orange);
+  background: rgba(240, 138, 36, 0.06);
+  color: var(--text);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pill:hover,
+.page-btn:hover:not(:disabled):not(.active),
+.clear:hover,
+.type-btn:hover,
+button.chip:hover {
+  background: rgba(240, 138, 36, 0.2);
+  border-color: var(--orange);
+}
+
+.pill.active,
+.page-btn.active,
+.type-btn.active {
+  color: var(--accent-text);
+  background: var(--lime);
+  border-color: var(--lime);
+  font-weight: 700;
+}
+
+.type-group-toggle {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.type-group-count {
+  color: var(--accent-text);
+  background: var(--lime);
+  border-radius: 0;
+}
+
+input[type='search'],
+select {
+  border-radius: 0;
+  border: 1px solid var(--orange);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+}
+
+input[type='search']:focus {
+  outline: 2px solid var(--lime);
+  outline-offset: 1px;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--lime);
+}
+
+/* ---- results count and modal ---- */
+.count {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.modal h2 {
+  font-size: 1.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.modal h2::after {
+  content: '';
+  display: block;
+  width: 90px;
+  height: 8px;
+  margin-top: 0.35rem;
+  background: var(--hatch);
+}
+
+.modal-close {
+  border-radius: 0;
+}
+
+/* ---- slider: lime fill and square thumb ---- */
+.qinput::-webkit-slider-thumb {
+  border-radius: 0;
+  background: var(--lime);
+}
+
+.qinput::-moz-range-thumb {
+  border-radius: 0;
+  background: var(--lime);
+}
+
+.qband.active {
+  background: rgba(200, 225, 31, 0.28);
+}
+
+.stats .value.modified {
+  color: var(--lime);
+}
