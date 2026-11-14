@@ -1222,3 +1222,38 @@ input[type='checkbox'] {
   border: 1px solid #f08a24;
   background: rgba(240, 138, 36, 0.04);
 }
+
+/* ---- small grey dots in a regular pattern on the panels ---- */
+:root {
+  --dots: radial-gradient(circle, rgba(150, 165, 178, 0.34) 1px, transparent 1.4px) 0 0 / 6px 6px;
+}
+
+.filters,
+.modal {
+  background:
+    linear-gradient(var(--bracket), var(--bracket)) top left / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top left / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 2px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 12px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 2px 12px no-repeat,
+    var(--dots),
+    var(--panel-bg);
+}
+
+.card,
+.type-group {
+  background: var(--dots), var(--panel-bg);
+}
+
+.type-group {
+  background: var(--dots), rgba(240, 138, 36, 0.04);
+}
+
+.filter-title,
+.type-subtitle,
+h3 {
+  background: var(--dots), rgba(110, 135, 155, 0.25);
+}
