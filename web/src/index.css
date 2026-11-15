@@ -1723,14 +1723,17 @@ header.top {
   font-size: 1.8rem;
 }
 
-/* Red band a bit taller: it extends further down. */
-.top-bar {
-  padding-top: 0.12rem;
-  padding-bottom: 0.7rem;
-  align-items: flex-start;
+/* Red band (and the labels on it) moved down a little, same thickness as before. */
+.top-bar,
+.top-tag {
+  transform: translateY(0.4rem);
 }
 
-.top-tag {
-  align-self: start;
-  margin-top: 0.12rem;
+/* A little extra room under the lowered band so the titles don't touch it. */
+.top-left {
+  padding-top: 0.8rem;
+}
+
+.top-sub {
+  padding-top: 0.6rem;
 }
