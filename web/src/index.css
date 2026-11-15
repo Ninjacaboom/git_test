@@ -1257,3 +1257,17 @@ input[type='checkbox'] {
 h3 {
   background: var(--dots), rgba(110, 135, 155, 0.25);
 }
+
+/* ---- header tag: red highlighted bar, like the terminal's system bar ---- */
+header {
+  border-left-color: #b3262e;
+}
+
+header::before {
+  width: min(100%, 560px);
+  padding: 0.12rem 0.6rem 0.12rem 0.4rem;
+  color: #ffe3df;
+  font-weight: 600;
+  text-shadow: none;
+  background: linear-gradient(90deg, #b3262e 0%, #b3262e 55%, rgba(179, 38, 46, 0) 100%);
+}
