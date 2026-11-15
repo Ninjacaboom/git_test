@@ -7,14 +7,14 @@ export type Band = { from: number; to: number; color: string };
 
 /** The sections the quality slider is split into. 1000 (Perfect) is a section of its own. */
 export const BANDS: Band[] = [
-  { from: 0, to: 399, color: 'rgb(220 58 58)' },
-  { from: 400, to: 599, color: 'rgb(174 59 60)' },
-  { from: 600, to: 699, color: 'rgb(127 59 63)' },
-  { from: 700, to: 799, color: 'rgb(81 60 65)' },
-  { from: 800, to: 899, color: 'rgb(59 81 71)' },
-  { from: 900, to: 949, color: 'rgb(60 123 82)' },
-  { from: 950, to: 999, color: 'rgb(61 164 93)' },
-  { from: 1000, to: 1000, color: 'rgb(62 206 104)' },
+  { from: 0, to: 399, color: 'hsl(0 70% 42%)' },
+  { from: 400, to: 599, color: 'hsl(14 78% 45%)' },
+  { from: 600, to: 699, color: 'hsl(28 88% 48%)' },
+  { from: 700, to: 799, color: 'hsl(125 42% 34%)' },
+  { from: 800, to: 899, color: 'hsl(128 50% 39%)' },
+  { from: 900, to: 949, color: 'hsl(130 56% 43%)' },
+  { from: 950, to: 999, color: 'hsl(133 62% 46%)' },
+  { from: 1000, to: 1000, color: 'hsl(140 75% 55%)' },
 ];
 
 export const bandRange = (b: Band, min = 0): string => {
