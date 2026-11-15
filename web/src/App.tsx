@@ -4,6 +4,22 @@ import { prettyType } from './format';
 import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
+import ComingSoon from './ComingSoon';
+
+// The pages the top buttons switch between. Only the catalogue exists so far.
+const PAGES = [
+  { id: 'catalogue', label: 'Catalogue' },
+  { id: 'market', label: 'Market' },
+  { id: 'contracts', label: 'Contracts' },
+  { id: 'crafted', label: 'Crafted' },
+] as const;
+type PageId = (typeof PAGES)[number]['id'];
+const PAGE_TITLES: Record<PageId, string> = {
+  catalogue: 'Item catalogue',
+  market: 'Public market',
+  contracts: 'Contracts',
+  crafted: 'Crafted items',
+};
 
 // Cards per page when the page can scroll (phones and small windows). 24 fills whole rows in 1, 2, 3, 4 or 6 columns.
 const DEFAULT_PAGE_SIZE = 24;
@@ -25,6 +41,7 @@ export default function App() {
   const pageRef = useRef(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<PageId>('catalogue');
 
   // Load the type list once.
   useEffect(() => {
@@ -41,6 +58,8 @@ export default function App() {
     const grid = gridRef.current;
     if (!grid) return;
     const measure = () => {
+      // Hidden while another page is open: keep the page size as it was.
+      if (grid.clientHeight === 0) return;
       let size = DEFAULT_PAGE_SIZE;
       if (window.matchMedia(FIT_TO_SCREEN).matches) {
         const style = getComputedStyle(grid);
@@ -142,19 +161,30 @@ export default function App() {
           <h1>Crafting Store</h1>
           <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
         </div>
-        <div className="top-sub">Item catalogue</div>
-        <div className="top-boxes" aria-hidden="true">
-          {['ITM', 'QTY', 'STA', 'LOG'].map((l) => (
-            <span key={l}>
-              <i>{l}</i>
-            </span>
+        <div className="top-sub">{PAGE_TITLES[view]}</div>
+        <nav className="top-boxes" aria-label="Pages">
+          {PAGES.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              className={view === p.id ? 'nav-box active' : 'nav-box'}
+              aria-current={view === p.id ? 'page' : undefined}
+              onClick={() => {
+                setView(p.id);
+                setSelectedId(null);
+              }}
+            >
+              {p.label}
+            </button>
           ))}
-        </div>
+        </nav>
       </header>
 
       {error && <p className="error">{error}</p>}
 
-      <div className="layout">
+      {view !== 'catalogue' && <ComingSoon page={view} />}
+
+      <div className="layout" hidden={view !== 'catalogue'}>
         <aside className="filters">
           <h2 className="filter-title">Search</h2>
           <input

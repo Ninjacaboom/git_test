@@ -1557,3 +1557,78 @@ header.top {
     grid-column: 1;
   }
 }
+
+/* ---- top buttons that switch between pages ---- */
+.top-boxes {
+  align-items: stretch;
+}
+
+.top-boxes .nav-box {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 104px;
+  height: 34px;
+  margin-top: 8px;
+  padding: 0 0 3px;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: repeating-linear-gradient(-45deg, rgba(143, 168, 189, 0.35) 0 2px, transparent 2px 6px);
+}
+
+.top-boxes .nav-box::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 1px;
+  height: 7px;
+  background: var(--muted);
+}
+
+.top-boxes .nav-box:hover {
+  color: var(--text);
+  border-color: #f08a24;
+}
+
+.top-boxes .nav-box.active {
+  color: var(--text);
+  border-color: var(--text);
+  background: repeating-linear-gradient(-45deg, rgba(143, 168, 189, 0.6) 0 2px, rgba(0, 0, 0, 0.35) 2px 6px);
+}
+
+.top-boxes .nav-box.active::before {
+  background: #b3262e;
+  width: 2px;
+}
+
+.coming-soon {
+  flex: 1;
+  margin-top: 1rem;
+  padding: 2rem;
+  border: 1px solid #f08a24;
+  background: var(--dots), var(--panel-bg);
+}
+
+.layout[hidden] {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .top-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.3rem clamp(1rem, 2vw, 2.5rem);
+  }
+  .top-boxes .nav-box {
+    width: auto;
+    flex: 1 1 40%;
+  }
+}
