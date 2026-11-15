@@ -1652,3 +1652,19 @@ header.top {
 header.top {
   padding-right: 0;
 }
+
+/* Fixed-width middle column: the page title changes, the tag and buttons never move. */
+header.top {
+  grid-template-columns: 1fr 300px 1fr;
+}
+
+.top-sub {
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  header.top {
+    grid-template-columns: 1fr;
+  }
+}
