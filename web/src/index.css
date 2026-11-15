@@ -2157,3 +2157,8 @@ header.top {
 .top-member {
   margin-left: calc(0.7rem + 443px + 0.7rem + 17px);
 }
+
+/* Gap of half the size of the // MODULE gap (about 11.5px) between the // MEMBER band and the menu button. */
+.top-member {
+  margin-right: calc(100px + 11.5px); /* menu button width + gap */
+}
