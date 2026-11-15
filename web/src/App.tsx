@@ -189,7 +189,10 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="top-member" aria-hidden="true" />
+        <div className="top-member">
+          <span className="top-member-tag">// MEMBER</span>
+          <span className="top-member-name">Guest</span>
+        </div>
         <div className="top-menu">
           <button
             type="button"
