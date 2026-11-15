@@ -2180,3 +2180,18 @@ header.top {
 .stats .value.modified.none {
   color: var(--text);
 }
+
+/* Type on the front of each card (e.g. "Heavy armour · Core", "Sniper"), highlighted; manufacturer after it. */
+.card-sub {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.type-tag {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}

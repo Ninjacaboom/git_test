@@ -132,3 +132,39 @@ export function displayEffect(stat: string, effect: StatEffect): StatEffect {
   }
   return effect;
 }
+
+const ARMOUR_PARTS: Record<string, string> = {
+  Char_Armor_Helmet: 'Helmet',
+  Char_Armor_Torso: 'Core',
+  Char_Armor_Arms: 'Arms',
+  Char_Armor_Legs: 'Legs',
+  Char_Armor_Undersuit: 'Undersuit',
+  Char_Armor_Backpack: 'Backpack',
+};
+
+const ARMOUR_WEIGHTS: Record<string, string> = {
+  light: 'Light armour',
+  medium: 'Medium armour',
+  heavy: 'Heavy armour',
+  superheavy: 'Super heavy armour',
+};
+
+const WEAPON_CATEGORIES: Record<string, string> = {
+  pistol: 'Pistol',
+  smg: 'SMG',
+  rifle: 'Rifle',
+  sniper: 'Sniper',
+  shotgun: 'Shotgun',
+  lmg: 'LMG',
+  special: 'Special',
+};
+
+/** The label shown on the front of an item card: "Heavy armour · Core", "Sniper", "Cooler", ... */
+export function typeLabel(r: { type: string; armourWeight?: string | null; weaponCategory?: string | null }): string {
+  const part = ARMOUR_PARTS[r.type];
+  if (part) return `${(r.armourWeight && ARMOUR_WEIGHTS[r.armourWeight]) || 'Armour'} · ${part}`;
+  if (r.type === 'WeaponPersonal' && r.weaponCategory && WEAPON_CATEGORIES[r.weaponCategory]) {
+    return WEAPON_CATEGORIES[r.weaponCategory];
+  }
+  return prettyType(r.type);
+}

@@ -43,6 +43,8 @@ export type Recipe = {
   skins: Skin[];
   slots: Slot[];
   baseStats?: { label: string; value: string }[] | null;
+  armourWeight?: string | null;
+  weaponCategory?: string | null;
 };
 
 export type RecipeSummary = {

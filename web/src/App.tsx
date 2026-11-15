@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
-import { prettyType } from './format';
+import { typeLabel } from './format';
 import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
@@ -278,12 +278,14 @@ export default function App() {
 
           <ul className="cards" ref={gridRef}>
             {pageItems.map((r) => {
-              const subtitle = [prettyType(r.type), r.manufacturer].filter(Boolean).join(' · ');
               return (
                 <li key={r.id}>
                   <button className="card" onClick={() => setSelectedId(r.id)}>
                     <span className="card-name">{r.name}</span>
-                    <span className="muted small">{subtitle}</span>
+                    <span className="card-sub small">
+                      <strong className="type-tag">{typeLabel(r)}</strong>
+                      {r.manufacturer ? <span className="muted"> · {r.manufacturer}</span> : null}
+                    </span>
                     <span className="badges">
                       {r.size > 0 && <span className="badge">Size {r.size}</span>}
                       {r.grade ? <span className="badge">Grade {r.grade}</span> : null}
