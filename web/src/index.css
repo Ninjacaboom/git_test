@@ -1632,3 +1632,23 @@ header.top {
     flex: 1 1 40%;
   }
 }
+
+/* Title exactly in the middle of the page; tag above it and buttons beside it move along. */
+header.top {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.top-boxes {
+  grid-column: 3;
+  justify-self: start;
+}
+
+@media (max-width: 700px) {
+  header.top {
+    grid-template-columns: 1fr;
+  }
+}
+
+header.top {
+  padding-right: 0;
+}
