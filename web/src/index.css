@@ -2152,3 +2152,8 @@ header.top {
 .top-boxes .nav-box:last-child::after {
   right: -6px;
 }
+
+/* More space between the last button line and the // MEMBER band, matching the gap between // MODULE and the first line. */
+.top-member {
+  margin-left: calc(0.7rem + 443px + 0.7rem + 17px);
+}
