@@ -116,7 +116,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
               {itemStats.map((s) => (
                 <tr key={s.label}>
                   <td>{s.label}</td>
-                  <td className={s.modified ? 'value modified' : 'value'} title={s.modified ? `Base: ${s.base}` : undefined}>
+                  <td className={s.modified ? `value modified ${s.direction}` : 'value'} title={s.modified ? `Base: ${s.base}` : undefined}>
                     {s.value}
                   </td>
                 </tr>

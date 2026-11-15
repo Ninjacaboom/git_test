@@ -2162,3 +2162,21 @@ header.top {
 .top-member {
   margin-right: calc(100px + 11.5px); /* menu button width + gap */
 }
+
+/* Green for a +, red for a -: the effects box and the item stats the quality has changed. */
+:root:root {
+  --up: #4ade80;
+  --down: #ff6b57;
+}
+
+.stats .value.modified.up {
+  color: var(--up);
+}
+
+.stats .value.modified.down {
+  color: var(--down);
+}
+
+.stats .value.modified.none {
+  color: var(--text);
+}

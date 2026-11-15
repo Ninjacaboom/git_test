@@ -82,7 +82,14 @@ const EFFECT_TARGETS: Record<string, { label: string; index: number }[]> = {
   Efficiency: [{ label: 'Extraction Efficiency', index: 0 }],
 };
 
-export type ItemStatRow = { label: string; value: string; base: string; modified: boolean };
+export type ItemStatRow = {
+  label: string;
+  value: string;
+  base: string;
+  modified: boolean;
+  /** Whether the quality effect on this stat is a + (up) or a - (down), as shown in the effects box. */
+  direction: 'up' | 'down' | 'none';
+};
 
 /** Item stats with the quality effects worked into the numbers. Changed values are flagged. */
 export function applyQualityToStats(
@@ -92,6 +99,7 @@ export function applyQualityToStats(
   return stats.map(({ label, value }) => {
     let text = value;
     let modified = false;
+    let direction: 'up' | 'down' | 'none' = 'none';
     for (const [stat, targets] of Object.entries(EFFECT_TARGETS)) {
       const effect = effects?.[stat];
       if (!effect) continue;
@@ -105,11 +113,12 @@ export function applyQualityToStats(
           const next = effect.kind === 'additive' ? base + effect.value : base * effect.value;
           if (Math.abs(next - base) < 0.005) return num;
           modified = true;
+          direction = formatEffect(displayEffect(stat, effect)).direction;
           return String(Number(next.toFixed(2)));
         });
       }
     }
-    return { label, value: text, base: value, modified };
+    return { label, value: text, base: value, modified, direction };
   });
 }
 
