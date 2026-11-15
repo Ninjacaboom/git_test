@@ -1882,3 +1882,139 @@ body::after {
 .pill {
   border-radius: 6px;
 }
+
+/* ---- menu button, top right corner ----
+   Twice as thick as the red band: its top is level with the top of the band and its middle sits on the band's bottom edge. */
+header.top {
+  --band-h: 1.3rem;
+  position: relative;
+}
+
+.top-bar {
+  height: var(--band-h);
+  padding-top: 0;
+  padding-bottom: 0;
+  align-items: center;
+}
+
+.top-tag {
+  align-self: start;
+  height: var(--band-h);
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+.top-menu {
+  position: absolute;
+  top: 0.65rem;
+  right: clamp(1rem, 2vw, 2.5rem);
+  z-index: 5;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 112px;
+  height: calc(2 * var(--band-h));
+  padding: 0 0.8rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  background: repeating-linear-gradient(-45deg, rgba(163, 173, 181, 0.35) 0 2px, rgba(0, 0, 0, 0.55) 2px 6px);
+  border: 1px solid #f08a24;
+}
+
+.menu-btn:hover,
+.menu-btn.open {
+  background: rgba(240, 138, 36, 0.25);
+}
+
+.menu-icon {
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+}
+
+.menu-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  border: 1px solid #f08a24;
+  background: var(--dots), rgba(5, 5, 5, 0.96);
+}
+
+.menu-list button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.menu-list button:hover {
+  background: rgba(240, 138, 36, 0.2);
+}
+
+.menu-list button.active {
+  color: var(--accent-text);
+  background: var(--accent);
+}
+
+/* the member band stops before the menu button */
+.top-member {
+  margin-right: calc(clamp(1rem, 2vw, 2.5rem) + 112px + 0.7rem);
+}
+
+/* The menu button takes the place of the right-hand red bar. */
+.top-member {
+  display: none;
+}
+
+.top-tag {
+  justify-content: flex-end;
+}
+
+/* Red band on the right, running to the screen edge; the menu button sits on its end. */
+.top-member {
+  display: block;
+  height: var(--band-h);
+  margin-right: 0;
+  background: #8a1c23;
+}
+
+@media (max-width: 1300px) {
+  .top-member {
+    display: none;
+  }
+}
+
+.menu-btn {
+  background:
+    repeating-linear-gradient(-45deg, rgba(163, 173, 181, 0.3) 0 2px, transparent 2px 6px),
+    #0b0b0b;
+}
+
+.menu-btn:hover,
+.menu-btn.open {
+  background:
+    repeating-linear-gradient(-45deg, rgba(240, 138, 36, 0.35) 0 2px, transparent 2px 6px),
+    #14100b;
+}

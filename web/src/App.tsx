@@ -42,6 +42,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<PageId>('catalogue');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Load the type list once.
   useEffect(() => {
@@ -188,9 +189,37 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="top-member">
-          <span className="top-member-tag">// MEMBER</span>
-          <span className="top-member-name">Guest</span>
+        <div className="top-member" aria-hidden="true" />
+        <div className="top-menu">
+          <button
+            type="button"
+            className={menuOpen ? 'menu-btn open' : 'menu-btn'}
+            aria-expanded={menuOpen}
+            aria-haspopup="true"
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <span className="menu-icon" aria-hidden="true" />
+            Menu
+          </button>
+          {menuOpen && (
+            <ul className="menu-list">
+              {PAGES.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    className={view === p.id ? 'active' : undefined}
+                    onClick={() => {
+                      setView(p.id);
+                      setSelectedId(null);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {PAGE_TITLES[p.id]}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </header>
 
