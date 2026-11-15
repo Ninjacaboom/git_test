@@ -2079,3 +2079,14 @@ header.top {
 .top-boxes .nav-box:hover {
   background: repeating-linear-gradient(-45deg, rgba(163, 173, 181, 0.55) 0 2px, rgba(0, 0, 0, 0.35) 2px 6px);
 }
+
+/* No grey lines in the gaps between the page buttons, and clean edges (stripes no longer run under the border). */
+.top-boxes .nav-box::before,
+.top-boxes .nav-box:last-child::after {
+  display: none;
+}
+
+.top-boxes .nav-box {
+  border: 0;
+  background-clip: padding-box;
+}
