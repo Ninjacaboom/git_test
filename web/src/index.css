@@ -1277,3 +1277,15 @@ header {
   margin-top: -1.5rem;
   padding-top: 0;
 }
+
+/* Red bar runs from the left edge to the right edge of the screen. */
+header::before {
+  width: 100vw;
+  margin-left: calc(-1 * (clamp(1rem, 2vw, 2.5rem) + 4px + 0.9rem));
+  padding-left: calc(clamp(1rem, 2vw, 2.5rem) + 4px + 0.9rem + 0.4rem);
+  background: #b3262e;
+}
+
+body {
+  overflow-x: hidden;
+}
