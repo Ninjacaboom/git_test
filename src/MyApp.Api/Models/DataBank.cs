@@ -94,7 +94,11 @@ public class DataBank
         }
 
         return query.Select(r => new RecipeSummary(
-            r.Id, r.Name, r.Type, r.SubType, r.Size, r.Grade, r.Manufacturer, IsSkin(r)));
+            r.Id, r.Name, r.Type, r.SubType, r.Size, r.Grade, r.Manufacturer, IsSkin(r),
+            r.ArmourWeight, r.WeaponCategory,
+            // Only the stat lines at the top of the description are needed on the cards, not the story text.
+            r.Description == null ? null : (r.Description.Length > 500 ? r.Description.Substring(0, 500) : r.Description),
+            r.BaseStats));
     }
 
     /// <summary>

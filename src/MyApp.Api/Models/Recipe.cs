@@ -52,6 +52,10 @@ public record RecipeSummary(
     int Size,
     int? Grade,
     string? Manufacturer,
-    bool IsSkin);
+    bool IsSkin,
+    string? ArmourWeight = null,
+    string? WeaponCategory = null,
+    string? Description = null,
+    List<BaseStat>? BaseStats = null);
 
 public record TypeCount(string Type, int Count);
