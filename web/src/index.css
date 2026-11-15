@@ -1374,3 +1374,13 @@ header.top::after {
     display: none;
   }
 }
+
+/* The fit-to-window layout makes headers a flex row; this one is stacked rows that fill the width. */
+header.top {
+  display: block;
+}
+
+.top-bar,
+.top-row {
+  width: 100%;
+}
