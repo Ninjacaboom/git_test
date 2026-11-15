@@ -185,6 +185,7 @@ export function cardFacts(r: {
   type: string;
   description?: string | null;
   baseStats?: { label: string; value: string }[] | null;
+  weaponClass?: string | null;
 }): CardFact[] {
   const facts: CardFact[] = [];
   const stats = parseItemStats(r.description);
@@ -196,8 +197,14 @@ export function cardFacts(r: {
     if (dm) facts.push({ text: `Damage mitigation ${dm}`, highlight: true });
   }
 
-  if (r.type === 'WeaponPersonal' || r.type === 'WeaponGun') {
-    // "42.5 Physical", "18 Energy", "30 Physical/Energy x 8 pellets": the damage type is the word(s) after the number.
+  if (r.type === 'WeaponPersonal') {
+    // FPS weapons: just the ammo type.
+    if (r.weaponClass) facts.push({ text: r.weaponClass === 'energy' ? 'Energy' : 'Ballistic', highlight: true });
+    return facts;
+  }
+
+  if (r.type === 'WeaponGun') {
+    // "72.99 Physical", "18 Energy", "30 Physical/Energy x 8 pellets": the damage type is the word(s) after the number.
     const dmg = base('Damage')?.replace(/^[\d.]+\s*/, '').replace(/\s*x\s*\d+\s*pellets?$/i, '');
     if (dmg) facts.push({ text: `${dmg} damage`, highlight: true });
   }

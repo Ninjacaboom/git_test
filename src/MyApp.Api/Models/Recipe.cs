@@ -56,6 +56,7 @@ public record RecipeSummary(
     string? ArmourWeight = null,
     string? WeaponCategory = null,
     string? Description = null,
-    List<BaseStat>? BaseStats = null);
+    List<BaseStat>? BaseStats = null,
+    string? WeaponClass = null);
 
 public record TypeCount(string Type, int Count);

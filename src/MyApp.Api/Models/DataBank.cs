@@ -98,7 +98,7 @@ public class DataBank
             r.ArmourWeight, r.WeaponCategory,
             // Only the stat lines at the top of the description are needed on the cards, not the story text.
             r.Description == null ? null : (r.Description.Length > 500 ? r.Description.Substring(0, 500) : r.Description),
-            r.BaseStats));
+            r.BaseStats, r.WeaponClass));
     }
 
     /// <summary>

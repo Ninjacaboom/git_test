@@ -61,6 +61,7 @@ export type RecipeSummary = {
   /** The top of the item description (its stat lines). */
   description?: string | null;
   baseStats?: { label: string; value: string }[] | null;
+  weaponClass?: string | null;
 };
 
 export type TypeCount = { type: string; count: number };
