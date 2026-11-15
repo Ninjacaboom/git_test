@@ -1384,3 +1384,99 @@ header.top {
 .top-row {
   width: 100%;
 }
+
+/* ---- header, second pass: grid like the photo (red band + tag over the right-hand title,
+        hatched labelled boxes with tick marks on the far right) ---- */
+header.top {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  margin: -1.5rem 0 0;
+  padding: 0 clamp(1rem, 2vw, 2.5rem) 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.top-bar {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: auto;
+  padding: 0.12rem 1.1rem 0.12rem clamp(1rem, 2vw, 2.5rem);
+  background: #b3262e;
+}
+
+.top-left {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+  padding: 0.5rem 0 0 clamp(1rem, 2vw, 2.5rem);
+}
+
+.top-sub {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  padding: 0 1.1rem 0.2rem 2rem;
+  text-align: right;
+}
+
+.top-boxes {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  margin-left: 0.5rem;
+  gap: 4px;
+}
+
+.top-boxes span {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 60px;
+  height: 34px;
+  margin-top: 8px;
+}
+
+/* tick mark above each box */
+.top-boxes span::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 1px;
+  height: 6px;
+  background: var(--muted);
+}
+
+.top-boxes i {
+  margin-bottom: 2px;
+  font-size: 0.55rem;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 0 2px;
+}
+
+@media (max-width: 700px) {
+  header.top {
+    grid-template-columns: 1fr;
+  }
+  .top-bar,
+  .top-left,
+  .top-sub {
+    grid-column: 1;
+  }
+  .top-sub {
+    grid-row: 3;
+    text-align: left;
+    padding-left: clamp(1rem, 2vw, 2.5rem);
+  }
+}
+
+header.top {
+  margin: -1.5rem calc(-1 * clamp(1rem, 2vw, 2.5rem)) 0;
+}
