@@ -185,6 +185,10 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <div className="top-member">
+          <span className="top-member-tag">// MEMBER</span>
+          <span className="top-member-name">Guest</span>
+        </div>
       </header>
 
       {error && <p className="error">{error}</p>}
