@@ -1710,3 +1710,10 @@ header.top {
 .top-boxes {
   margin-left: 0.7rem;
 }
+
+/* Page title sits right under the red band instead of at the bottom of the header. */
+.top-sub {
+  align-self: start;
+  padding-top: 0.3rem;
+  line-height: 1.1;
+}
