@@ -158,7 +158,10 @@ export default function App() {
         </div>
         <div className="top-tag">// MODULE</div>
         <div className="top-left">
-          <h1>Crafting Store</h1>
+          <h1 aria-label="NOVA Foundry">
+            <img className="brand-logo" src="/nova-logo.png" alt="" />
+            <span>Foundry</span>
+          </h1>
           <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
         </div>
         <div className="top-sub">

@@ -1842,3 +1842,25 @@ header.top {
   top: -0.64rem;
   height: 0.64rem;
 }
+
+/* Site name: the NOVA logo followed by "Foundry". */
+.top-left h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand-logo {
+  display: block;
+  height: 1.9rem;
+  width: auto;
+}
+
+/* Keep the logo clear of the red band. */
+.top-left {
+  padding-top: 1.45rem;
+}
+
+.brand-logo {
+  height: 1.7rem;
+}
