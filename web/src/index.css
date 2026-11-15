@@ -1271,3 +1271,9 @@ header::before {
   text-shadow: none;
   background: linear-gradient(90deg, #b3262e 0%, #b3262e 55%, rgba(179, 38, 46, 0) 100%);
 }
+
+/* Pull the header up so the red bar touches the top edge of the screen. */
+header {
+  margin-top: -1.5rem;
+  padding-top: 0;
+}
