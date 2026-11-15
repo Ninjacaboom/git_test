@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
-import { typeLabel } from './format';
+import { cardFacts, typeLabel } from './format';
 import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
@@ -287,6 +287,11 @@ export default function App() {
                       {r.manufacturer ? <span className="muted"> · {r.manufacturer}</span> : null}
                     </span>
                     <span className="badges">
+                      {cardFacts(r).map((f) => (
+                        <span key={f.text} className="badge fact">
+                          {f.text}
+                        </span>
+                      ))}
                       {r.size > 0 && <span className="badge">Size {r.size}</span>}
                       {r.grade ? <span className="badge">Grade {r.grade}</span> : null}
                       {r.isSkin && <span className="badge skin">Skin</span>}

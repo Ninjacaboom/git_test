@@ -145,6 +145,14 @@ function weaponStats(item) {
   return out;
 }
 
+// Power plants: the power output at base quality (500Q), which the game's "Power Pips" quality effect adds to or takes from.
+function powerStats(item) {
+  if (item?.type !== 'PowerPlant') return [];
+  const gen = (item.stdItem?.ResourceNetwork ?? []).flatMap((n) => n.Generation ?? []).filter((g) => g.Resource === 'Power');
+  const total = gen.reduce((n, g) => n + (g.Segment ?? 0), 0);
+  return total > 0 ? [{ label: 'Power Pips', value: String(round2(total)) }] : [];
+}
+
 // Armour weight class: light, medium, heavy or superheavy (the juggernaut suit). From the class name, falling
 // back on the "Item Type" line of the description. Null for anything that is not weighted armour (flight suits...).
 function armourWeight(b, item) {
@@ -206,7 +214,7 @@ const recipes = named.map((b) => {
     craftTimeSeconds: tier.CraftTimeSeconds,
     variantOf: item ? variantOf(item) : null, // className of the base item if this is a skin
     skins: [], // filled in below
-    baseStats: weaponStats(item),
+    baseStats: [...weaponStats(item), ...powerStats(item)],
     armourWeight: armourWeight(b, item),
     weaponCategory: weaponCategory(b),
     weaponClass: weaponClass(b, weaponStats(item)),

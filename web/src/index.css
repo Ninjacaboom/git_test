@@ -2195,3 +2195,17 @@ header.top {
   text-transform: uppercase;
   color: var(--accent);
 }
+
+/* Key facts on the front of a card (damage mitigation, damage type, component class, power pips). */
+.badge.fact {
+  color: var(--text);
+  border-color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.badges {
+  max-height: 3.4rem;
+  overflow: hidden;
+}

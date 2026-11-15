@@ -66,6 +66,7 @@ export function parseItemStats(description: string | null | undefined): { label:
  */
 const EFFECT_TARGETS: Record<string, { label: string; index: number }[]> = {
   'Damage Mitigation': [{ label: 'Damage Reduction', index: 0 }],
+  'Power Pips': [{ label: 'Power Pips', index: 0 }],
   'Impact Force': [{ label: 'Damage', index: 0 }],
   'Fire Rate': [
     { label: 'Rate Of Fire', index: 0 },
@@ -160,11 +161,58 @@ const WEAPON_CATEGORIES: Record<string, string> = {
 };
 
 /** The label shown on the front of an item card: "Heavy armour · Core", "Sniper", "Cooler", ... */
-export function typeLabel(r: { type: string; armourWeight?: string | null; weaponCategory?: string | null }): string {
+export function typeLabel(r: {
+  type: string;
+  armourWeight?: string | null;
+  weaponCategory?: string | null;
+  description?: string | null;
+}): string {
   const part = ARMOUR_PARTS[r.type];
   if (part) return `${(r.armourWeight && ARMOUR_WEIGHTS[r.armourWeight]) || 'Armour'} · ${part}`;
   if (r.type === 'WeaponPersonal' && r.weaponCategory && WEAPON_CATEGORIES[r.weaponCategory]) {
     return WEAPON_CATEGORIES[r.weaponCategory];
   }
-  return prettyType(r.type);
+  return weaponTypeName(r) ?? prettyType(r.type);
+}
+
+export type CardFact = { text: string; highlight?: boolean };
+
+/**
+ * The key numbers shown on the front of an item card, all at base quality (500Q):
+ * armour - damage mitigation; weapons - damage type; components - class (stealth, military...); power plants - power pips.
+ */
+export function cardFacts(r: {
+  type: string;
+  description?: string | null;
+  baseStats?: { label: string; value: string }[] | null;
+}): CardFact[] {
+  const facts: CardFact[] = [];
+  const stats = parseItemStats(r.description);
+  const stat = (label: string) => stats.find((s) => s.label === label)?.value.trim();
+  const base = (label: string) => r.baseStats?.find((s) => s.label === label)?.value.trim();
+
+  if (r.type.startsWith('Char_Armor_')) {
+    const dm = stat('Damage Reduction');
+    if (dm) facts.push({ text: `Damage mitigation ${dm}`, highlight: true });
+  }
+
+  if (r.type === 'WeaponPersonal' || r.type === 'WeaponGun') {
+    // "42.5 Physical", "18 Energy", "30 Physical/Energy x 8 pellets": the damage type is the word(s) after the number.
+    const dmg = base('Damage')?.replace(/^[\d.]+\s*/, '').replace(/\s*x\s*\d+\s*pellets?$/i, '');
+    if (dmg) facts.push({ text: `${dmg} damage`, highlight: true });
+  }
+
+  const cls = stat('Class');
+  if (cls && !['WeaponPersonal'].includes(r.type)) facts.push({ text: cls, highlight: true });
+
+  const pips = base('Power Pips');
+  if (r.type === 'PowerPlant' && pips) facts.push({ text: `${pips} power pips`, highlight: true });
+
+  return facts;
+}
+
+/** "Item Type" for ship weapons and mining lasers ("Laser Cannon"), which have no useful type name of their own. */
+export function weaponTypeName(r: { type: string; description?: string | null }): string | null {
+  if (r.type !== 'WeaponGun' && r.type !== 'WeaponMining') return null;
+  return parseItemStats(r.description).find((s) => s.label === 'Item Type')?.value.trim() || null;
 }

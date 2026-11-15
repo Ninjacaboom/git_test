@@ -120,3 +120,7 @@ Hand-held weapons have `weaponCategory` (`pistol`, `smg`, `rifle`, `sniper`, `sh
 ## FPS weapon ammo type
 
 Hand-held weapons have `weaponClass`: `ballistic` or `energy` (lasers, plasma and the electron/distortion guns), from the `Class` line of the description. The crossbows have no `Class` line, so they go by the damage type of their ammo (physical = ballistic). The search takes `ammo=ballistic,energy`.
+
+## Power plant output
+
+Power plants have a `Power Pips` entry in `baseStats`: the power output at base quality (500Q), taken from the item's power generation. The `Power Pips` quality effect adds to or takes from it.
