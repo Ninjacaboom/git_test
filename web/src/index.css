@@ -1831,3 +1831,14 @@ header.top {
     grid-template-columns: 1fr;
   }
 }
+
+/* Button tops at the middle of the red band; the grey side lines run from the top of the band down to the buttons. */
+.top-boxes {
+  margin-top: calc(0.65rem - 8px + 0.64rem);
+}
+
+.top-boxes .nav-box::before,
+.top-boxes .nav-box:last-child::after {
+  top: -0.64rem;
+  height: 0.64rem;
+}
