@@ -136,8 +136,8 @@ export default function App() {
       <header className="top">
         <div className="top-bar">
           <span>// CRAFTING SYSTEM</span>
-          <span>// MODULE</span>
         </div>
+        <div className="top-tag">// MODULE</div>
         <div className="top-left">
           <h1>Crafting Store</h1>
           <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
