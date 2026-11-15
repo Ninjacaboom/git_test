@@ -2090,3 +2090,24 @@ header.top {
   border: 0;
   background-clip: padding-box;
 }
+
+/* button - small gap - grey line - small gap - button */
+.top-boxes {
+  gap: 9px;
+}
+
+.top-boxes .nav-box:not(:last-child)::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -5px; /* 4px gap, then the 1px line, then 4px gap */
+  width: 1px;
+  height: auto;
+  background: #8d8f92;
+}
+
+.top-member {
+  margin-left: calc(0.7rem + 443px + 0.7rem); /* after the four buttons (4 x 104px + 3 gaps of 9px) */
+}
