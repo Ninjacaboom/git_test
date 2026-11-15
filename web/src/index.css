@@ -2111,3 +2111,24 @@ header.top {
 .top-member {
   margin-left: calc(0.7rem + 443px + 0.7rem); /* after the four buttons (4 x 104px + 3 gaps of 9px) */
 }
+
+/* grey line - small gap - button at the start and end of the row too */
+.top-boxes .nav-box:first-child::before,
+.top-boxes .nav-box:last-child::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  height: auto;
+  background: #8d8f92;
+}
+
+.top-boxes .nav-box:first-child::before {
+  left: -5px;
+}
+
+.top-boxes .nav-box:last-child::after {
+  right: -5px;
+}
