@@ -149,19 +149,22 @@ const ARMOUR_WEIGHTS: Record<string, string> = {
   superheavy: 'Super heavy armour',
 };
 
-/**
- * The specific type of an item, shown on its card and pop-up: "Heavy armour · Core", "Sniper Rifle",
- * "Assault Rifle", "Laser Cannon", "Cooler", ... Taken from the "Item Type" line of the description where there is one.
- */
-export function typeLabel(r: {
-  type: string;
-  armourWeight?: string | null;
-  description?: string | null;
-}): string {
+const WEAPON_CATEGORIES: Record<string, string> = {
+  pistol: 'Pistol',
+  smg: 'SMG',
+  rifle: 'Rifle',
+  sniper: 'Sniper',
+  shotgun: 'Shotgun',
+  lmg: 'LMG',
+  special: 'Special',
+};
+
+/** The label shown on the front of an item card: "Heavy armour · Core", "Sniper", "Cooler", ... */
+export function typeLabel(r: { type: string; armourWeight?: string | null; weaponCategory?: string | null }): string {
   const part = ARMOUR_PARTS[r.type];
-  if (part && r.armourWeight && ARMOUR_WEIGHTS[r.armourWeight]) return `${ARMOUR_WEIGHTS[r.armourWeight]} · ${part}`;
-  const itemType = parseItemStats(r.description).find((s) => s.label === 'Item Type')?.value.trim();
-  if (itemType) return itemType;
-  if (part) return `Armour · ${part}`;
+  if (part) return `${(r.armourWeight && ARMOUR_WEIGHTS[r.armourWeight]) || 'Armour'} · ${part}`;
+  if (r.type === 'WeaponPersonal' && r.weaponCategory && WEAPON_CATEGORIES[r.weaponCategory]) {
+    return WEAPON_CATEGORIES[r.weaponCategory];
+  }
   return prettyType(r.type);
 }
