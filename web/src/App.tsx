@@ -173,25 +173,27 @@ export default function App() {
             </span>
           ))}
         </div>
-        <nav className="top-boxes" aria-label="Pages">
-          {PAGES.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              className={view === p.id ? 'nav-box active' : 'nav-box'}
-              aria-current={view === p.id ? 'page' : undefined}
-              onClick={() => {
-                setView(p.id);
-                setSelectedId(null);
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </nav>
-        <div className="top-member">
-          <span className="top-member-tag">// MEMBER</span>
-          <span className="top-member-name">Guest</span>
+        <div className="top-group">
+          <nav className="top-boxes" aria-label="Pages">
+            {PAGES.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={view === p.id ? 'nav-box active' : 'nav-box'}
+                aria-current={view === p.id ? 'page' : undefined}
+                onClick={() => {
+                  setView(p.id);
+                  setSelectedId(null);
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </nav>
+          <div className="top-member">
+            <span className="top-member-tag">// MEMBER</span>
+            <span className="top-member-name">Guest</span>
+          </div>
         </div>
         <div className="top-menu">
           <button
