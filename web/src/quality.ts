@@ -8,12 +8,12 @@ export type Band = { from: number; to: number; color: string };
 /** The sections the quality slider is split into. 1000 (Perfect) is a section of its own. */
 export const BANDS: Band[] = [
   { from: 0, to: 399, color: 'hsl(0 70% 42%)' },
-  { from: 400, to: 599, color: 'hsl(14 78% 45%)' },
-  { from: 600, to: 699, color: 'hsl(28 88% 48%)' },
-  { from: 700, to: 799, color: 'hsl(125 42% 34%)' },
-  { from: 800, to: 899, color: 'hsl(128 50% 39%)' },
-  { from: 900, to: 949, color: 'hsl(130 56% 43%)' },
-  { from: 950, to: 999, color: 'hsl(133 62% 46%)' },
+  { from: 400, to: 599, color: 'hsl(14 74% 44%)' },
+  { from: 600, to: 699, color: 'hsl(28 72% 44%)' },
+  { from: 700, to: 799, color: 'hsl(55 30% 41%)' },
+  { from: 800, to: 899, color: 'hsl(90 34% 40%)' },
+  { from: 900, to: 949, color: 'hsl(115 44% 40%)' },
+  { from: 950, to: 999, color: 'hsl(130 56% 43%)' },
   { from: 1000, to: 1000, color: 'hsl(140 75% 55%)' },
 ];
 
