@@ -1722,3 +1722,15 @@ header.top {
 .top-sub {
   font-size: 1.8rem;
 }
+
+/* Red band a bit taller: it extends further down. */
+.top-bar {
+  padding-top: 0.12rem;
+  padding-bottom: 0.7rem;
+  align-items: flex-start;
+}
+
+.top-tag {
+  align-self: start;
+  margin-top: 0.12rem;
+}
