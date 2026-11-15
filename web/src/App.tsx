@@ -161,7 +161,14 @@ export default function App() {
           <h1>Crafting Store</h1>
           <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
         </div>
-        <div className="top-sub">{PAGE_TITLES[view]}</div>
+        <div className="top-sub">
+          {/* All titles share one cell, so the column is as wide as the longest and never changes. */}
+          {PAGES.map((p) => (
+            <span key={p.id} className={view === p.id ? 'on' : 'off'} aria-hidden={view !== p.id}>
+              {PAGE_TITLES[p.id]}
+            </span>
+          ))}
+        </div>
         <nav className="top-boxes" aria-label="Pages">
           {PAGES.map((p) => (
             <button

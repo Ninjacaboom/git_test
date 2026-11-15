@@ -1682,3 +1682,31 @@ header.top {
 .top-tag {
   padding-right: 0.5rem;
 }
+
+/* Middle column = exactly the longest title; tag ends where the title ends; buttons follow with a small gap. */
+header.top {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.top-sub {
+  display: grid;
+  padding: 0 0 0.2rem;
+  text-align: center;
+}
+
+.top-sub > span {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
+.top-sub > span.off {
+  visibility: hidden;
+}
+
+.top-tag {
+  padding-right: 0;
+}
+
+.top-boxes {
+  margin-left: 0.7rem;
+}
