@@ -85,8 +85,9 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
   const meta = [
     prettyType(recipe.type),
     recipe.subType && recipe.subType !== 'UNDEFINED' ? recipe.subType : null,
-    recipe.size ? `Size ${recipe.size}` : null,
-    recipe.grade ? `Grade ${recipe.grade}` : null,
+    // FPS weapons have no meaningful size or grade.
+    recipe.type !== 'WeaponPersonal' && recipe.size ? `Size ${recipe.size}` : null,
+    recipe.type !== 'WeaponPersonal' && recipe.grade ? `Grade ${recipe.grade}` : null,
     recipe.manufacturer,
   ].filter(Boolean);
   // Stats from the description, with the game data's weapon damage / fire rate taking priority.

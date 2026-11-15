@@ -292,8 +292,8 @@ export default function App() {
                           {f.text}
                         </span>
                       ))}
-                      {r.size > 0 && <span className="badge">Size {r.size}</span>}
-                      {r.grade ? <span className="badge">Grade {r.grade}</span> : null}
+                      {r.type !== 'WeaponPersonal' && r.size > 0 && <span className="badge">Size {r.size}</span>}
+                      {r.type !== 'WeaponPersonal' && r.grade ? <span className="badge">Grade {r.grade}</span> : null}
                       {r.isSkin && <span className="badge skin">Skin</span>}
                     </span>
                   </button>
