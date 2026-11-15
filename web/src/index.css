@@ -1532,3 +1532,28 @@ header.top {
     padding-right: clamp(1rem, 2vw, 2.5rem);
   }
 }
+
+/* Red band ends at the "// MODULE" text; the boxes sit directly to the right of the title. */
+header.top {
+  grid-template-columns: 1fr auto auto 1fr;
+}
+
+.top-bar {
+  grid-column: 1 / 3;
+  margin-right: 0;
+}
+
+.top-boxes {
+  grid-column: 3;
+  justify-self: start;
+  margin-left: 0;
+}
+
+@media (max-width: 700px) {
+  header.top {
+    grid-template-columns: 1fr;
+  }
+  .top-bar {
+    grid-column: 1;
+  }
+}
