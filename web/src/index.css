@@ -1260,7 +1260,7 @@ h3 {
 
 /* ---- header tag: red highlighted bar, like the terminal's system bar ---- */
 header {
-  border-left-color: #b3262e;
+  border-left-color: #8a1c23;
 }
 
 header::before {
@@ -1269,7 +1269,7 @@ header::before {
   color: #ffe3df;
   font-weight: 600;
   text-shadow: none;
-  background: linear-gradient(90deg, #b3262e 0%, #b3262e 55%, rgba(179, 38, 46, 0) 100%);
+  background: linear-gradient(90deg, #8a1c23 0%, #8a1c23 55%, rgba(179, 38, 46, 0) 100%);
 }
 
 /* Pull the header up so the red bar touches the top edge of the screen. */
@@ -1283,7 +1283,7 @@ header::before {
   width: 100vw;
   margin-left: calc(-1 * (clamp(1rem, 2vw, 2.5rem) + 4px + 0.9rem));
   padding-left: calc(clamp(1rem, 2vw, 2.5rem) + 4px + 0.9rem + 0.4rem);
-  background: #b3262e;
+  background: #8a1c23;
 }
 
 body {
@@ -1312,7 +1312,7 @@ header.top::after {
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #ffe3df;
-  background: #b3262e;
+  background: #8a1c23;
   text-shadow: none;
 }
 
@@ -1404,7 +1404,7 @@ header.top {
   align-items: center;
   width: auto;
   padding: 0.12rem 1.1rem 0.12rem clamp(1rem, 2vw, 2.5rem);
-  background: #b3262e;
+  background: #8a1c23;
 }
 
 .top-left {
@@ -1605,7 +1605,7 @@ header.top {
 }
 
 .top-boxes .nav-box.active::before {
-  background: #b3262e;
+  background: #8a1c23;
   width: 2px;
 }
 
@@ -1766,7 +1766,7 @@ header.top {
 
 .top-boxes .nav-box.active::before {
   width: 1px;
-  background: #b3262e;
+  background: #8a1c23;
 }
 
 .top-member {
@@ -1785,7 +1785,7 @@ header.top {
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #ffe3df;
-  background: #b3262e;
+  background: #8a1c23;
 }
 
 .top-member-name {
