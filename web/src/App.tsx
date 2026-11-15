@@ -133,9 +133,24 @@ export default function App() {
 
   return (
     <div className="app">
-      <header>
-        <h1>Crafting Store</h1>
-        <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
+      <header className="top">
+        <div className="top-bar">// CRAFTING SYSTEM</div>
+        <div className="top-row">
+          <div className="top-left">
+            <h1>Crafting Store</h1>
+            <p className="muted">Browse craftable items and see how material quality changes their stats.</p>
+          </div>
+          <div className="top-boxes" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="top-right">
+            <span className="top-tag">// MODULE</span>
+            <span className="top-sub">Item catalogue</span>
+          </div>
+        </div>
       </header>
 
       {error && <p className="error">{error}</p>}

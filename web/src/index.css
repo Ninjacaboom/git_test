@@ -1289,3 +1289,88 @@ header::before {
 body {
   overflow-x: hidden;
 }
+
+/* =====================================================================
+   Top of the page laid out like the terminal header: thin red bar with a
+   small label, big title on the left, hatched boxes in the middle, a small
+   tag over a larger line on the right.
+   ===================================================================== */
+header.top {
+  margin: -1.5rem calc(-1 * clamp(1rem, 2vw, 2.5rem)) 0;
+  padding: 0;
+  border-left: 0;
+}
+
+header.top::before,
+header.top::after {
+  content: none;
+}
+
+.top-bar {
+  padding: 0.1rem clamp(1rem, 2vw, 2.5rem);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #ffe3df;
+  background: #b3262e;
+  text-shadow: none;
+}
+
+.top-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  padding: 0.5rem clamp(1rem, 2vw, 2.5rem) 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.top-left {
+  margin-right: auto;
+}
+
+.top-left h1 {
+  line-height: 1;
+}
+
+.top-left p {
+  margin: 0.3rem 0 0;
+}
+
+.top-boxes {
+  display: flex;
+  gap: 4px;
+  align-self: center;
+}
+
+.top-boxes span {
+  width: 54px;
+  height: 26px;
+  border: 1px solid var(--border);
+  background: repeating-linear-gradient(-45deg, rgba(143, 168, 189, 0.35) 0 2px, transparent 2px 6px);
+}
+
+.top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.top-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.top-sub {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .top-boxes {
+    display: none;
+  }
+}
