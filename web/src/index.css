@@ -1668,3 +1668,17 @@ header.top {
     grid-template-columns: 1fr;
   }
 }
+
+/* Middle column is only as wide as the longest title, so the tag and buttons sit right against it. */
+header.top {
+  grid-template-columns: 1fr 252px 1fr;
+}
+
+.top-sub {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.top-tag {
+  padding-right: 0.5rem;
+}
