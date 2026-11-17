@@ -6,6 +6,7 @@ import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 import ComingSoon from './ComingSoon';
+import Market from './Market';
 
 // The pages the top buttons switch between. Only the catalogue exists so far.
 const PAGES = [
@@ -44,7 +45,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<PageId>('catalogue');
   const [menuOpen, setMenuOpen] = useState(false);
-  const { members, current, choose } = useCurrentMember();
+  const { members, squadrons, current, choose } = useCurrentMember();
 
   // Load the type list once.
   useEffect(() => {
@@ -242,7 +243,8 @@ export default function App() {
 
       {error && <p className="error">{error}</p>}
 
-      {view !== 'catalogue' && <ComingSoon page={view} />}
+      {view === 'market' && <Market current={current} members={members} squadrons={squadrons} />}
+      {view !== 'catalogue' && view !== 'market' && <ComingSoon page={view} />}
 
       <div className="layout" hidden={view !== 'catalogue'}>
         <aside className="filters">

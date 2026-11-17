@@ -2229,3 +2229,181 @@ header.top {
   color: #d5dbe2;
   text-transform: none;
 }
+
+/* ---- Market page ---- */
+.market {
+  flex: 1;
+  min-height: 0;
+  margin-top: 1rem;
+  overflow-y: auto;
+}
+
+.market-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.market-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.market-tabs button,
+.market-add,
+.list-form button[type='submit'] {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.market-tabs button.on,
+.market-add:not(:disabled),
+.list-form button[type='submit']:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.market-tabs button.on {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.market-add:disabled,
+.list-form button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.8rem;
+}
+
+.lot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+}
+
+.lot-name {
+  font-weight: 600;
+}
+
+.lot-quality {
+  font-weight: 600;
+}
+
+.lot-card dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.8rem;
+  margin: 0.3rem 0;
+}
+
+.lot-card dt {
+  color: var(--muted);
+}
+
+.lot-card dd {
+  margin: 0;
+  text-align: right;
+}
+
+.lot-price {
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.list-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-width: 34rem;
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+}
+
+.form-title {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.list-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--muted);
+}
+
+.list-form label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.list-form input:not([type='checkbox']) {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  background: #000;
+  color: var(--text);
+  font: inherit;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+}
+
+.list-matches {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+}
+
+.list-matches button {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.list-matches button:hover {
+  background: rgba(163, 173, 181, 0.15);
+}
+
+.picked {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: var(--text);
+}
+
+.picked button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}

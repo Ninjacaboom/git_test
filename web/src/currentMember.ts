@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getMembers, type Member } from './api';
+import { getMembers, getSquadrons, type Member, type Squadron } from './api';
 
 const KEY = 'nova.viewingAs';
 
@@ -9,6 +9,7 @@ const KEY = 'nova.viewingAs';
  */
 export function useCurrentMember() {
   const [members, setMembers] = useState<Member[]>([]);
+  const [squadrons, setSquadrons] = useState<Squadron[]>([]);
   const [currentId, setCurrentId] = useState<string>(() => {
     try {
       return localStorage.getItem(KEY) ?? '';
@@ -19,6 +20,7 @@ export function useCurrentMember() {
 
   useEffect(() => {
     getMembers().then(setMembers).catch(() => setMembers([]));
+    getSquadrons().then(setSquadrons).catch(() => setSquadrons([]));
   }, []);
 
   function choose(id: string) {
@@ -31,5 +33,5 @@ export function useCurrentMember() {
   }
 
   const current = members.find((m) => m.id === currentId) ?? null;
-  return { members, current, choose };
+  return { members, squadrons, current, choose };
 }
