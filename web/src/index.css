@@ -2209,3 +2209,23 @@ header.top {
   max-height: 3.4rem;
   overflow: hidden;
 }
+
+/* "Viewing as" picker: looks like the plain name it replaced */
+.member-select {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  padding: 0;
+  max-width: 11rem;
+  text-overflow: ellipsis;
+}
+.member-select option {
+  background: #0b0b0c;
+  color: #d5dbe2;
+  text-transform: none;
+}

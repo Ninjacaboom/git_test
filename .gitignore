@@ -4,3 +4,4 @@ bin
 obj
 .vs
 *.user
+src/MyApp.Api/App_Data/

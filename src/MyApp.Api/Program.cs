@@ -42,6 +42,59 @@ app.MapPost("/api/recipes/{id}/stats", (string id, StatsRequest request) =>
     return Results.Ok(QualityMath.RecipeEffects(recipe, qualities));
 });
 
+// ---- Stand-in members and squadrons (the NOVA portal will supply these later) ----
+app.MapGet("/api/members", () => Org.Members);
+app.MapGet("/api/squadrons", () => Org.Squadrons);
+
+// ---- Stock lots: crafted items owned by a member or a squadron ----
+// Saved to App_Data/lots.json next to the program.
+var lots = new LotStore(Path.Combine(app.Environment.ContentRootPath, "App_Data", "lots.json"));
+
+// Example: /api/lots?stage=Public&ownerKind=squadron&ownerId=901st&recipeId=...
+app.MapGet("/api/lots", (string? stage, string? ownerKind, string? ownerId, string? recipeId) =>
+    lots.List(stage, ownerKind, ownerId, recipeId));
+
+app.MapGet("/api/lots/{id}", (string id) =>
+    lots.Get(id) is { } lot ? Results.Ok(lot) : Results.NotFound());
+
+// Body: { "recipeId": "...", "quality": 750, "quantity": 1, "madeByMemberId": "m-ash",
+//         "forSquadron": true, "priceAuec": 12000 }
+app.MapPost("/api/lots", (NewLot input) =>
+{
+    if (bank.GetRecipe(input.RecipeId) is not { } recipe)
+        return Results.BadRequest(new { error = "Unknown recipe." });
+    if (Org.FindMember(input.MadeByMemberId) is not { } member)
+        return Results.BadRequest(new { error = "Unknown member." });
+    if (input.Quality is < 0 or > 1000)
+        return Results.BadRequest(new { error = "Quality must be 0-1000." });
+    if (input.Quantity < 1)
+        return Results.BadRequest(new { error = "Quantity must be at least 1." });
+    if (input.ForSquadron && member.SquadronId is null)
+        return Results.BadRequest(new { error = "That member is not in a squadron." });
+    if (input.PriceAuec is < 0)
+        return Results.BadRequest(new { error = "Price cannot be negative." });
+
+    // Squadron-made lots start on the release ladder; member-made lots are listed publicly.
+    var lot = new Lot(
+        Guid.NewGuid().ToString("N")[..8],
+        recipe.Id,
+        recipe.Name,
+        recipe.Type,
+        input.Quality,
+        input.Quantity,
+        input.ForSquadron ? "squadron" : "member",
+        input.ForSquadron ? member.SquadronId! : member.Id,
+        member.Id,
+        input.ForSquadron ? LotStages.Squadron : LotStages.Public,
+        input.PriceAuec,
+        DateTime.UtcNow,
+        null);
+    return Results.Created($"/api/lots/{lot.Id}", lots.Add(lot));
+});
+
+app.MapDelete("/api/lots/{id}", (string id) =>
+    lots.Remove(id) ? Results.NoContent() : Results.NotFound());
+
 // In-memory list for now. Swap for a database (EF Core) later.
 var todos = new List<Todo>
 {

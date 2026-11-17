@@ -1,3 +1,4 @@
+import { useCurrentMember } from './currentMember';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getRecipeTypes, searchRecipes, type RecipeSummary, type TypeCount } from './api';
 import { cardFacts, typeLabel } from './format';
@@ -43,6 +44,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<PageId>('catalogue');
   const [menuOpen, setMenuOpen] = useState(false);
+  const { members, current, choose } = useCurrentMember();
 
   // Load the type list once.
   useEffect(() => {
@@ -191,7 +193,19 @@ export default function App() {
         </nav>
         <div className="top-member">
           <span className="top-member-tag">// MEMBER</span>
-          <span className="top-member-name">Guest</span>
+          <select
+            className="top-member-name member-select"
+            aria-label="Viewing as"
+            value={current?.id ?? ''}
+            onChange={(e) => choose(e.target.value)}
+          >
+            <option value="">Guest</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="top-menu">
           <button

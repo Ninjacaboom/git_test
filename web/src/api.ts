@@ -101,3 +101,51 @@ export const getStats = (id: string, qualities: Record<string, number>) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ qualities }),
   });
+
+// ---- Members, squadrons and stock lots (stand-ins until the NOVA portal supplies members) ----
+
+export type Squadron = { id: string; name: string; division: string };
+export type Member = { id: string; name: string; squadronId: string | null; division: string };
+
+export type LotStage = 'Squadron' | 'Priority' | 'Public' | 'Claimed' | 'Sold';
+
+export type Lot = {
+  id: string;
+  recipeId: string;
+  itemName: string;
+  itemType: string;
+  quality: number;
+  quantity: number;
+  ownerKind: 'member' | 'squadron';
+  ownerId: string;
+  madeByMemberId: string;
+  stage: LotStage;
+  priceAuec: number | null;
+  createdAt: string;
+  releaseAt: string | null;
+};
+
+export type NewLot = {
+  recipeId: string;
+  quality: number;
+  quantity: number;
+  madeByMemberId: string;
+  forSquadron: boolean;
+  priceAuec: number | null;
+};
+
+export const getMembers = () => request<Member[]>('/api/members');
+export const getSquadrons = () => request<Squadron[]>('/api/squadrons');
+
+export function getLots(filter: { stage?: string; ownerKind?: string; ownerId?: string; recipeId?: string } = {}) {
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(filter)) if (v) params.set(k, v);
+  return request<Lot[]>(`/api/lots?${params.toString()}`);
+}
+
+export const createLot = (lot: NewLot) =>
+  request<Lot>('/api/lots', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(lot),
+  });
