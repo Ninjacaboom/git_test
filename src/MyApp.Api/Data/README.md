@@ -124,3 +124,14 @@ Hand-held weapons have `weaponClass`: `ballistic` or `energy` (lasers, plasma an
 ## Power plant output
 
 Power plants have a `Power Pips` entry in `baseStats`: the power output at base quality (500Q), taken from the item's power generation. The `Power Pips` quality effect adds to or takes from it.
+
+## Commodity prices (UEX)
+
+`GET /api/prices` returns what commodity terminals pay per SCU, taken from the UEX community API
+(`commodities_prices_all`). The backend fetches it at most once a day and saves it to
+`App_Data/uex-prices.json`.
+
+The UEX access token is read from the `Uex:Token` setting. Keep it out of the repo. To store it on your own
+PC, from `src\MyApp.Api` run:
+
+    dotnet user-secrets set "Uex:Token" "YOUR_TOKEN"

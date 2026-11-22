@@ -95,6 +95,18 @@ app.MapPost("/api/lots", (NewLot input) =>
 app.MapDelete("/api/lots/{id}", (string id) =>
     lots.Remove(id) ? Results.NoContent() : Results.NotFound());
 
+// ---- Commodity prices from UEX (what terminals pay per SCU), fetched at most once a day ----
+// The access token is read from the "Uex:Token" setting (see README), never stored in code.
+var uex = new UexPrices(
+    new HttpClient { Timeout = TimeSpan.FromSeconds(30) },
+    app.Configuration["Uex:Token"],
+    Path.Combine(app.Environment.ContentRootPath, "App_Data", "uex-prices.json"));
+
+app.MapGet("/api/prices", async () =>
+    await uex.GetAsync() is { } snapshot
+        ? Results.Ok(snapshot)
+        : Results.Problem("Commodity prices are not available yet. Check the Uex:Token setting and the internet connection.", statusCode: 503));
+
 // In-memory list for now. Swap for a database (EF Core) later.
 var todos = new List<Todo>
 {

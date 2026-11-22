@@ -44,14 +44,40 @@ export type Ore = {
   basePrice?: number;
 };
 
-/** The base price to use for an ore: a price set in the guide, then the ore's own, then the class placeholder. */
-export function baseFor(ore: Ore, overrides: Record<string, number> = {}): number {
-  return overrides[ore.name] ?? ore.basePrice ?? CLASSES[ore.classId].basePrice;
+export type BaseSource = 'typed' | 'market' | 'ore' | 'class';
+
+export type MarketPrice = { price: number; name: string; terminals: number };
+
+/** Names UEX uses that differ from ours. */
+const UEX_ALIASES: Record<string, string> = { Aluminium: 'Aluminum' };
+
+/**
+ * Find what terminals pay for an ore in a UEX price list. Raw ore is what members mine, so
+ * "<name> (Ore)" and "<name> (Raw)" are tried before the plain (refined) name.
+ */
+export function findMarketPrice(oreName: string, list: { name: string; avgSell: number | null; terminals: number }[]): MarketPrice | null {
+  const base = UEX_ALIASES[oreName] ?? oreName;
+  const wanted = [`${base} (Ore)`, `${base} (Raw)`, `${oreName} (Ore)`, `${oreName} (Raw)`, base, oreName].map((n) => n.toLowerCase());
+  for (const w of wanted) {
+    const hit = list.find((p) => p.name.toLowerCase() === w && p.avgSell);
+    if (hit && hit.avgSell) return { price: hit.avgSell, name: hit.name, terminals: hit.terminals };
+  }
+  return null;
 }
 
-/** True when the ore has a price someone set, rather than the class placeholder. */
-export function hasOwnBase(ore: Ore, overrides: Record<string, number> = {}): boolean {
-  return overrides[ore.name] !== undefined || ore.basePrice !== undefined;
+/**
+ * The base price to use for an ore, and where it came from: a price typed in the guide, then the
+ * market price from UEX, then the ore's own, then the class placeholder.
+ */
+export function baseInfo(
+  ore: Ore,
+  typed: Record<string, number> = {},
+  market: MarketPrice | null = null,
+): { value: number; source: BaseSource } {
+  if (typed[ore.name] !== undefined) return { value: typed[ore.name], source: 'typed' };
+  if (market) return { value: market.price, source: 'market' };
+  if (ore.basePrice !== undefined) return { value: ore.basePrice, source: 'ore' };
+  return { value: CLASSES[ore.classId].basePrice, source: 'class' };
 }
 
 export const ORES: Ore[] = [

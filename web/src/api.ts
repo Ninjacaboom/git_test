@@ -149,3 +149,18 @@ export const createLot = (lot: NewLot) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(lot),
   });
+
+// ---- Commodity prices from UEX (what terminals pay per SCU) ----
+
+export type CommodityPrice = {
+  name: string;
+  bestSell: number | null;
+  avgSell: number | null;
+  terminals: number;
+  /** Unix seconds of the latest report. */
+  updated: number | null;
+};
+
+export type PriceSnapshot = { fetchedAt: string; source: string; prices: CommodityPrice[] };
+
+export const getPrices = () => request<PriceSnapshot>('/api/prices');

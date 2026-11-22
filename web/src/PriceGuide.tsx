@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getPrices, type PriceSnapshot } from './api';
 import {
   CLASSES,
   GUIDE_QUALITIES,
   ORES,
   chanceAtLeast,
-  baseFor,
+  baseInfo,
+  findMarketPrice,
   formatChance,
-  hasOwnBase,
   materialPrice,
   type Region,
 } from './pricing';
@@ -28,6 +29,16 @@ export default function PriceGuide() {
   // Base prices typed in here. Kept in this browser for now; sharing them across the org needs the backend.
   const [overrides, setOverrides] = useState<Record<string, number>>(loadOverrides);
 
+  // What commodity terminals pay, from the backend (which refreshes it from UEX once a day).
+  const [market, setMarket] = useState<PriceSnapshot | null>(null);
+  const [marketError, setMarketError] = useState(false);
+
+  useEffect(() => {
+    getPrices()
+      .then(setMarket)
+      .catch(() => setMarketError(true));
+  }, []);
+
   function setBase(name: string, value: string) {
     const next = { ...overrides };
     const n = Math.round(Number(value));
@@ -45,9 +56,9 @@ export default function PriceGuide() {
     <div className="price-guide">
       <div className="price-head">
         <p className="muted">
-          Suggested price per SCU. It rises with how rare the quality is: ten times rarer adds one base price, capped at 6x. Type
-          each ore's own base price in the Base column (grey numbers are placeholders from its rarity class). Quality is "this
-          or better".
+          Suggested price per SCU. It rises with how rare the quality is: ten times rarer adds one base price, capped at 6x. The
+          Base column starts from what commodity terminals pay (UEX), and you can type your own over it. Grey numbers are
+          placeholders from the ore's rarity class. Quality is "this or better".
         </p>
         <div className="market-tabs" role="tablist">
           {(['stanton', 'pyro'] as Region[]).map((r) => (
@@ -79,8 +90,15 @@ export default function PriceGuide() {
           <tbody>
             {ORES.map((ore) => {
               const cls = CLASSES[ore.classId];
-              const base = baseFor(ore, overrides);
-              const own = hasOwnBase(ore, overrides);
+              const found = market ? findMarketPrice(ore.name, market.prices) : null;
+              const { value: base, source } = baseInfo(ore, overrides, found);
+              const own = source !== 'class';
+              const title =
+                source === 'market' && found
+                  ? `Average of ${found.terminals} terminal${found.terminals === 1 ? '' : 's'} paying for ${found.name} (UEX)`
+                  : source === 'typed'
+                    ? 'Typed by you'
+                    : 'Placeholder from the rarity class';
               return (
                 <tr key={ore.name}>
                   <td>{ore.name}</td>
@@ -101,6 +119,7 @@ export default function PriceGuide() {
                           min={0}
                           className={own ? 'base-input' : 'base-input placeholder'}
                           aria-label={`${ore.name} base price`}
+                          title={title}
                           value={own ? base : ''}
                           placeholder={String(base)}
                           onChange={(e) => setBase(ore.name, e.target.value)}
@@ -119,7 +138,14 @@ export default function PriceGuide() {
           </tbody>
         </table>
       </div>
-      <p className="muted">A "?" means the ore's rarity class is a guess. Copper and Torite are confirmed.</p>
+      <p className="muted">
+        A "?" means the ore's rarity class is a guess. Copper and Torite are confirmed.{' '}
+        {market
+          ? `Terminal prices from UEX, last fetched ${new Date(market.fetchedAt).toLocaleString()}.`
+          : marketError
+            ? 'Terminal prices are not available right now, so the base prices are placeholders.'
+            : 'Loading terminal prices…'}
+      </p>
     </div>
   );
 }
