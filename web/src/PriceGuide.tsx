@@ -5,6 +5,7 @@ import {
   GUIDE_QUALITIES,
   ORES,
   chanceAtLeast,
+  DEFAULT_STEEPNESS,
   baseInfo,
   findMarketPrice,
   formatChance,
@@ -14,6 +15,16 @@ import {
 
 /** Suggested prices for ship-mined ore at each quality, from how rare that quality is. */
 const KEY = 'nova.basePrices';
+const STEEP_KEY = 'nova.steepness';
+
+function loadSteepness(): number {
+  try {
+    const n = Number(localStorage.getItem(STEEP_KEY));
+    return n > 0 && n <= 1 ? n : DEFAULT_STEEPNESS;
+  } catch {
+    return DEFAULT_STEEPNESS;
+  }
+}
 
 function loadOverrides(): Record<string, number> {
   try {
@@ -26,6 +37,18 @@ function loadOverrides(): Record<string, number> {
 
 export default function PriceGuide() {
   const [region, setRegion] = useState<Region>('stanton');
+  const [steepness, setSteepness] = useState<number>(loadSteepness);
+
+  function chooseSteepness(value: string) {
+    const n = Number(value);
+    if (!(n > 0 && n <= 1)) return;
+    setSteepness(n);
+    try {
+      localStorage.setItem(STEEP_KEY, String(n));
+    } catch {
+      // storage unavailable: the choice lasts until the page is reloaded
+    }
+  }
   // Base prices typed in here. Kept in this browser for now; sharing them across the org needs the backend.
   const [overrides, setOverrides] = useState<Record<string, number>>(loadOverrides);
 
@@ -56,10 +79,22 @@ export default function PriceGuide() {
     <div className="price-guide">
       <div className="price-head">
         <p className="muted">
-          Suggested price per SCU. It rises with how rare the quality is: ten times rarer adds one base price, capped at 6x. The
-          Base column starts from what commodity terminals pay (UEX), and you can type your own over it. Grey numbers are
-          placeholders from the ore's rarity class. Quality is "this or better".
+          Suggested price per SCU. The price is the base price times (1 / chance) to the power of the steepness, capped at
+          200x. The Base column starts from what commodity terminals pay (UEX), and you can type your own over it. Grey numbers
+          are placeholders from the ore's rarity class. Quality is "this or better".
         </p>
+        <label className="steepness">
+          Steepness
+          <input
+            type="number"
+            min={0.05}
+            max={1}
+            step={0.05}
+            value={steepness}
+            onChange={(e) => chooseSteepness(e.target.value)}
+          />
+          <span className="muted">0.5 = the square root of how many times rarer it is. 1 = price follows rarity exactly.</span>
+        </label>
         <div className="market-tabs" role="tablist">
           {(['stanton', 'pyro'] as Region[]).map((r) => (
             <button
@@ -127,7 +162,7 @@ export default function PriceGuide() {
                       </td>
                     ) : (
                       <td key={q}>
-                        {materialPrice(base, q, ore.classId, region).toLocaleString()}
+                        {materialPrice(base, q, ore.classId, region, steepness).toLocaleString()}
                         <span className="chance">{formatChance(chanceAtLeast(q, ore.classId, region))}</span>
                       </td>
                     ),

@@ -111,8 +111,14 @@ export const ORES: Ore[] = [
 /** Quality steps shown in the price guide. 500 is the baseline (everything rolls at least this). */
 export const GUIDE_QUALITIES = [500, 600, 700, 800, 900, 950] as const;
 
-/** Largest multiplier any quality can reach, so a one-in-a-thousand roll is not priced absurdly. */
-export const MAX_MULTIPLIER = 6;
+/** Largest multiplier any quality can reach, so a one-in-ten-thousand roll is not priced absurdly. */
+export const MAX_MULTIPLIER = 200;
+
+/**
+ * How steeply price follows rarity. The multiplier is (1 / chance) ^ steepness:
+ * 0 is flat, 1 means a quality ten times rarer costs ten times more. Tune it against real sales.
+ */
+export const DEFAULT_STEEPNESS = 0.5;
 
 /** Error function (Abramowitz and Stegun 7.1.26, accurate to about 1.5e-7). */
 function erf(x: number): number {
@@ -137,15 +143,21 @@ export function chanceAtLeast(quality: number, classId: ClassId, region: Region 
   return Math.max(0, (hi - phi((q - QUALITY_MEAN) / sd)) / (hi - lo));
 }
 
-/** 1 for anything common, then 1 + k per factor of ten rarer, capped. */
-export function rarityMultiplier(chance: number, k = 1): number {
+/** 1 for anything that always rolls, then (1 / chance) ^ steepness, capped. */
+export function rarityMultiplier(chance: number, steepness = DEFAULT_STEEPNESS): number {
   if (chance >= 1) return 1;
   if (chance <= 0) return MAX_MULTIPLIER;
-  return Math.min(MAX_MULTIPLIER, 1 + k * Math.log10(1 / chance));
+  return Math.min(MAX_MULTIPLIER, Math.pow(1 / chance, steepness));
 }
 
-export function materialPrice(basePrice: number, quality: number, classId: ClassId, region: Region = 'stanton', k = 1): number {
-  const m = rarityMultiplier(chanceAtLeast(quality, classId, region), k);
+export function materialPrice(
+  basePrice: number,
+  quality: number,
+  classId: ClassId,
+  region: Region = 'stanton',
+  steepness = DEFAULT_STEEPNESS,
+): number {
+  const m = rarityMultiplier(chanceAtLeast(quality, classId, region), steepness);
   return Math.round((basePrice * m) / 10) * 10;
 }
 

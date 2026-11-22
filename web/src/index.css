@@ -2484,3 +2484,20 @@ header.top {
 .price-table .base-input.placeholder::placeholder {
   color: var(--muted);
 }
+
+.steepness {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.steepness input {
+  width: 5rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  background: #000;
+  color: var(--text);
+  font: inherit;
+  text-align: right;
+}
