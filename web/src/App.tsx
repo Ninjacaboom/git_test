@@ -7,20 +7,21 @@ import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
 import ComingSoon from './ComingSoon';
 import Market from './Market';
+import Orders from './Orders';
 
 // The pages the top buttons switch between. Only the catalogue exists so far.
 const PAGES = [
   { id: 'catalogue', label: 'Catalogue' },
   { id: 'market', label: 'Market' },
   { id: 'contracts', label: 'Contracts' },
-  { id: 'crafted', label: 'Crafted' },
+  { id: 'orders', label: 'My orders' },
 ] as const;
 type PageId = (typeof PAGES)[number]['id'];
 const PAGE_TITLES: Record<PageId, string> = {
   catalogue: 'Item catalogue',
   market: 'Public market',
   contracts: 'Contracts',
-  crafted: 'Crafted items',
+  orders: 'My orders',
 };
 
 // Cards per page when the page can scroll (phones and small windows). 24 fills whole rows in 1, 2, 3, 4 or 6 columns.
@@ -244,7 +245,8 @@ export default function App() {
       {error && <p className="error">{error}</p>}
 
       {view === 'market' && <Market current={current} members={members} squadrons={squadrons} />}
-      {view !== 'catalogue' && view !== 'market' && <ComingSoon page={view} />}
+      {view === 'orders' && <Orders current={current} members={members} squadrons={squadrons} />}
+      {view === 'contracts' && <ComingSoon page={view} />}
 
       <div className="layout" hidden={view !== 'catalogue'}>
         <aside className="filters">

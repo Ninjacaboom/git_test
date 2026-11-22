@@ -7,10 +7,6 @@ const TEXT: Record<string, { title: string; text: string }> = {
     title: 'Contracts',
     text: 'A board where members pick up contracts to farm materials for the org.',
   },
-  crafted: {
-    title: 'Crafted items',
-    text: 'Look through the items members have crafted, with the quality of the materials used.',
-  },
 };
 
 /** Placeholder for the pages that are planned but not built yet. */

@@ -2407,3 +2407,14 @@ header.top {
   font: inherit;
   cursor: pointer;
 }
+
+.orders-section {
+  margin-bottom: 1.4rem;
+}
+
+.orders-title {
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

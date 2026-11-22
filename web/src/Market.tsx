@@ -9,7 +9,7 @@ import {
   type Squadron,
 } from './api';
 import { prettyType } from './format';
-import { bandOf } from './quality';
+import LotCard from './LotCard';
 
 type Tab = 'public' | 'squadron' | 'mine';
 
@@ -114,35 +114,9 @@ export default function Market({ current, members, squadrons }: Props) {
       )}
 
       <div className="lot-grid">
-        {visible.map((l) => {
-          const band = bandOf(l.quality);
-          return (
-            <article key={l.id} className="lot-card">
-              <div className="lot-head">
-                <span className="type-tag">{prettyType(l.itemType)}</span>
-                <div className="lot-name">{l.itemName}</div>
-              </div>
-              <div className="lot-quality" style={{ color: band.color }}>
-                Q{l.quality}
-              </div>
-              <dl>
-                <dt>Quantity</dt>
-                <dd>{l.quantity}</dd>
-                <dt>{l.ownerKind === 'squadron' ? 'Squadron' : 'Seller'}</dt>
-                <dd>{ownerName(l)}</dd>
-                {l.ownerKind === 'squadron' && (
-                  <>
-                    <dt>Made by</dt>
-                    <dd>{memberName(l.madeByMemberId)}</dd>
-                  </>
-                )}
-                <dt>Stage</dt>
-                <dd>{l.stage}</dd>
-              </dl>
-              <div className="lot-price">{l.priceAuec == null ? 'Price on request' : `${l.priceAuec.toLocaleString()} aUEC`}</div>
-            </article>
-          );
-        })}
+        {visible.map((l) => (
+          <LotCard key={l.id} lot={l} ownerName={ownerName(l)} madeBy={memberName(l.madeByMemberId)} />
+        ))}
       </div>
     </section>
   );
