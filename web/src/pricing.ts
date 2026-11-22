@@ -40,7 +40,19 @@ export type Ore = {
   classId: ClassId;
   /** True once the class has been checked against the game or SCMDB; false for a guess. */
   confirmed: boolean;
+  /** This ore's own base price (aUEC per SCU at baseline quality). Falls back to the class placeholder. */
+  basePrice?: number;
 };
+
+/** The base price to use for an ore: a price set in the guide, then the ore's own, then the class placeholder. */
+export function baseFor(ore: Ore, overrides: Record<string, number> = {}): number {
+  return overrides[ore.name] ?? ore.basePrice ?? CLASSES[ore.classId].basePrice;
+}
+
+/** True when the ore has a price someone set, rather than the class placeholder. */
+export function hasOwnBase(ore: Ore, overrides: Record<string, number> = {}): boolean {
+  return overrides[ore.name] !== undefined || ore.basePrice !== undefined;
+}
 
 export const ORES: Ore[] = [
   { name: 'Copper', classId: 'common', confirmed: true },

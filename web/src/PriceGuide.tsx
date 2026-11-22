@@ -4,21 +4,50 @@ import {
   GUIDE_QUALITIES,
   ORES,
   chanceAtLeast,
+  baseFor,
   formatChance,
+  hasOwnBase,
   materialPrice,
   type Region,
 } from './pricing';
 
 /** Suggested prices for ship-mined ore at each quality, from how rare that quality is. */
+const KEY = 'nova.basePrices';
+
+function loadOverrides(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? (JSON.parse(raw) as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export default function PriceGuide() {
   const [region, setRegion] = useState<Region>('stanton');
+  // Base prices typed in here. Kept in this browser for now; sharing them across the org needs the backend.
+  const [overrides, setOverrides] = useState<Record<string, number>>(loadOverrides);
+
+  function setBase(name: string, value: string) {
+    const next = { ...overrides };
+    const n = Math.round(Number(value));
+    if (value.trim() === '' || !Number.isFinite(n) || n < 0) delete next[name];
+    else next[name] = n;
+    setOverrides(next);
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next));
+    } catch {
+      // storage unavailable: prices last until the page is reloaded
+    }
+  }
 
   return (
     <div className="price-guide">
       <div className="price-head">
         <p className="muted">
-          Suggested price per SCU. It rises with how rare the quality is: ten times rarer adds one base price, capped at 6x. Base
-          prices are starting values for the org to set. Quality is "this or better".
+          Suggested price per SCU. It rises with how rare the quality is: ten times rarer adds one base price, capped at 6x. Type
+          each ore's own base price in the Base column (grey numbers are placeholders from its rarity class). Quality is "this
+          or better".
         </p>
         <div className="market-tabs" role="tablist">
           {(['stanton', 'pyro'] as Region[]).map((r) => (
@@ -50,6 +79,8 @@ export default function PriceGuide() {
           <tbody>
             {ORES.map((ore) => {
               const cls = CLASSES[ore.classId];
+              const base = baseFor(ore, overrides);
+              const own = hasOwnBase(ore, overrides);
               return (
                 <tr key={ore.name}>
                   <td>{ore.name}</td>
@@ -62,12 +93,26 @@ export default function PriceGuide() {
                       </span>
                     )}
                   </td>
-                  {GUIDE_QUALITIES.map((q) => (
-                    <td key={q}>
-                      {materialPrice(cls.basePrice, q, ore.classId, region).toLocaleString()}
-                      <span className="chance">{q === 500 ? '' : formatChance(chanceAtLeast(q, ore.classId, region))}</span>
-                    </td>
-                  ))}
+                  {GUIDE_QUALITIES.map((q) =>
+                    q === 500 ? (
+                      <td key={q}>
+                        <input
+                          type="number"
+                          min={0}
+                          className={own ? 'base-input' : 'base-input placeholder'}
+                          aria-label={`${ore.name} base price`}
+                          value={own ? base : ''}
+                          placeholder={String(base)}
+                          onChange={(e) => setBase(ore.name, e.target.value)}
+                        />
+                      </td>
+                    ) : (
+                      <td key={q}>
+                        {materialPrice(base, q, ore.classId, region).toLocaleString()}
+                        <span className="chance">{formatChance(chanceAtLeast(q, ore.classId, region))}</span>
+                      </td>
+                    ),
+                  )}
                 </tr>
               );
             })}
