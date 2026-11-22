@@ -107,6 +107,10 @@ app.MapGet("/api/prices", async () =>
         ? Results.Ok(snapshot)
         : Results.Problem("Commodity prices are not available yet. Check the Uex:Token setting and the internet connection.", statusCode: 503));
 
+// For checking what UEX really sends back, e.g. /api/uex-sample/marketplace_listings (shows the first few records).
+app.MapGet("/api/uex-sample/{resource}", async (string resource) =>
+    UexPrices.CanSample(resource) ? Results.Text(await uex.SampleAsync(resource)) : Results.NotFound());
+
 // In-memory list for now. Swap for a database (EF Core) later.
 var todos = new List<Todo>
 {

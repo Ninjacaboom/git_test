@@ -39,6 +39,37 @@ public class UexPrices
         }
     }
 
+    static readonly HashSet<string> SampleResources = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "marketplace_listings", "marketplace_averages", "marketplace_averages_all",
+        "marketplace_prices_averages", "marketplace_prices_averages_all", "marketplace_trends",
+        "items", "items_prices_all", "categories",
+    };
+
+    /// <summary>Only a few harmless read-only endpoints can be sampled.</summary>
+    public static bool CanSample(string resource) => SampleResources.Contains(resource);
+
+    /// <summary>
+    /// The first part of a UEX response as plain text, so the real field names can be checked while building.
+    /// Not cached; it is for looking at, not for the site to use.
+    /// </summary>
+    public async Task<string> SampleAsync(string resource)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.uexcorp.uk/2.0/{resource}/");
+            if (_token is not null) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            using var response = await _http.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
+            var shown = body.Length > 6000 ? body[..6000] + "\n... (cut off, " + body.Length + " characters in total)" : body;
+            return $"HTTP {(int)response.StatusCode} from {resource}\n\n{shown}";
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            return $"Could not reach UEX: {ex.Message}";
+        }
+    }
+
     /// <summary>The latest prices, refreshed if they are over a day old. Null if there are none yet.</summary>
     public async Task<PriceSnapshot?> GetAsync()
     {
