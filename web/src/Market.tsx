@@ -10,13 +10,15 @@ import {
 } from './api';
 import { prettyType } from './format';
 import LotCard from './LotCard';
+import PriceGuide from './PriceGuide';
 
-type Tab = 'public' | 'squadron' | 'mine';
+type Tab = 'public' | 'squadron' | 'mine' | 'prices';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'public', label: 'Public market' },
   { id: 'squadron', label: 'My squadron' },
   { id: 'mine', label: 'My items' },
+  { id: 'prices', label: 'Price guide' },
 ];
 
 type Props = {
@@ -52,6 +54,8 @@ export default function Market({ current, members, squadrons }: Props) {
         return current?.squadronId
           ? lots.filter((l) => l.ownerKind === 'squadron' && l.ownerId === current.squadronId)
           : [];
+      case 'prices':
+        return [];
       case 'mine':
         return current ? lots.filter((l) => l.ownerKind === 'member' && l.ownerId === current.id) : [];
     }
@@ -103,15 +107,17 @@ export default function Market({ current, members, squadrons }: Props) {
 
       {error && <p className="error">{error}</p>}
 
-      {tab !== 'public' && !current && <p className="muted">Pick who you are viewing as (top right) to see this.</p>}
+      {tab !== 'public' && tab !== 'prices' && !current && <p className="muted">Pick who you are viewing as (top right) to see this.</p>}
       {tab === 'squadron' && current && !current.squadronId && (
         <p className="muted">{current.name} is not in a squadron.</p>
       )}
 
-      {lots === null && !error && <p className="muted">Loading…</p>}
-      {lots !== null && visible.length === 0 && (tab === 'public' || current) && (
+      {tab !== 'prices' && lots === null && !error && <p className="muted">Loading…</p>}
+      {tab !== 'prices' && lots !== null && visible.length === 0 && (tab === 'public' || current) && (
         <p className="muted">Nothing here yet.</p>
       )}
+
+      {tab === 'prices' && <PriceGuide />}
 
       <div className="lot-grid">
         {visible.map((l) => (

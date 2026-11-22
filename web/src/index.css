@@ -2418,3 +2418,55 @@ header.top {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+/* ---- Price guide ---- */
+.price-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+}
+
+.price-scroll {
+  overflow-x: auto;
+}
+
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel-bg);
+}
+
+.price-table th,
+.price-table td {
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.price-table th:first-child,
+.price-table td:first-child,
+.price-table th:nth-child(2),
+.price-table td:nth-child(2) {
+  text-align: left;
+}
+
+.price-table th {
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.price-table .chance {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8em;
+}
+
+.price-table .guess {
+  color: var(--down);
+  font-weight: 700;
+  cursor: help;
+}
