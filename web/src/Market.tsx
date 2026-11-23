@@ -4,6 +4,8 @@ import {
   createLot,
   getLots,
   getMarketListings,
+  getTradeableItems,
+  type TradeableItem,
   type LotKind,
   type MarketListing,
   searchRecipes,
@@ -166,6 +168,8 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
   // The item is either from the crafting catalogue, or any other item typed in (medals, attachments, looted gear).
   const [source, setSource] = useState<'catalogue' | 'other'>('catalogue');
   const [customName, setCustomName] = useState('');
+  const [chosenName, setChosenName] = useState<string | null>(null);
+  const [known, setKnown] = useState<TradeableItem[]>([]);
   const [category, setCategory] = useState<string>(CUSTOM_CATEGORIES[0]);
   const [rated, setRated] = useState(false);
   const [notes, setNotes] = useState('');
@@ -186,6 +190,21 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
       .then((s) => setListings(s.listings))
       .catch(() => setListingsError(true));
   }, []);
+
+  // Names of weapons, attachments, railguns and ship parts, to suggest as you type. Free text still works.
+  useEffect(() => {
+    getTradeableItems()
+      .then(setKnown)
+      .catch(() => setKnown([]));
+  }, []);
+
+  const suggestions = useMemo(() => {
+    const q = customName.trim().toLowerCase();
+    if (source !== 'other' || q.length < 2 || customName === chosenName) return [];
+    const hits = known.filter((i) => i.n.toLowerCase().includes(q));
+    hits.sort((a, b) => Number(b.n.toLowerCase().startsWith(q)) - Number(a.n.toLowerCase().startsWith(q)));
+    return hits.slice(0, 8);
+  }, [known, customName, chosenName, source]);
 
   const itemName = source === 'catalogue' ? (picked?.name ?? '') : customName.trim();
   const hasQuality = source === 'catalogue' || rated;
@@ -296,8 +315,31 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         <>
           <label>
             Item name
-            <input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Ranger medal, Tactical suppressor, Railgun" maxLength={80} />
+            <input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="Start typing, e.g. Scourge, Compensator, Ranger medal" maxLength={80} />
           </label>
+          {suggestions.length > 0 && (
+            <ul className="list-matches">
+              {suggestions.map((i, idx) => (
+                <li key={`${i.n}-${i.s ?? ''}-${idx}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomName(i.n);
+                      setChosenName(i.n);
+                      if ((CUSTOM_CATEGORIES as readonly string[]).includes(i.c)) setCategory(i.c);
+                    }}
+                  >
+                    {i.n}{' '}
+                    <span className="muted">
+                      {i.c}
+                      {i.s ? ` · S${i.s}` : ''}
+                      {i.m ? ` · ${i.m}` : ''}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           <label>
             Category
             <select value={category} onChange={(e) => setCategory(e.target.value)}>

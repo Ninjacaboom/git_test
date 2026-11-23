@@ -209,3 +209,18 @@ export type MarketListing = {
 export type ListingSnapshot = { fetchedAt: string; source: string; listings: MarketListing[] };
 
 export const getMarketListings = () => request<ListingSnapshot>('/api/market-listings');
+
+// ---- Names of tradeable items that are not in the crafting catalogue (built by tools/build-tradeable.mjs) ----
+
+export type TradeableItem = {
+  /** Name. */
+  n: string;
+  /** Category, one of CUSTOM_CATEGORIES. */
+  c: string;
+  /** Manufacturer. */
+  m?: string;
+  /** Size. */
+  s?: number;
+};
+
+export const getTradeableItems = () => request<TradeableItem[]>('/tradeable-items.json');
