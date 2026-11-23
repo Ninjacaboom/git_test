@@ -2603,3 +2603,62 @@ header.top {
   color: var(--text);
   font: inherit;
 }
+
+/* ---- Order at this quality ---- */
+.order-panel {
+  margin: 0.4rem 0 0.9rem;
+}
+
+.order-btn {
+  padding: 0.4rem 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.order-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.order-panel .list-form {
+  margin-top: 0.7rem;
+}
+
+.order-slots {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-slots li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-done {
+  margin: 0.5rem 0 0;
+  color: var(--up);
+}
+
+.link-btn {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.lot-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  font-size: 0.9em;
+}

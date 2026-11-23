@@ -330,7 +330,7 @@ export default function App() {
             <button className="modal-close" onClick={() => setSelectedId(null)} aria-label="Close">
               ×
             </button>
-            <RecipeDetail recipeId={selectedId} onSelect={setSelectedId} />
+            <RecipeDetail recipeId={selectedId} onSelect={setSelectedId} member={current} onViewMarket={() => setView('market')} />
           </div>
         </div>
       )}

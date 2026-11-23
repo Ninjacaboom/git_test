@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getRecipe, getStats, type Recipe, type StatEffects } from './api';
+import { getRecipe, getStats, type Member, type Recipe, type StatEffects } from './api';
 import { formatAmount, formatDuration, applyQualityToStats, displayEffect, formatEffect, parseItemStats, prettyType } from './format';
+import OrderPanel from './OrderPanel';
 import QualitySlider from './QualitySlider';
 import { BASELINE, qualityAt, redundantTiers } from './quality';
 
 type Props = {
   recipeId: string;
   onSelect: (id: string) => void;
+  /** Who the site is being viewed as; orders are posted as this member. */
+  member: Member | null;
+  onViewMarket: () => void;
 };
 
-export default function RecipeDetail({ recipeId, onSelect }: Props) {
+export default function RecipeDetail({ recipeId, onSelect, member, onViewMarket }: Props) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Where each slider thumb is. The quality actually used is worked out from it (see `qualities`).
@@ -107,6 +111,7 @@ export default function RecipeDetail({ recipeId, onSelect }: Props) {
       <h2>{recipe.name}</h2>
       <p className="meta">{meta.join(' · ')}</p>
       <p className="meta">Craft time: {formatDuration(recipe.craftTimeSeconds)}</p>
+      <OrderPanel recipe={recipe} qualities={qualities} member={member} onViewMarket={onViewMarket} />
 
       <div className="stat-panels">
       {itemStats.length > 0 && (

@@ -60,7 +60,7 @@ app.MapGet("/api/lots/{id}", (string id) =>
 // Body: { "recipeId": "...", "quality": 750, "quantity": 1, "madeByMemberId": "m-ash",
 //         "forSquadron": true, "priceAuec": 12000, "kind": "WTS" }
 // For an item that is not in the catalogue, leave recipeId out and send "customName" and "category"
-// (one of CustomCategories.All) instead; "quality" is optional then. "notes" is optional for any post.
+// (one of CustomCategories.All) instead; for a crafted item you can also send "slotQualities" (slot name -> quality); "quality" is optional then. "notes" is optional for any post.
 // kind: WTS (selling), WTB (buying: quality is the minimum, price the most you will pay),
 //       WTT (trading: also send "wanted", what you want in exchange).
 app.MapPost("/api/lots", (NewLot input) =>
@@ -86,11 +86,30 @@ app.MapPost("/api/lots", (NewLot input) =>
 
     // The item is either a crafted one from the catalogue, or any other item the member names.
     string recipeId, itemName, itemType;
+    int? quality = input.Quality;
+    Dictionary<string, int>? slotQualities = null;
     if (!string.IsNullOrWhiteSpace(input.RecipeId))
     {
         if (bank.GetRecipe(input.RecipeId) is not { } recipe)
             return Results.BadRequest(new { error = "Unknown recipe." });
-        if (input.Quality is null)
+
+        // Quality for each material slot, e.g. from an order placed in the catalogue.
+        if (input.SlotQualities is { Count: > 0 })
+        {
+            slotQualities = new Dictionary<string, int>();
+            foreach (var (slotName, slotQuality) in input.SlotQualities)
+            {
+                var slot = recipe.Slots.FirstOrDefault(s => s.Name == slotName);
+                if (slot is null)
+                    return Results.BadRequest(new { error = $"Unknown slot: {slotName}." });
+                if (slotQuality is < 0 or > 1000)
+                    return Results.BadRequest(new { error = "Slot quality must be 0-1000." });
+                slotQualities[string.IsNullOrWhiteSpace(slot.DisplayName) ? slot.Name : slot.DisplayName] = slotQuality;
+            }
+            quality ??= (int)Math.Round(slotQualities.Values.Average());
+        }
+
+        if (quality is null)
             return Results.BadRequest(new { error = "Quality is required for crafted items." });
         recipeId = recipe.Id;
         itemName = recipe.Name;
@@ -120,7 +139,7 @@ app.MapPost("/api/lots", (NewLot input) =>
         recipeId,
         itemName,
         itemType,
-        input.Quality,
+        quality,
         input.Quantity,
         input.ForSquadron ? "squadron" : "member",
         input.ForSquadron ? member.SquadronId! : member.Id,
@@ -131,7 +150,8 @@ app.MapPost("/api/lots", (NewLot input) =>
         null,
         kind,
         kind == LotKinds.Trade ? input.Wanted!.Trim() : null,
-        notes);
+        notes,
+        slotQualities);
     return Results.Created($"/api/lots/{lot.Id}", lots.Add(lot));
 });
 

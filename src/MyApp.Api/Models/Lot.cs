@@ -10,6 +10,8 @@ namespace MyApp.Api.Models;
 /// Lots saved before kinds existed have no Kind and count as WTS.
 /// Items that cannot be crafted (medals, attachments, looted armour...) have an empty RecipeId; ItemType
 /// then holds their category, and Quality is null when the item has no quality.
+/// SlotQualities (slot display name -> material quality) is set when someone asked for particular materials,
+/// e.g. an order placed from the catalogue; Quality is then their average.
 /// </summary>
 public record Lot(
     string Id,
@@ -27,7 +29,8 @@ public record Lot(
     DateTime? ReleaseAt,
     string Kind = "WTS",
     string? Wanted = null,
-    string? Notes = null);
+    string? Notes = null,
+    Dictionary<string, int>? SlotQualities = null);
 
 /// <summary>Body for creating a lot. Whoever is making it is MadeByMemberId.</summary>
 public record NewLot(
@@ -41,7 +44,8 @@ public record NewLot(
     string? Wanted = null,
     string? CustomName = null,
     string? Category = null,
-    string? Notes = null);
+    string? Notes = null,
+    Dictionary<string, int>? SlotQualities = null);
 
 /// <summary>Categories for items that are not in the crafting catalogue.</summary>
 public static class CustomCategories

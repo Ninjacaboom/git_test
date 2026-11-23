@@ -42,6 +42,15 @@ export default function LotCard({ lot: l, ownerName, madeBy }: { lot: Lot; owner
           </>
         )}
       </dl>
+      {l.slotQualities && (
+        <div className="lot-slots">
+          {Object.entries(l.slotQualities).map(([slot, q]) => (
+            <span key={slot} style={{ color: bandOf(q).color }}>
+              {slot} Q{q}
+            </span>
+          ))}
+        </div>
+      )}
       {l.notes && <div className="lot-notes">{l.notes}</div>}
       <div className="lot-price">
         {l.priceAuec == null

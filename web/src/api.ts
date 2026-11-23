@@ -132,6 +132,8 @@ export type Lot = {
   /** For WTT: what the poster wants in exchange. */
   wanted: string | null;
   notes: string | null;
+  /** Material quality asked for in each slot (slot display name -> quality), e.g. for an order from the catalogue. */
+  slotQualities: Record<string, number> | null;
 };
 
 /** Categories for items that are not in the crafting catalogue. Keep in step with CustomCategories in Lot.cs. */
@@ -160,6 +162,8 @@ export type NewLot = {
   customName?: string | null;
   category?: string | null;
   notes?: string | null;
+  /** Slot name (not display name) -> quality. */
+  slotQualities?: Record<string, number> | null;
 };
 
 export const getMembers = () => request<Member[]>('/api/members');
