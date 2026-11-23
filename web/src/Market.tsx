@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react
 import {
   createLot,
   getLots,
+  getMarketListings,
+  type MarketListing,
   searchRecipes,
   type Lot,
   type Member,
@@ -9,6 +11,7 @@ import {
   type Squadron,
 } from './api';
 import { prettyType } from './format';
+import { compsFor, listingsFor } from './comps';
 import LotCard from './LotCard';
 import PriceGuide from './PriceGuide';
 
@@ -138,6 +141,17 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
   const [forSquadron, setForSquadron] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [listings, setListings] = useState<MarketListing[] | null>(null);
+  const [listingsError, setListingsError] = useState(false);
+
+  // Player listings from the UEX marketplace, for comparing prices. Loaded when the form opens.
+  useEffect(() => {
+    getMarketListings()
+      .then((s) => setListings(s.listings))
+      .catch(() => setListingsError(true));
+  }, []);
+
+  const comps = picked && listings ? compsFor(listingsFor(picked.name, listings), quality) : null;
 
   useEffect(() => {
     if (picked || search.trim().length < 2) {
@@ -222,6 +236,40 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
           <input type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="optional" />
         </label>
       </div>
+
+      {picked && (
+        <div className="comps">
+          <div className="comps-title">What players are asking on UEX</div>
+          {listingsError && <p className="muted">Marketplace prices are not available right now.</p>}
+          {!listingsError && listings === null && <p className="muted">Loading listings…</p>}
+          {comps && comps.nearest.length === 0 && (
+            <p className="muted">No listings found with "{picked.name}" in the title.</p>
+          )}
+          {comps && comps.nearest.length > 0 && (
+            <>
+              <ul>
+                {comps.nearest.map((l, i) => (
+                  <li key={i}>
+                    <span>{l.quality !== null && l.quality > 1 ? `Q${l.quality}` : 'no quality'}</span>
+                    <span>{l.price.toLocaleString()} aUEC</span>
+                    <span className="muted">{l.title}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="comps-median">
+                Middle asking price: <strong>{comps.median?.toLocaleString()} aUEC</strong>
+                <button type="button" onClick={() => setPrice(String(comps.median))}>
+                  Use this price
+                </button>
+              </div>
+              {comps.includesUnrated && (
+                <p className="muted">Some listings have no quality, so they are not matched to yours.</p>
+              )}
+              <p className="muted">These are asking prices, not sales, so they run higher than what items actually sell for.</p>
+            </>
+          )}
+        </div>
+      )}
 
       <label className="check">
         <input

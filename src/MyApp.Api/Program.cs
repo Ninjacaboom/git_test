@@ -107,6 +107,17 @@ app.MapGet("/api/prices", async () =>
         ? Results.Ok(snapshot)
         : Results.Problem("Commodity prices are not available yet. Check the Uex:Token setting and the internet connection.", statusCode: 503));
 
+// Items players are selling on the UEX marketplace (asking prices), fetched at most once a day.
+var uexListings = new UexListings(
+    new HttpClient { Timeout = TimeSpan.FromSeconds(60) },
+    app.Configuration["Uex:Token"],
+    Path.Combine(app.Environment.ContentRootPath, "App_Data", "uex-listings.json"));
+
+app.MapGet("/api/market-listings", async () =>
+    await uexListings.GetAsync() is { } snapshot
+        ? Results.Ok(snapshot)
+        : Results.Problem("Marketplace listings are not available yet. Check the Uex:Token setting and the internet connection.", statusCode: 503));
+
 // For checking what UEX really sends back, e.g. /api/uex-sample/marketplace_listings (shows the first few records).
 app.MapGet("/api/uex-sample/{resource}", async (string resource) =>
     UexPrices.CanSample(resource) ? Results.Text(await uex.SampleAsync(resource)) : Results.NotFound());

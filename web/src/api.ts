@@ -164,3 +164,20 @@ export type CommodityPrice = {
 export type PriceSnapshot = { fetchedAt: string; source: string; prices: CommodityPrice[] };
 
 export const getPrices = () => request<PriceSnapshot>('/api/prices');
+
+// ---- Player listings from the UEX marketplace (asking prices) ----
+
+export type MarketListing = {
+  title: string;
+  itemId: number | null;
+  categoryId: number | null;
+  quality: number | null;
+  price: number;
+  stock: number;
+  /** Unix seconds when the listing was added. */
+  added: number | null;
+};
+
+export type ListingSnapshot = { fetchedAt: string; source: string; listings: MarketListing[] };
+
+export const getMarketListings = () => request<ListingSnapshot>('/api/market-listings');

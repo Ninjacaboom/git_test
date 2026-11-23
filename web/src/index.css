@@ -2501,3 +2501,47 @@ header.top {
   font: inherit;
   text-align: right;
 }
+
+/* ---- Marketplace comparison in the list form ---- */
+.comps {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.comps-title {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.comps ul {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.comps li {
+  display: grid;
+  grid-template-columns: 6rem 10rem 1fr;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+}
+
+.comps li span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comps-median button {
+  margin-left: 0.8rem;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}

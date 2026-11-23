@@ -149,10 +149,10 @@ public class UexPrices
         public long Updated { get; set; }
     }
 
-    static string? Text(JsonElement row, string name) =>
+    internal static string? Text(JsonElement row, string name) =>
         row.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 
-    static double Number(JsonElement row, string name)
+    internal static double Number(JsonElement row, string name)
     {
         if (!row.TryGetProperty(name, out var v)) return 0;
         return v.ValueKind switch
