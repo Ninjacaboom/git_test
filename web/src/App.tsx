@@ -310,7 +310,7 @@ export default function App() {
                           {f.text}
                         </span>
                       ))}
-                      {r.type !== 'WeaponPersonal' && r.size > 0 && <span className="badge">Size {r.size}</span>}
+                      {r.type !== 'WeaponPersonal' && !r.type.startsWith('Char_Armor') && r.size > 0 && <span className="badge">Size {r.size}</span>}
                       {r.type !== 'WeaponPersonal' && r.grade ? <span className="badge">Grade {r.grade}</span> : null}
                       {r.isSkin && <span className="badge skin">Skin</span>}
                     </span>
