@@ -5,6 +5,9 @@ namespace MyApp.Api.Models;
 /// OwnerKind is "member" or "squadron": squadron-made lots are crafted from pooled resources and
 /// follow the release ladder; member-made lots belong to the person who made them.
 /// Stage is Squadron, Priority, Public, Claimed or Sold.
+/// Kind is WTS (want to sell: the item is in stock), WTB (want to buy: Quality is the minimum wanted and
+/// PriceAuec the most the buyer will pay) or WTT (want to trade: Wanted says what is wanted in exchange).
+/// Lots saved before kinds existed have no Kind and count as WTS.
 /// </summary>
 public record Lot(
     string Id,
@@ -19,7 +22,9 @@ public record Lot(
     string Stage,
     int? PriceAuec,
     DateTime CreatedAt,
-    DateTime? ReleaseAt);
+    DateTime? ReleaseAt,
+    string Kind = "WTS",
+    string? Wanted = null);
 
 /// <summary>Body for creating a lot. Whoever is making it is MadeByMemberId.</summary>
 public record NewLot(
@@ -28,7 +33,18 @@ public record NewLot(
     int Quantity,
     string MadeByMemberId,
     bool ForSquadron,
-    int? PriceAuec);
+    int? PriceAuec,
+    string? Kind = null,
+    string? Wanted = null);
+
+public static class LotKinds
+{
+    public const string Sell = "WTS";
+    public const string Buy = "WTB";
+    public const string Trade = "WTT";
+
+    public static bool IsValid(string kind) => kind is Sell or Buy or Trade;
+}
 
 public static class LotStages
 {

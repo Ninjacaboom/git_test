@@ -58,7 +58,9 @@ app.MapGet("/api/lots/{id}", (string id) =>
     lots.Get(id) is { } lot ? Results.Ok(lot) : Results.NotFound());
 
 // Body: { "recipeId": "...", "quality": 750, "quantity": 1, "madeByMemberId": "m-ash",
-//         "forSquadron": true, "priceAuec": 12000 }
+//         "forSquadron": true, "priceAuec": 12000, "kind": "WTS" }
+// kind: WTS (selling), WTB (buying: quality is the minimum, price the most you will pay),
+//       WTT (trading: also send "wanted", what you want in exchange).
 app.MapPost("/api/lots", (NewLot input) =>
 {
     if (bank.GetRecipe(input.RecipeId) is not { } recipe)
@@ -74,6 +76,14 @@ app.MapPost("/api/lots", (NewLot input) =>
     if (input.PriceAuec is < 0)
         return Results.BadRequest(new { error = "Price cannot be negative." });
 
+    var kind = (input.Kind ?? LotKinds.Sell).Trim().ToUpperInvariant();
+    if (!LotKinds.IsValid(kind))
+        return Results.BadRequest(new { error = "Kind must be WTS, WTB or WTT." });
+    if (kind != LotKinds.Sell && input.ForSquadron)
+        return Results.BadRequest(new { error = "Only items for sale can be made for a squadron." });
+    if (kind == LotKinds.Trade && string.IsNullOrWhiteSpace(input.Wanted))
+        return Results.BadRequest(new { error = "Say what you want in exchange." });
+
     // Squadron-made lots start on the release ladder; member-made lots are listed publicly.
     var lot = new Lot(
         Guid.NewGuid().ToString("N")[..8],
@@ -88,7 +98,9 @@ app.MapPost("/api/lots", (NewLot input) =>
         input.ForSquadron ? LotStages.Squadron : LotStages.Public,
         input.PriceAuec,
         DateTime.UtcNow,
-        null);
+        null,
+        kind,
+        kind == LotKinds.Trade ? input.Wanted!.Trim() : null);
     return Results.Created($"/api/lots/{lot.Id}", lots.Add(lot));
 });
 

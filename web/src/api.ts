@@ -109,6 +109,9 @@ export type Member = { id: string; name: string; squadronId: string | null; divi
 
 export type LotStage = 'Squadron' | 'Priority' | 'Public' | 'Claimed' | 'Sold';
 
+/** WTS = selling, WTB = buying, WTT = trading. */
+export type LotKind = 'WTS' | 'WTB' | 'WTT';
+
 export type Lot = {
   id: string;
   recipeId: string;
@@ -123,6 +126,10 @@ export type Lot = {
   priceAuec: number | null;
   createdAt: string;
   releaseAt: string | null;
+  /** For WTB, quality is the minimum wanted and priceAuec the most the buyer will pay. */
+  kind: LotKind;
+  /** For WTT: what the poster wants in exchange. */
+  wanted: string | null;
 };
 
 export type NewLot = {
@@ -132,6 +139,8 @@ export type NewLot = {
   madeByMemberId: string;
   forSquadron: boolean;
   priceAuec: number | null;
+  kind?: LotKind;
+  wanted?: string | null;
 };
 
 export const getMembers = () => request<Member[]>('/api/members');

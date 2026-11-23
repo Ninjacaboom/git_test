@@ -3,6 +3,7 @@ import {
   createLot,
   getLots,
   getMarketListings,
+  type LotKind,
   type MarketListing,
   searchRecipes,
   type Lot,
@@ -16,6 +17,13 @@ import LotCard from './LotCard';
 import PriceGuide from './PriceGuide';
 
 type Tab = 'public' | 'squadron' | 'mine' | 'prices';
+
+const KINDS: { id: LotKind | 'all'; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'WTS', label: 'WTS' },
+  { id: 'WTB', label: 'WTB' },
+  { id: 'WTT', label: 'WTT' },
+];
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'public', label: 'Public market' },
@@ -36,6 +44,7 @@ export default function Market({ current, members, squadrons }: Props) {
   const [lots, setLots] = useState<Lot[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [kindFilter, setKindFilter] = useState<LotKind | 'all'>('all');
 
   const reload = useCallback(() => {
     getLots()
@@ -50,19 +59,20 @@ export default function Market({ current, members, squadrons }: Props) {
 
   const visible = useMemo(() => {
     if (!lots) return [];
+    const byKind = kindFilter === 'all' ? lots : lots.filter((l) => l.kind === kindFilter);
     switch (tab) {
       case 'public':
-        return lots.filter((l) => l.stage === 'Public');
+        return byKind.filter((l) => l.stage === 'Public');
       case 'squadron':
         return current?.squadronId
-          ? lots.filter((l) => l.ownerKind === 'squadron' && l.ownerId === current.squadronId)
+          ? byKind.filter((l) => l.ownerKind === 'squadron' && l.ownerId === current.squadronId)
           : [];
       case 'prices':
         return [];
       case 'mine':
-        return current ? lots.filter((l) => l.ownerKind === 'member' && l.ownerId === current.id) : [];
+        return current ? byKind.filter((l) => l.ownerKind === 'member' && l.ownerId === current.id) : [];
     }
-  }, [lots, tab, current]);
+  }, [lots, tab, current, kindFilter]);
 
   const memberName = (id: string) => members.find((m) => m.id === id)?.name ?? id;
   const ownerName = (l: Lot) =>
@@ -91,12 +101,29 @@ export default function Market({ current, members, squadrons }: Props) {
           type="button"
           className="market-add"
           disabled={!current}
-          title={current ? undefined : 'Pick who you are viewing as (top right) to list an item'}
+          title={current ? undefined : 'Pick who you are viewing as (top right) to post'}
           onClick={() => setShowForm((s) => !s)}
         >
-          {showForm ? 'Close' : 'List an item'}
+          {showForm ? 'Close' : 'New post'}
         </button>
       </div>
+
+      {tab !== 'prices' && (
+        <div className="kind-filter" role="group" aria-label="Post type">
+          {KINDS.map((k) => (
+            <button
+              key={k.id}
+              type="button"
+              aria-pressed={kindFilter === k.id}
+              className={kindFilter === k.id ? 'on' : undefined}
+              onClick={() => setKindFilter(k.id)}
+              title={k.id === 'WTS' ? 'Want to sell' : k.id === 'WTB' ? 'Want to buy' : k.id === 'WTT' ? 'Want to trade' : undefined}
+            >
+              {k.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {showForm && current && (
         <ListForm
@@ -139,6 +166,8 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState('');
   const [forSquadron, setForSquadron] = useState(false);
+  const [kind, setKind] = useState<LotKind>('WTS');
+  const [wanted, setWanted] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [listings, setListings] = useState<MarketListing[] | null>(null);
@@ -177,8 +206,10 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         quality,
         quantity,
         madeByMemberId: member.id,
-        forSquadron,
+        forSquadron: kind === 'WTS' && forSquadron,
         priceAuec: price.trim() === '' ? null : Math.max(0, Math.round(Number(price))),
+        kind,
+        wanted: kind === 'WTT' ? wanted.trim() : null,
       });
       onDone();
     } catch (err) {
@@ -189,7 +220,21 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
 
   return (
     <form className="list-form" onSubmit={submit}>
-      <div className="form-title">List an item as {member.name}</div>
+      <div className="form-title">Post as {member.name}</div>
+
+      <div className="kind-filter" role="group" aria-label="Post type">
+        {(
+          [
+            ['WTS', 'WTS: selling'],
+            ['WTB', 'WTB: buying'],
+            ['WTT', 'WTT: trading'],
+          ] as [LotKind, string][]
+        ).map(([k, label]) => (
+          <button key={k} type="button" aria-pressed={kind === k} className={kind === k ? 'on' : undefined} onClick={() => setKind(k)}>
+            {label}
+          </button>
+        ))}
+      </div>
 
       <label>
         Item
@@ -224,7 +269,7 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
 
       <div className="list-row">
         <label>
-          Quality (0–1000)
+          {kind === 'WTB' ? 'Minimum quality (0–1000)' : 'Quality (0–1000)'}
           <input type="number" min={0} max={1000} value={quality} onChange={(e) => setQuality(Number(e.target.value))} />
         </label>
         <label>
@@ -232,7 +277,7 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
           <input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} />
         </label>
         <label>
-          Price (aUEC)
+          {kind === 'WTB' ? 'Most you will pay (aUEC)' : kind === 'WTT' ? 'Plus aUEC (optional)' : 'Price (aUEC)'}
           <input type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="optional" />
         </label>
       </div>
@@ -271,19 +316,28 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         </div>
       )}
 
-      <label className="check">
-        <input
-          type="checkbox"
-          checked={forSquadron}
-          disabled={!member.squadronId}
-          onChange={(e) => setForSquadron(e.target.checked)}
-        />
-        Made for my squadron (goes to the squadron armoury first)
-      </label>
+      {kind === 'WTT' && (
+        <label>
+          What you want in exchange
+          <input value={wanted} onChange={(e) => setWanted(e.target.value)} placeholder="e.g. a 900Q Gallant, or 2 SCU of 850Q Agricium" />
+        </label>
+      )}
+
+      {kind === 'WTS' && (
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={forSquadron}
+            disabled={!member.squadronId}
+            onChange={(e) => setForSquadron(e.target.checked)}
+          />
+          Made for my squadron (goes to the squadron armoury first)
+        </label>
+      )}
 
       {error && <p className="error">{error}</p>}
-      <button type="submit" disabled={!picked || busy}>
-        {busy ? 'Listing…' : 'List item'}
+      <button type="submit" disabled={!picked || busy || (kind === 'WTT' && wanted.trim() === '')}>
+        {busy ? 'Posting…' : `Post ${kind}`}
       </button>
     </form>
   );

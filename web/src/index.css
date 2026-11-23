@@ -2545,3 +2545,48 @@ header.top {
   font: inherit;
   cursor: pointer;
 }
+
+/* ---- WTS / WTB / WTT ---- */
+.kind-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.kind-filter button {
+  padding: 0.25rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.kind-filter button.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.kind-tag {
+  display: inline-block;
+  padding: 0 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.kind-wts {
+  color: var(--up);
+}
+
+.kind-wtb {
+  color: #e0b04a;
+}
+
+.kind-wtt {
+  color: #6fb7ff;
+}
