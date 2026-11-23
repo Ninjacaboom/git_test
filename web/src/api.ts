@@ -117,7 +117,8 @@ export type Lot = {
   recipeId: string;
   itemName: string;
   itemType: string;
-  quality: number;
+  /** Null for items that have no quality (medals, most looted gear). */
+  quality: number | null;
   quantity: number;
   ownerKind: 'member' | 'squadron';
   ownerId: string;
@@ -130,17 +131,35 @@ export type Lot = {
   kind: LotKind;
   /** For WTT: what the poster wants in exchange. */
   wanted: string | null;
+  notes: string | null;
 };
 
+/** Categories for items that are not in the crafting catalogue. Keep in step with CustomCategories in Lot.cs. */
+export const CUSTOM_CATEGORIES = [
+  'Medal',
+  'Weapon attachment',
+  'FPS weapon',
+  'Ship weapon',
+  'Railgun',
+  'Armour (looted)',
+  'Ship component',
+  'Material',
+  'Other',
+] as const;
+
 export type NewLot = {
-  recipeId: string;
-  quality: number;
+  /** Leave out for an item that is not in the catalogue, and send customName and category instead. */
+  recipeId?: string | null;
+  quality: number | null;
   quantity: number;
   madeByMemberId: string;
   forSquadron: boolean;
   priceAuec: number | null;
   kind?: LotKind;
   wanted?: string | null;
+  customName?: string | null;
+  category?: string | null;
+  notes?: string | null;
 };
 
 export const getMembers = () => request<Member[]>('/api/members');

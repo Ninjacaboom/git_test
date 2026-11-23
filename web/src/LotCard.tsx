@@ -4,7 +4,7 @@ import { bandOf } from './quality';
 
 /** One stock lot: used by the Market and My orders pages. */
 export default function LotCard({ lot: l, ownerName, madeBy }: { lot: Lot; ownerName: string; madeBy: string }) {
-  const band = bandOf(l.quality);
+  const band = l.quality === null ? null : bandOf(l.quality);
   return (
     <article className="lot-card">
       <div className="lot-head">
@@ -12,10 +12,12 @@ export default function LotCard({ lot: l, ownerName, madeBy }: { lot: Lot; owner
         <span className="type-tag">{prettyType(l.itemType)}</span>
         <div className="lot-name">{l.itemName}</div>
       </div>
-      <div className="lot-quality" style={{ color: band.color }}>
-        {l.kind === 'WTB' ? 'Minimum Q' : 'Q'}
-        {l.quality}
-      </div>
+      {band && l.quality !== null && (
+        <div className="lot-quality" style={{ color: band.color }}>
+          {l.kind === 'WTB' ? 'Minimum Q' : 'Q'}
+          {l.quality}
+        </div>
+      )}
       <dl>
         <dt>Quantity</dt>
         <dd>{l.quantity}</dd>
@@ -40,6 +42,7 @@ export default function LotCard({ lot: l, ownerName, madeBy }: { lot: Lot; owner
           </>
         )}
       </dl>
+      {l.notes && <div className="lot-notes">{l.notes}</div>}
       <div className="lot-price">
         {l.priceAuec == null
           ? l.kind === 'WTT'

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
+  CUSTOM_CATEGORIES,
   createLot,
   getLots,
   getMarketListings,
@@ -162,6 +163,12 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
   const [search, setSearch] = useState('');
   const [matches, setMatches] = useState<RecipeSummary[]>([]);
   const [picked, setPicked] = useState<RecipeSummary | null>(null);
+  // The item is either from the crafting catalogue, or any other item typed in (medals, attachments, looted gear).
+  const [source, setSource] = useState<'catalogue' | 'other'>('catalogue');
+  const [customName, setCustomName] = useState('');
+  const [category, setCategory] = useState<string>(CUSTOM_CATEGORIES[0]);
+  const [rated, setRated] = useState(false);
+  const [notes, setNotes] = useState('');
   const [quality, setQuality] = useState(500);
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState('');
@@ -180,7 +187,10 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
       .catch(() => setListingsError(true));
   }, []);
 
-  const comps = picked && listings ? compsFor(listingsFor(picked.name, listings), quality) : null;
+  const itemName = source === 'catalogue' ? (picked?.name ?? '') : customName.trim();
+  const hasQuality = source === 'catalogue' || rated;
+  const comps = itemName && listings ? compsFor(listingsFor(itemName, listings), hasQuality ? quality : null) : null;
+  const itemReady = source === 'catalogue' ? picked !== null : customName.trim().length >= 2;
 
   useEffect(() => {
     if (picked || search.trim().length < 2) {
@@ -197,13 +207,16 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (!picked) return;
+    if (!itemReady) return;
     setBusy(true);
     setError(null);
     try {
       await createLot({
-        recipeId: picked.id,
-        quality,
+        recipeId: source === 'catalogue' ? picked?.id : null,
+        customName: source === 'other' ? customName.trim() : null,
+        category: source === 'other' ? category : null,
+        notes: notes.trim() === '' ? null : notes.trim(),
+        quality: hasQuality ? quality : null,
         quantity,
         madeByMemberId: member.id,
         forSquadron: kind === 'WTS' && forSquadron,
@@ -236,6 +249,17 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         ))}
       </div>
 
+      <div className="kind-filter" role="group" aria-label="Item source">
+        <button type="button" aria-pressed={source === 'catalogue'} className={source === 'catalogue' ? 'on' : undefined} onClick={() => setSource('catalogue')}>
+          Crafted item
+        </button>
+        <button type="button" aria-pressed={source === 'other'} className={source === 'other' ? 'on' : undefined} onClick={() => setSource('other')}>
+          Other item
+        </button>
+      </div>
+
+      {source === 'catalogue' ? (
+        <>
       <label>
         Item
         {picked ? (
@@ -267,11 +291,37 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         </ul>
       )}
 
+        </>
+      ) : (
+        <>
+          <label>
+            Item name
+            <input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Ranger medal, Tactical suppressor, Railgun" maxLength={80} />
+          </label>
+          <label>
+            Category
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              {CUSTOM_CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="check">
+            <input type="checkbox" checked={rated} onChange={(e) => setRated(e.target.checked)} />
+            This item has a quality
+          </label>
+        </>
+      )}
+
       <div className="list-row">
+        {hasQuality && (
         <label>
           {kind === 'WTB' ? 'Minimum quality (0–1000)' : 'Quality (0–1000)'}
           <input type="number" min={0} max={1000} value={quality} onChange={(e) => setQuality(Number(e.target.value))} />
         </label>
+        )}
         <label>
           Quantity
           <input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} />
@@ -282,13 +332,13 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         </label>
       </div>
 
-      {picked && (
+      {itemName && (
         <div className="comps">
           <div className="comps-title">What players are asking on UEX</div>
           {listingsError && <p className="muted">Marketplace prices are not available right now.</p>}
           {!listingsError && listings === null && <p className="muted">Loading listings…</p>}
           {comps && comps.nearest.length === 0 && (
-            <p className="muted">No listings found with "{picked.name}" in the title.</p>
+            <p className="muted">No listings found with "{itemName}" in the title.</p>
           )}
           {comps && comps.nearest.length > 0 && (
             <>
@@ -316,6 +366,11 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
         </div>
       )}
 
+      <label>
+        Notes (optional)
+        <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Where to meet, condition, anything a buyer should know" maxLength={300} />
+      </label>
+
       {kind === 'WTT' && (
         <label>
           What you want in exchange
@@ -336,7 +391,7 @@ function ListForm({ member, onDone }: { member: Member; onDone: () => void }) {
       )}
 
       {error && <p className="error">{error}</p>}
-      <button type="submit" disabled={!picked || busy || (kind === 'WTT' && wanted.trim() === '')}>
+      <button type="submit" disabled={!itemReady || busy || (kind === 'WTT' && wanted.trim() === '')}>
         {busy ? 'Posting…' : `Post ${kind}`}
       </button>
     </form>

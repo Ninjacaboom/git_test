@@ -8,13 +8,15 @@ namespace MyApp.Api.Models;
 /// Kind is WTS (want to sell: the item is in stock), WTB (want to buy: Quality is the minimum wanted and
 /// PriceAuec the most the buyer will pay) or WTT (want to trade: Wanted says what is wanted in exchange).
 /// Lots saved before kinds existed have no Kind and count as WTS.
+/// Items that cannot be crafted (medals, attachments, looted armour...) have an empty RecipeId; ItemType
+/// then holds their category, and Quality is null when the item has no quality.
 /// </summary>
 public record Lot(
     string Id,
     string RecipeId,
     string ItemName,
     string ItemType,
-    int Quality,
+    int? Quality,
     int Quantity,
     string OwnerKind,
     string OwnerId,
@@ -24,18 +26,39 @@ public record Lot(
     DateTime CreatedAt,
     DateTime? ReleaseAt,
     string Kind = "WTS",
-    string? Wanted = null);
+    string? Wanted = null,
+    string? Notes = null);
 
 /// <summary>Body for creating a lot. Whoever is making it is MadeByMemberId.</summary>
 public record NewLot(
-    string RecipeId,
-    int Quality,
+    string? RecipeId,
+    int? Quality,
     int Quantity,
     string MadeByMemberId,
     bool ForSquadron,
     int? PriceAuec,
     string? Kind = null,
-    string? Wanted = null);
+    string? Wanted = null,
+    string? CustomName = null,
+    string? Category = null,
+    string? Notes = null);
+
+/// <summary>Categories for items that are not in the crafting catalogue.</summary>
+public static class CustomCategories
+{
+    public static readonly string[] All =
+    [
+        "Medal",
+        "Weapon attachment",
+        "FPS weapon",
+        "Ship weapon",
+        "Railgun",
+        "Armour (looted)",
+        "Ship component",
+        "Material",
+        "Other",
+    ];
+}
 
 public static class LotKinds
 {

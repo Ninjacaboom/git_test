@@ -2590,3 +2590,16 @@ header.top {
 .kind-wtt {
   color: #6fb7ff;
 }
+
+.lot-notes {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.list-form select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  background: #000;
+  color: var(--text);
+  font: inherit;
+}
