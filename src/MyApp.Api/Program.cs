@@ -158,6 +158,84 @@ app.MapPost("/api/lots", (NewLot input) =>
 app.MapDelete("/api/lots/{id}", (string id) =>
     lots.Remove(id) ? Results.NoContent() : Results.NotFound());
 
+// ---- Contracts: requests for crafting materials that members can pick up ----
+var contracts = new ContractStore(Path.Combine(app.Environment.ContentRootPath, "App_Data", "contracts.json"));
+
+// Example: /api/contracts?status=Open   (hot ones come first)
+app.MapGet("/api/contracts", (string? status) => contracts.List(status));
+
+// Body: { "material": "Agricium", "quantity": 12, "minQuality": 700, "rewardPerUnit": 5000,
+//         "postedByMemberId": "m-ash", "hot": true, "notes": "optional" }
+app.MapPost("/api/contracts", (NewContract input) =>
+{
+    if (Org.FindMember(input.PostedByMemberId) is not { } member)
+        return Results.BadRequest(new { error = "Unknown member." });
+    if (!bank.Resources.Any(r => r.Name == input.Material))
+        return Results.BadRequest(new { error = "Unknown material." });
+    if (!(input.Quantity > 0) || input.Quantity > 100000)
+        return Results.BadRequest(new { error = "Quantity must be more than 0." });
+    if (input.MinQuality is < 0 or > 1000)
+        return Results.BadRequest(new { error = "Minimum quality must be 0-1000." });
+    if (input.RewardPerUnit is < 0)
+        return Results.BadRequest(new { error = "Reward cannot be negative." });
+    var notes = string.IsNullOrWhiteSpace(input.Notes) ? null : input.Notes.Trim();
+    if (notes is { Length: > 300 })
+        return Results.BadRequest(new { error = "Notes can be at most 300 characters." });
+
+    var contract = new Contract(
+        Guid.NewGuid().ToString("N")[..8],
+        input.Material,
+        input.Quantity,
+        input.MinQuality,
+        input.RewardPerUnit,
+        member.Id,
+        DateTime.UtcNow,
+        ContractStatuses.Open,
+        null,
+        input.Hot,
+        notes);
+    return Results.Created($"/api/contracts/{contract.Id}", contracts.Add(contract));
+});
+
+// Pick up an open contract.
+app.MapPost("/api/contracts/{id}/claim", (string id, MemberAction action) =>
+{
+    if (Org.FindMember(action.MemberId) is not { } member) return Results.BadRequest(new { error = "Unknown member." });
+    if (contracts.Get(id) is not { } contract) return Results.NotFound();
+    if (contract.Status != ContractStatuses.Open) return Results.BadRequest(new { error = "That contract is not open." });
+    if (contract.PostedByMemberId == member.Id) return Results.BadRequest(new { error = "You cannot pick up your own contract." });
+    return Results.Ok(contracts.Update(id, c => c with { Status = ContractStatuses.Claimed, ClaimedByMemberId = member.Id }));
+});
+
+// Put a picked-up contract back on the board (only the member who picked it up).
+app.MapPost("/api/contracts/{id}/release", (string id, MemberAction action) =>
+{
+    if (contracts.Get(id) is not { } contract) return Results.NotFound();
+    if (contract.Status != ContractStatuses.Claimed || contract.ClaimedByMemberId != action.MemberId)
+        return Results.BadRequest(new { error = "Only the member who picked it up can put it back." });
+    return Results.Ok(contracts.Update(id, c => c with { Status = ContractStatuses.Open, ClaimedByMemberId = null }));
+});
+
+// Mark a picked-up contract as delivered (only the member who posted it).
+app.MapPost("/api/contracts/{id}/complete", (string id, MemberAction action) =>
+{
+    if (contracts.Get(id) is not { } contract) return Results.NotFound();
+    if (contract.PostedByMemberId != action.MemberId)
+        return Results.BadRequest(new { error = "Only the member who posted it can mark it done." });
+    if (contract.Status != ContractStatuses.Claimed)
+        return Results.BadRequest(new { error = "Only a picked-up contract can be marked done." });
+    return Results.Ok(contracts.Update(id, c => c with { Status = ContractStatuses.Done }));
+});
+
+// Take an open contract off the board (only the member who posted it).
+app.MapDelete("/api/contracts/{id}", (string id, string memberId) =>
+{
+    if (contracts.Get(id) is not { } contract) return Results.NotFound();
+    if (contract.PostedByMemberId != memberId || contract.Status != ContractStatuses.Open)
+        return Results.BadRequest(new { error = "Only the poster can cancel, and only while it is still open." });
+    return contracts.Remove(id) ? Results.NoContent() : Results.NotFound();
+});
+
 // ---- Commodity prices from UEX (what terminals pay per SCU), fetched at most once a day ----
 // The access token is read from the "Uex:Token" setting (see README), never stored in code.
 var uex = new UexPrices(

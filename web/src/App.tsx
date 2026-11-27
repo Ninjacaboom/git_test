@@ -5,7 +5,7 @@ import { cardFacts, typeLabel } from './format';
 import TypeFilter from './TypeFilter';
 import Pagination from './Pagination';
 import RecipeDetail from './RecipeDetail';
-import ComingSoon from './ComingSoon';
+import Contracts from './Contracts';
 import Market from './Market';
 import Orders from './Orders';
 
@@ -246,7 +246,7 @@ export default function App() {
 
       {view === 'market' && <Market current={current} members={members} squadrons={squadrons} />}
       {view === 'orders' && <Orders current={current} members={members} squadrons={squadrons} />}
-      {view === 'contracts' && <ComingSoon page={view} />}
+      {view === 'contracts' && <Contracts current={current} members={members} />}
 
       <div className="layout" hidden={view !== 'catalogue'}>
         <aside className="filters">

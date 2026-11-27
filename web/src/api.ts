@@ -228,3 +228,63 @@ export type TradeableItem = {
 };
 
 export const getTradeableItems = () => request<TradeableItem[]>('/tradeable-items.json');
+
+// ---- Crafting resources and contracts (requests for materials) ----
+
+export type Resource = { id: string; name: string; category: string; unitType: string; material: string | null };
+
+export const getResources = () => request<Resource[]>('/api/resources');
+
+export type ContractStatus = 'Open' | 'Claimed' | 'Done';
+
+export type Contract = {
+  id: string;
+  material: string;
+  /** SCU for ores and metals, units for harvestables (see the resource's unitType). */
+  quantity: number;
+  /** 0 means any quality. */
+  minQuality: number;
+  rewardPerUnit: number | null;
+  postedByMemberId: string;
+  postedAt: string;
+  status: ContractStatus;
+  claimedByMemberId: string | null;
+  hot: boolean;
+  notes: string | null;
+};
+
+export type NewContract = {
+  material: string;
+  quantity: number;
+  minQuality: number;
+  rewardPerUnit: number | null;
+  postedByMemberId: string;
+  hot: boolean;
+  notes: string | null;
+};
+
+export const getContracts = (status?: ContractStatus) =>
+  request<Contract[]>(`/api/contracts${status ? `?status=${status}` : ''}`);
+
+export const createContract = (c: NewContract) =>
+  request<Contract>('/api/contracts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(c),
+  });
+
+const contractAction = (id: string, action: 'claim' | 'release' | 'complete', memberId: string) =>
+  request<Contract>(`/api/contracts/${encodeURIComponent(id)}/${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memberId }),
+  });
+
+export const claimContract = (id: string, memberId: string) => contractAction(id, 'claim', memberId);
+export const releaseContract = (id: string, memberId: string) => contractAction(id, 'release', memberId);
+export const completeContract = (id: string, memberId: string) => contractAction(id, 'complete', memberId);
+
+export async function cancelContract(id: string, memberId: string): Promise<void> {
+  const res = await fetch(`/api/contracts/${encodeURIComponent(id)}?memberId=${encodeURIComponent(memberId)}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+}
